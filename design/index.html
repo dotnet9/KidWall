@@ -301,17 +301,25 @@
   }
   .modal .close:hover { background:rgba(255,255,255,.25); transform:rotate(90deg); }
 
-  /* ---------- 设置抽屉 ---------- */
+  /* ---------- 设置抽屉（软件窗口内右侧边栏） ---------- */
   .drawer {
-    position:fixed; top:0; right:0; bottom:0; z-index:60; width:min(400px,92vw);
-    background:rgba(24,12,70,.92); backdrop-filter:blur(20px);
-    border-left:1px solid var(--stroke); padding:30px 28px;
+    position:absolute; top:60px; right:0; bottom:0; z-index:60; width:min(400px,92%);
+    background:rgba(24,12,70,.94); backdrop-filter:blur(20px);
+    border-left:1px solid var(--stroke); border-radius:18px 0 0 18px;
+    padding:26px 28px;
     transform:translateX(105%); transition:transform .35s cubic-bezier(.2,1,.3,1);
     overflow-y:auto;
   }
   .drawer.show { transform:translateX(0); }
   .drawer h3 { font-size:20px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
   .drawer .sub { font-size:13px; color:var(--ink-3); margin-bottom:22px; }
+  /* 窗口内遮罩：只变暗软件内容区，不覆盖窗口外 */
+  .dimmer {
+    position:absolute; top:60px; left:0; right:0; bottom:0; z-index:54;
+    background:rgba(10,5,40,.45); backdrop-filter:blur(5px);
+    opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .dimmer.show { opacity:1; pointer-events:auto; }
   .row {
     display:flex; align-items:center; justify-content:space-between; gap:12px;
     padding:15px 0; border-bottom:1px dashed rgba(255,255,255,.14);
@@ -328,7 +336,6 @@
   }
   .switch.on { background:linear-gradient(135deg,var(--accent),#ff9d5c); }
   .switch.on::after { left:25px; }
-  .drawer .overlay-touch { position:fixed; inset:0; z-index:-1; }
 
   /* ---------- Toast ---------- */
   .toast {
@@ -413,6 +420,32 @@
   <footer>童壁 KidWall · 为儿童打造的纯净桌面壁纸 · 开源原型</footer>
     </div><!-- /.app -->
   </div><!-- /.win-body -->
+
+  <!-- 设置抽屉（应用内右侧边栏） -->
+  <div class="dimmer" id="drawerDimmer" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <h3>⚙ 简单设置
+      <button class="btn" style="margin-left:auto;padding:7px 14px;font-size:13px;" onclick="closeDrawer()">✕ 取消</button>
+    </h3>
+    <p class="sub">儿童模式 · 一键守护</p>
+    <div class="row">
+      <div class="txt"><b>开机自启</b><span>开机后自动应用上次的壁纸</span></div>
+      <button class="switch on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="row">
+      <div class="txt"><b>定时换壁纸</b><span>每 30 分钟自动换一张</span></div>
+      <button class="switch" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="row">
+      <div class="txt"><b>动态壁纸省电模式</b><span>后台播放时降低帧率，更省电</span></div>
+      <button class="switch on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="row">
+      <div class="txt"><b>屏蔽不适合内容</b><span>自动过滤风险壁纸源</span></div>
+      <button class="switch on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <button class="btn primary" style="width:100%;justify-content:center;margin-top:24px;" onclick="closeDrawer();toast('设置已保存 🎉')">保存设置</button>
+  </div>
 </div><!-- /.win -->
 
 <button class="reopen" id="reopen" onclick="restoreWin()">🎈 童壁去系统托盘啦，点我重新打开</button>
@@ -431,29 +464,6 @@
       <button class="btn primary" onclick="apply('预览页')">✨ 设为壁纸</button>
     </div>
   </div>
-</div>
-
-<!-- 设置抽屉 -->
-<div class="drawer" id="drawer">
-  <h3>⚙ 简单设置</h3>
-  <p class="sub">儿童模式 · 一键守护</p>
-  <div class="row">
-    <div class="txt"><b>开机自启</b><span>开机后自动应用上次的壁纸</span></div>
-    <button class="switch on" onclick="this.classList.toggle('on')"></button>
-  </div>
-  <div class="row">
-    <div class="txt"><b>定时换壁纸</b><span>每 30 分钟自动换一张</span></div>
-    <button class="switch" onclick="this.classList.toggle('on')"></button>
-  </div>
-  <div class="row">
-    <div class="txt"><b>动态壁纸省电模式</b><span>后台播放时降低帧率，更省电</span></div>
-    <button class="switch on" onclick="this.classList.toggle('on')"></button>
-  </div>
-  <div class="row">
-    <div class="txt"><b>屏蔽不适合内容</b><span>自动过滤风险壁纸源</span></div>
-    <button class="switch on" onclick="this.classList.toggle('on')"></button>
-  </div>
-  <button class="btn primary" style="width:100%;justify-content:center;margin-top:24px;" onclick="closeDrawer();toast('设置已保存 🎉')">保存设置</button>
 </div>
 
 <!-- Toast -->
@@ -565,8 +575,8 @@ function openModal(id){
   document.getElementById("modal").classList.add("show");
 }
 function closeModal(){ document.getElementById("modal").classList.remove("show"); }
-function openDrawer(){ document.getElementById("drawer").classList.add("show"); }
-function closeDrawer(){ document.getElementById("drawer").classList.remove("show"); }
+function openDrawer(){ document.getElementById("drawer").classList.add("show"); document.getElementById("drawerDimmer").classList.add("show"); }
+function closeDrawer(){ document.getElementById("drawer").classList.remove("show"); document.getElementById("drawerDimmer").classList.remove("show"); }
 function openFile(){ toast("已打开本地文件夹选择器（原型示意）"); }
 
 let toastTimer;
