@@ -13,6 +13,13 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        // 退出时关闭动态壁纸播放层
+        App.CloseDynamicWallpaper();
+        base.OnClosed(e);
+    }
+
     private MainViewModel? ViewModel => DataContext as MainViewModel;
 
     private void OnTitleBarPointerPressed(object? sender, PointerPressedEventArgs e)

@@ -269,9 +269,24 @@ public partial class MainViewModel : LocalizedViewModel
     [RelayCommand]
     private void ApplyWallpaper(WallpaperItemViewModel item)
     {
-        // 动态壁纸：桌面视频播放为规划功能，先应用封面静态图
-        var applyPath = item.IsDynamic ? item.Model.ThumbPath : item.FullPath;
-        if (_wallpaperService.SetWallpaper(applyPath))
+        if (item.IsDynamic)
+        {
+            // 动态壁纸：全屏视频挂载到桌面壁纸层（WorkerW）
+            App.ShowDynamicWallpaper(item.FullPath);
+            foreach (var wallpaper in _allItems)
+            {
+                wallpaper.IsCurrent = false;
+            }
+
+            item.IsCurrent = true;
+            _appliedWallpaperId = item.Id;
+            ShowStatus($"🎬 动态壁纸已应用：{item.Name}");
+            return;
+        }
+
+        // 静态壁纸：先关闭动态壁纸层，再应用静态图
+        App.CloseDynamicWallpaper();
+        if (_wallpaperService.SetWallpaper(item.FullPath))
         {
             foreach (var wallpaper in _allItems)
             {
@@ -280,9 +295,7 @@ public partial class MainViewModel : LocalizedViewModel
 
             item.IsCurrent = true;
             _appliedWallpaperId = item.Id;
-            ShowStatus(item.IsDynamic
-                ? $"🎬 动态桌面播放规划中，已应用封面：{item.Name}"
-                : string.Format(L(Localization.Toast.Messages.Applied), item.Name));
+            ShowStatus(string.Format(L(Localization.Toast.Messages.Applied), item.Name));
         }
         else
         {
