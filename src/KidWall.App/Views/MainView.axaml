@@ -78,6 +78,16 @@
                 <Border Classes="dyn-overlay" IsVisible="{Binding IsDynamic}" />
                 <Border Background="{DynamicResource CardShadeBrush}" />
 
+                <!-- 整卡点击打开预览（透明覆盖层，ops 按钮在其上层仍可点击） -->
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).OpenPreviewCommand}"
+                    CommandParameter="{Binding}"
+                    HorizontalAlignment="Stretch"
+                    Padding="0"
+                    VerticalAlignment="Stretch" />
+
                 <!-- 左上角徽标 -->
                 <StackPanel
                     Margin="10"
