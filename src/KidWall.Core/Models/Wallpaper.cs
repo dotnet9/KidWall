@@ -32,8 +32,11 @@ public sealed class Wallpaper
     /// <summary>缩略图路径（用于网格展示）。</summary>
     public string ThumbPath { get; }
 
-    /// <summary>是否动态壁纸（当前为规划功能，恒为 false）。</summary>
+    /// <summary>是否动态壁纸（动态分类为静态底图 + 播放动效模拟）。</summary>
     public bool IsDynamic { get; set; }
+
+    /// <summary>是否精选（推荐分类）。</summary>
+    public bool IsRecommended { get; set; }
 
     /// <summary>是否来自本地用户文件夹。</summary>
     public bool IsFromLocal { get; set; }
