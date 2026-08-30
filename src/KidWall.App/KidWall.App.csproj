@@ -14,7 +14,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Lang.Avalonia" />
     <PackageReference Include="Lang.Avalonia.Json" />
-    <PackageReference Include="MediaPlayer.Controls" />
+    <PackageReference Include="LibVLCSharp" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" />
     <PackageReference Include="Irihi.Ursa" />
     <PackageReference Include="Irihi.Ursa.Themes.Semi" />

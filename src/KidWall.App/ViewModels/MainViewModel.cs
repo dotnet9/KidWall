@@ -147,16 +147,6 @@ public partial class MainViewModel : LocalizedViewModel
     [ObservableProperty]
     private WallpaperItemViewModel? _previewItem;
 
-    /// <summary>动态壁纸预览视频源（仅在预览动态壁纸时非空）。</summary>
-    public Uri? PreviewVideoSource => PreviewItem is { IsDynamic: true } item
-        ? new Uri(Path.GetFullPath(item.FullPath))
-        : null;
-
-    partial void OnPreviewItemChanged(WallpaperItemViewModel? value)
-    {
-        OnPropertyChanged(nameof(PreviewVideoSource));
-    }
-
     [ObservableProperty]
     private string? _statusMessage;
 

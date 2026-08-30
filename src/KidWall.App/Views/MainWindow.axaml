@@ -5,7 +5,6 @@
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:views="using:KidWall.App.Views"
     xmlns:ac="using:Avalonia.Data.Converters"
-    xmlns:media="clr-namespace:MediaPlayer.Controls;assembly=MediaPlayer.Controls"
     x:CompileBindings="True"
     x:DataType="vm:MainViewModel"
     Background="{DynamicResource KidWallWindowBackground}"
@@ -151,13 +150,8 @@
                   <Image
                       Source="{Binding PreviewItem.Preview}"
                       Stretch="UniformToFill" />
-                  <!-- 动态壁纸：真实视频预览播放 -->
-                  <media:GpuMediaPlayer
-                      AutoPlay="True"
-                      IsVisible="{Binding PreviewItem.IsDynamic}"
-                      PreferDirectGpuTextureUpload="True"
-                      Source="{Binding PreviewVideoSource}"
-                      Volume="0" />
+                  <!-- 动态壁纸：叠加呼吸光晕提示播放（桌面播放由 WorkerW + LibVLC 实现） -->
+                  <Border Classes="dyn-overlay" IsVisible="{Binding PreviewItem.IsDynamic}" />
                   <Border
                       Background="{DynamicResource CardShadeBrush}"
                       VerticalAlignment="Bottom">
