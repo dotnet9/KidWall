@@ -1,0 +1,284 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ================= 设计令牌 ================= -->
+  <Styles.Resources>
+    <SolidColorBrush x:Key="KidWallWindowBackground" Color="#1A0D48" />
+    <SolidColorBrush x:Key="KidWallSurfaceBrush" Color="#241458" />
+    <SolidColorBrush x:Key="KidWallTitlebarBrush" Color="#1E0F52" />
+    <SolidColorBrush x:Key="KidWallTextBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="KidWallTextSecondaryBrush" Color="#B8FFB8FF" />
+    <SolidColorBrush x:Key="KidWallTextTertiaryBrush" Color="#73FFFFFF" />
+    <SolidColorBrush x:Key="KidWallBorderBrush" Color="#2EFFFFFF" />
+    <SolidColorBrush x:Key="KidWallAccentBrush" Color="#FFD166" />
+
+    <LinearGradientBrush x:Key="KidWallAccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,0%">
+      <GradientStop Offset="0" Color="#FFD166" />
+      <GradientStop Offset="0.55" Color="#FF8FD8" />
+      <GradientStop Offset="1" Color="#4FD1FF" />
+    </LinearGradientBrush>
+
+    <!-- 糖果按钮三色 -->
+    <LinearGradientBrush x:Key="CandyMoonBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#8FE0FF" />
+      <GradientStop Offset="1" Color="#3F9BFF" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CandyStarBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#FFE08A" />
+      <GradientStop Offset="1" Color="#FF9D5C" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CandyHandBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#FFB0DD" />
+      <GradientStop Offset="1" Color="#FF5F9E" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PrimaryButtonBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#FFD166" />
+      <GradientStop Offset="1" Color="#FF9D5C" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BrandMarkBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#FFD166" />
+      <GradientStop Offset="0.55" Color="#FF7AB8" />
+      <GradientStop Offset="1" Color="#4FD1FF" />
+    </LinearGradientBrush>
+
+    <!-- 卡片遮罩渐变 -->
+    <LinearGradientBrush x:Key="CardShadeBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+      <GradientStop Offset="0" Color="#00000000" />
+      <GradientStop Offset="0.78" Color="#8C0A0528" />
+      <GradientStop Offset="1" Color="#D90A0528" />
+    </LinearGradientBrush>
+  </Styles.Resources>
+
+  <!-- ================= 标题栏 ================= -->
+  <Style Selector="TextBlock.win-title">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.win-subtitle">
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextTertiaryBrush}" />
+    <Setter Property="LetterSpacing" Value="1" />
+  </Style>
+  <Style Selector="Border.brand-mark">
+    <Setter Property="Width" Value="34" />
+    <Setter Property="Height" Value="34" />
+    <Setter Property="CornerRadius" Value="11" />
+    <Setter Property="Background" Value="{DynamicResource BrandMarkBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- 胶囊搜索框 -->
+  <Style Selector="TextBox.search">
+    <Setter Property="Background" Value="#26FFFFFF" />
+    <Setter Property="BorderBrush" Value="{DynamicResource KidWallBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="18" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="Padding" Value="14,4" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="MaxWidth" Value="440" />
+  </Style>
+  <Style Selector="TextBox.search:focus">
+    <Setter Property="BorderBrush" Value="{DynamicResource KidWallAccentBrush}" />
+  </Style>
+
+  <!-- ================= 通用按钮 ================= -->
+  <Style Selector="Button.secondary-btn">
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="13,7" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Background" Value="#2EFFFFFF" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+  </Style>
+  <Style Selector="Button.primary-btn">
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="13,7" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
+    <Setter Property="Foreground" Value="#3A2500" />
+  </Style>
+
+  <!-- 糖果窗口按钮 -->
+  <Style Selector="Button.candy">
+    <Setter Property="Width" Value="34" />
+    <Setter Property="Height" Value="34" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="17" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+  </Style>
+  <Style Selector="Button.candy.moon">
+    <Setter Property="Background" Value="{DynamicResource CandyMoonBrush}" />
+  </Style>
+  <Style Selector="Button.candy.star">
+    <Setter Property="Background" Value="{DynamicResource CandyStarBrush}" />
+  </Style>
+  <Style Selector="Button.candy.hand">
+    <Setter Property="Background" Value="{DynamicResource CandyHandBrush}" />
+  </Style>
+  <Style Selector="Button.candy:pointerover">
+    <Setter Property="FontSize" Value="19" />
+  </Style>
+
+  <!-- ================= 分类胶囊 ================= -->
+  <Style Selector="Button.category">
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="15,8" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Background" Value="#1AFFFFFF" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
+  </Style>
+  <Style Selector="Button.category:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#2EFFFFFF" />
+  </Style>
+  <Style Selector="Button.category.active">
+    <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
+    <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="Border.category-count">
+    <Setter Property="Background" Value="#33FFFFFF" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="MinWidth" Value="22" />
+  </Style>
+  <Style Selector="Border.category-count.active">
+    <Setter Property="Background" Value="#2E3A2500" />
+  </Style>
+  <Style Selector="TextBlock.category-count">
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.category-count.active">
+    <Setter Property="Foreground" Value="#3A2500" />
+  </Style>
+  <Style Selector="Border.category-planned">
+    <Setter Property="Background" Value="#66FFFFFF" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="5,1" />
+  </Style>
+  <Style Selector="TextBlock.category-planned">
+    <Setter Property="FontSize" Value="9.5" />
+    <Setter Property="Foreground" Value="#B8FFB8FF" />
+  </Style>
+
+  <!-- ================= 壁纸卡片 ================= -->
+  <Style Selector="Border.card">
+    <Setter Property="Width" Value="280" />
+    <Setter Property="Height" Value="158" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="ClipToBounds" Value="True" />
+    <Setter Property="BorderBrush" Value="{DynamicResource KidWallBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Background" Value="#26FFFFFF" />
+  </Style>
+  <Style Selector="Border.card:pointerover">
+    <Setter Property="BorderBrush" Value="{DynamicResource KidWallAccentBrush}" />
+    <Setter Property="BoxShadow" Value="0 12 30 0 #66000000" />
+  </Style>
+
+  <!-- 卡片操作按钮（悬停浮现） -->
+  <Style Selector="Border.card Button.card-ops">
+    <Setter Property="IsVisible" Value="False" />
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+  <Style Selector="Border.card:pointerover Button.card-ops">
+    <Setter Property="IsVisible" Value="True" />
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+  <Style Selector="Button.card-ops">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="10,5" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Background" Value="#99000000" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  <Style Selector="Button.card-ops.set">
+    <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
+    <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+
+  <!-- 徽标（动态 / 当前 / 规划中） -->
+  <Style Selector="Border.badge">
+    <Setter Property="Background" Value="#73000000" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="8,3" />
+  </Style>
+  <Style Selector="TextBlock.badge">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="Ellipse.badge-dot">
+    <Setter Property="Width" Value="7" />
+    <Setter Property="Height" Value="7" />
+    <Setter Property="Fill" Value="#6DFFC4" />
+  </Style>
+  <Style Selector="TextBlock.card-name">
+    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  <Style Selector="TextBlock.card-tag">
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
+  </Style>
+
+  <!-- ================= 覆盖层 / 面板 ================= -->
+  <Style Selector="Border.overlay">
+    <Setter Property="Background" Value="#8C0A1628" />
+  </Style>
+  <Style Selector="Border.surface-panel">
+    <Setter Property="Background" Value="{DynamicResource KidWallSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource KidWallBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="18" />
+    <Setter Property="BoxShadow" Value="0 24 60 0 #8C000000" />
+  </Style>
+  <Style Selector="TextBlock.panel-title">
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.panel-sub">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextTertiaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.setting-title">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.setting-desc">
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextTertiaryBrush}" />
+  </Style>
+
+  <!-- 节标题 -->
+  <Style Selector="Border.section-badge">
+    <Setter Property="Width" Value="6" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Background" Value="{DynamicResource KidWallAccentGradientBrush}" />
+  </Style>
+  <Style Selector="TextBlock.section-title">
+    <Setter Property="FontSize" Value="19" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.section-count">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource KidWallTextTertiaryBrush}" />
+  </Style>
+</Styles>

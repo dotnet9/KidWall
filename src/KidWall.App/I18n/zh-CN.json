@@ -1,0 +1,105 @@
+{
+  "language": "简体中文",
+  "description": "KidWall 简体中文资源",
+  "cultureName": "zh-CN",
+  "Localization": {
+    "Shell": {
+      "Window": {
+        "Title": "童壁 KidWall",
+        "Subtitle": "儿童桌面壁纸 · 轻量 纯净 无广告"
+      },
+      "Search": {
+        "Placeholder": "搜索喜欢的壁纸，比如：恐龙、星星、独角兽…"
+      },
+      "Actions": {
+        "Local": "本地壁纸",
+        "Settings": "设置"
+      },
+      "Controls": {
+        "Minimize": "睡觉觉 🌙",
+        "Maximize": "变大大 ⭐",
+        "Restore": "变回小窝 🏠",
+        "Close": "拜拜 👋"
+      }
+    },
+    "Main": {
+      "Categories": {
+        "All": "全部",
+        "Cartoon": "卡通",
+        "Starry": "星空",
+        "Illustration": "插画",
+        "Dynamic": "动态壁纸",
+        "Local": "本地"
+      },
+      "Section": {
+        "All": "全部壁纸",
+        "Cartoon": "卡通壁纸",
+        "Starry": "星空壁纸",
+        "Illustration": "插画壁纸",
+        "Dynamic": "动态壁纸",
+        "Local": "本地壁纸"
+      },
+      "Labels": {
+        "Count": "共 {0} 张 · 点击卡片可预览"
+      },
+      "Card": {
+        "Preview": "预览",
+        "SetWallpaper": "设为壁纸",
+        "Dynamic": "动态",
+        "Current": "当前",
+        "Planned": "规划中"
+      },
+      "Empty": {
+        "Icon": "🔭",
+        "Text": "没有找到匹配的壁纸，换个关键词试试吧～"
+      },
+      "Status": {
+        "Loading": "正在加载壁纸…",
+        "DynamicPlanned": "动态壁纸正在制作中，敬请期待～"
+      }
+    },
+    "Preview": {
+      "Labels": {
+        "Resolution": "建议分辨率 1920×1080",
+        "Apply": "✨ 设为壁纸",
+        "Close": "✕"
+      }
+    },
+    "Settings": {
+      "Page": {
+        "Title": "⚙ 简单设置",
+        "Subtitle": "儿童模式 · 一键守护",
+        "Save": "保存设置"
+      },
+      "AutoStart": {
+        "Title": "开机自启",
+        "Desc": "开机后自动应用上次的壁纸"
+      },
+      "AutoRotate": {
+        "Title": "定时换壁纸",
+        "Desc": "每隔 {0} 分钟自动换一张"
+      },
+      "BatterySaver": {
+        "Title": "动态壁纸省电模式",
+        "Desc": "后台播放时降低帧率，更省电"
+      },
+      "ContentFilter": {
+        "Title": "屏蔽不适合内容",
+        "Desc": "自动过滤风险壁纸源"
+      }
+    },
+    "Toast": {
+      "Messages": {
+        "Applied": "已设为桌面壁纸：{0}",
+        "Saved": "设置已保存 🎉",
+        "Minimized": "🌙 月亮睡着了，童壁先去睡一觉～",
+        "Maximized": "✨ 变大大啦！",
+        "Restored": "🐣 变回小窝～",
+        "Closed": "👋 拜拜～童壁去托盘玩啦",
+        "Reopened": "🎈 童壁醒啦！",
+        "LocalImported": "已导入 {0} 张本地壁纸",
+        "AutoRotated": "自动换了一张：{0}"
+      }
+    }
+  }
+}
