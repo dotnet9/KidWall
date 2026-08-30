@@ -11,7 +11,8 @@ public partial class WallpaperItemViewModel : ObservableObject
     {
         Model = model;
         Thumb = LoadBitmap(model.ThumbPath, 480);
-        Preview = LoadBitmap(model.FullPath, 1280);
+        // 动态壁纸是视频文件，不能用 Bitmap 解码；预览大图由视频播放器呈现
+        Preview = model.IsDynamic ? null : LoadBitmap(model.FullPath, 1280);
     }
 
     public Wallpaper Model { get; }
