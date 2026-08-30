@@ -27,7 +27,7 @@ public class BuiltInWallpaperSourceTests
             "cartoon/02-puppy.jpg",
             "starry/01-night.png",
             "illustration/01-castle.jpg",
-            "dynamic/01-aurora.jpg",
+            "dynamic/01-aurora.webm",
             "cartoon/ignored.txt",
             "other/01-unknown.jpg");
 
@@ -47,7 +47,31 @@ public class BuiltInWallpaperSourceTests
             Assert.Single(starry);
             Assert.Single(illustration);
             Assert.True(dynamic.IsDynamic);
+            Assert.EndsWith(".webm", dynamic.FullPath, StringComparison.OrdinalIgnoreCase);
+            // 视频自动生成封面
+            Assert.True(File.Exists(dynamic.ThumbPath), "动态壁纸应生成封面图");
             Assert.All(wallpapers, w => Assert.True(File.Exists(w.FullPath)));
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task LoadAsync_ReusesExistingDynamicCover()
+    {
+        var root = CreateTempResTree(
+            "dynamic/01-aurora.webm",
+            "dynamic/01-aurora.jpg");
+
+        try
+        {
+            var source = new BuiltInWallpaperSource(root);
+            var wallpapers = await source.LoadAsync();
+            var dynamic = wallpapers.Single();
+
+            Assert.EndsWith("01-aurora.jpg", dynamic.ThumbPath, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -62,7 +86,8 @@ public class BuiltInWallpaperSourceTests
             "cartoon/01-dino-balloons.jpg",
             "cartoon/02-unicorn-rainbow.jpg",
             "cartoon/03-other.jpg",
-            "starry/01-moon-stars.jpg");
+            "starry/01-moon-stars.jpg",
+            "dynamic/01-big-buck-bunny.webm");
 
         try
         {
@@ -73,6 +98,7 @@ public class BuiltInWallpaperSourceTests
             Assert.Contains("01-dino-balloons", recommended);
             Assert.Contains("02-unicorn-rainbow", recommended);
             Assert.Contains("01-moon-stars", recommended);
+            Assert.Contains("01-big-buck-bunny", recommended);
             Assert.DoesNotContain("03-other", recommended);
         }
         finally
