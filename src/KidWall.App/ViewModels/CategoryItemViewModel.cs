@@ -7,10 +7,10 @@ namespace KidWall.App.ViewModels;
 
 public partial class CategoryItemViewModel : ObservableObject
 {
-    private static readonly IBrush InactiveBackground = new SolidColorBrush(Color.Parse("#1AFFFFFF"));
-    private static readonly IBrush ActiveBackground = new SolidColorBrush(Color.Parse("#FFD166"));
-    private static readonly IBrush InactiveForeground = new SolidColorBrush(Color.Parse("#B8FFB8FF"));
-    private static readonly IBrush ActiveForeground = new SolidColorBrush(Color.Parse("#3A2500"));
+    private static readonly IBrush InactiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#1AFFFFFF"));
+    private static readonly IBrush ActiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#FFD166"));
+    private static readonly IBrush InactiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#B8FFB8FF"));
+    private static readonly IBrush ActiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#3A2500"));
 
     public CategoryItemViewModel(
         string key,

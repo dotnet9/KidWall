@@ -2,12 +2,15 @@
     x:Class="KidWall.App.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:KidWall.App.Behaviors"
+    xmlns:controls="using:KidWall.App.Controls"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:views="using:KidWall.App.Views"
     xmlns:ac="using:Avalonia.Data.Converters"
     x:CompileBindings="True"
     x:DataType="vm:MainViewModel"
     Background="{DynamicResource KidWallWindowBackground}"
+    Icon="/Assets/logo.ico"
     ExtendClientAreaTitleBarHeightHint="60"
     ExtendClientAreaToDecorationsHint="True"
     FontFamily="YouYuan, Microsoft YaHei UI, Microsoft YaHei, Segoe UI"
@@ -17,6 +20,7 @@
     Title="{Binding WindowTitle}"
     Width="1280"
     WindowDecorations="BorderOnly"
+    behaviors:WindowCloseBehavior.IsEnabled="True"
     WindowStartupLocation="CenterScreen">
   <Panel>
     <Grid RowDefinitions="60,*">
@@ -25,8 +29,7 @@
       <Grid
           Grid.Row="0"
           Background="{DynamicResource KidWallTitlebarBrush}"
-          DoubleTapped="OnTitleBarDoubleTapped"
-          PointerPressed="OnTitleBarPointerPressed">
+          behaviors:TitleBarDragBehavior.IsEnabled="True">
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
           <!-- 品牌区 -->
           <StackPanel
@@ -62,7 +65,7 @@
               Orientation="Horizontal"
               Spacing="8"
               VerticalAlignment="Center">
-            <Button Classes="secondary-btn" Click="OnPickLocalFolderClick">
+            <Button Classes="secondary-btn" Command="{Binding PickLocalFolderCommand}">
               <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="📁" />
                 <TextBlock Text="{Binding LocalButtonText}" />
@@ -77,19 +80,19 @@
 
             <Button
                 Classes="candy moon"
-                Click="OnMinimizeClick"
+                Command="{Binding MinimizeWindowCommand}"
                 ToolTip.Tip="{Binding MinimizeTip}">
               <TextBlock Text="🌙" />
             </Button>
             <Button
                 Classes="candy star"
-                Click="OnMaximizeClick"
+                Command="{Binding ToggleMaximizeWindowCommand}"
                 ToolTip.Tip="{Binding MaximizeTip}">
               <TextBlock Text="⭐" />
             </Button>
             <Button
                 Classes="candy hand"
-                Click="OnCloseClick"
+                Command="{Binding CloseWindowCommand}"
                 ToolTip.Tip="{Binding CloseTip}">
               <TextBlock Text="👋" />
             </Button>
@@ -104,103 +107,102 @@
       <Border
           IsVisible="{Binding PreviewItem, Converter={x:Static ac:ObjectConverters.IsNotNull}}"
           Background="#990A1628"
+          Grid.RowSpan="2"
           ZIndex="300">
-        <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
-          <Border Classes="surface-panel" Width="880">
-            <Grid RowDefinitions="Auto,*,Auto">
-              <Grid
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top">
+          <Border Classes="surface-panel" HorizontalAlignment="Center" Margin="0,16,0,0" Width="760">
+            <Grid RowDefinitions="*,Auto">
+              <Border
                   Grid.Row="0"
-                  Margin="18,12,10,4"
-                  ColumnDefinitions="*,Auto">
-                <StackPanel
-                    Orientation="Horizontal"
-                    Spacing="10"
-                    VerticalAlignment="Center">
-                  <TextBlock Classes="panel-title" Text="{Binding PreviewItem.Name}" />
+                  Margin="18,18,18,10"
+                  Background="#00000000"
+                  BorderBrush="{DynamicResource KidWallBorderBrush}"
+                  BorderThickness="1"
+                  ClipToBounds="True"
+                  CornerRadius="20">
+                <Grid>
+                  <controls:DynamicWallpaperPreviewView
+                      IsHitTestVisible="False"
+                      MediaPath="{Binding PreviewItem.PreviewMediaPath}"
+                      PosterSource="{Binding PreviewItem.Preview}"
+                      AutoPlay="{Binding PreviewItem.IsDynamic}"
+                      EnableHoverPreview="False"
+                      Loop="True" />
+                  <Border
+                      Background="{DynamicResource CardShadeBrush}"
+                      Height="82"
+                      VerticalAlignment="Bottom" />
                   <Border
                       Classes="badge"
                       IsVisible="{Binding PreviewItem.IsDynamic}"
-                      VerticalAlignment="Center">
+                      Margin="16"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                       <Ellipse Classes="badge-dot" VerticalAlignment="Center" />
                       <TextBlock Classes="badge" Text="{Binding DynamicBadgeText}" />
                     </StackPanel>
                   </Border>
-                </StackPanel>
-                <Button
-                    Grid.Column="1"
-                    Classes="candy hand"
-                    Click="OnClosePreviewClick"
-                    CornerRadius="15"
-                    Height="30"
-                    Width="30">
-                  <TextBlock FontSize="12" Text="✕" />
-                </Button>
-              </Grid>
-
-              <Border
-                  Grid.Row="1"
-                  Margin="18,6,18,10"
-                  Background="#00000000"
-                  BorderBrush="{DynamicResource KidWallBorderBrush}"
-                  BorderThickness="1"
-                  ClipToBounds="True"
-                  CornerRadius="14">
-                <Grid>
-                  <Image
-                      Source="{Binding PreviewItem.Preview}"
-                      Stretch="UniformToFill" />
-                  <!-- 动态壁纸：叠加呼吸光晕提示播放（桌面播放由 WorkerW + LibVLC 实现） -->
-                  <Border Classes="dyn-overlay" IsVisible="{Binding PreviewItem.IsDynamic}" />
-                  <Border
-                      Background="{DynamicResource CardShadeBrush}"
-                      VerticalAlignment="Bottom">
-                    <StackPanel
-                        Margin="16,24,16,14"
-                        Orientation="Horizontal"
-                        Spacing="12">
-                      <TextBlock Classes="card-tag" Text="{Binding PreviewItem.Tags}" />
-                      <TextBlock Classes="card-tag" Text="{Binding PreviewResolution}" />
-                    </StackPanel>
-                  </Border>
                 </Grid>
               </Border>
 
-              <StackPanel
-                  Grid.Row="2"
-                  Margin="0,0,0,14"
-                  HorizontalAlignment="Center"
-                  Orientation="Horizontal"
-                  Spacing="12">
+              <Grid
+                  Grid.Row="1"
+                  Margin="18,0,18,18"
+                  ColumnDefinitions="*,Auto,Auto"
+                  ColumnSpacing="12">
+                <StackPanel Spacing="4" VerticalAlignment="Center">
+                  <TextBlock Classes="panel-title" Text="{Binding PreviewItem.Name}" />
+                  <TextBlock Classes="panel-sub" Text="{Binding PreviewItem.Tags}" />
+                  <TextBlock Classes="panel-sub" Text="{Binding PreviewResolution}" />
+                </StackPanel>
                 <Button
+                    Grid.Column="1"
                     Classes="secondary-btn"
                     Command="{Binding ToggleFavoriteCommand}"
                     CommandParameter="{Binding PreviewItem}">
                   <TextBlock Text="{Binding PreviewItem.FavoriteText}" />
                 </Button>
-                <Button Classes="primary-btn" Command="{Binding ApplyWallpaperCommand}" CommandParameter="{Binding PreviewItem}">
+                <Button
+                    Grid.Column="2"
+                    Classes="primary-btn"
+                    Command="{Binding ApplyWallpaperCommand}"
+                    CommandParameter="{Binding PreviewItem}">
                   <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="✨" />
                     <TextBlock Text="{Binding ApplyWallpaperText}" />
                   </StackPanel>
                 </Button>
-              </StackPanel>
+              </Grid>
             </Grid>
           </Border>
-        </Panel>
+          <Button
+              Classes="candy hand"
+              Command="{Binding ClosePreviewCommand}"
+              CornerRadius="17"
+              Height="34"
+              HorizontalAlignment="Right"
+              Margin="0,16,16,0"
+              VerticalAlignment="Top"
+              Width="34"
+              ZIndex="1">
+            <TextBlock FontSize="13" Text="✕" />
+          </Button>
+        </Grid>
       </Border>
 
       <!-- ================= 设置层 ================= -->
       <Border
           IsVisible="{Binding IsSettingsOpen}"
           Background="#660A1628"
+          Grid.RowSpan="2"
           ZIndex="250">
         <Border
             Classes="surface-panel"
             CornerRadius="18,0,0,18"
             HorizontalAlignment="Right"
-            Margin="0,60,0,0"
-            Width="390">
+            Margin="0"
+            Width="380">
           <StackPanel Margin="26,22">
             <TextBlock Classes="panel-title" Text="{Binding SettingsTitle}" />
             <TextBlock
@@ -277,6 +279,7 @@
           HorizontalAlignment="Center"
           Padding="20,10"
           VerticalAlignment="Bottom"
+          Grid.RowSpan="2"
           ZIndex="400">
         <TextBlock
             FontSize="13"

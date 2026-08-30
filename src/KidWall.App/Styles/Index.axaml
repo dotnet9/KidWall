@@ -237,21 +237,54 @@
 
   <!-- 动态壁纸：呼吸光晕（模拟播放动效，仅 Opacity 动画，安全） -->
   <Style Selector="Border.dyn-overlay">
-    <Setter Property="Background" Value="#2EFFFFFF" />
+    <Setter Property="Background">
+      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Offset="0" Color="#00FFFFFF" />
+        <GradientStop Offset="0.5" Color="#70FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+      </LinearGradientBrush>
+    </Setter>
     <Setter Property="IsHitTestVisible" Value="False" />
     <Style.Animations>
       <Animation Duration="0:0:2.8" IterationCount="Infinite" Easing="SineEaseInOut">
         <KeyFrame Cue="0%">
-          <Setter Property="Opacity" Value="0.15" />
+          <Setter Property="Opacity" Value="0.16" />
         </KeyFrame>
         <KeyFrame Cue="50%">
-          <Setter Property="Opacity" Value="0.7" />
+          <Setter Property="Opacity" Value="0.58" />
         </KeyFrame>
         <KeyFrame Cue="100%">
-          <Setter Property="Opacity" Value="0.15" />
+          <Setter Property="Opacity" Value="0.16" />
         </KeyFrame>
       </Animation>
     </Style.Animations>
+  </Style>
+  <Style Selector="Border.dyn-overlay.twinkle">
+    <Setter Property="Background">
+      <RadialGradientBrush Center="50%,38%" GradientOrigin="50%,38%" RadiusX="0.9" RadiusY="0.9">
+        <GradientStop Offset="0" Color="#00FFFFFF" />
+        <GradientStop Offset="0.45" Color="#6DFFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+      </RadialGradientBrush>
+    </Setter>
+  </Style>
+  <Style Selector="Border.dyn-overlay.flow">
+    <Setter Property="Background">
+      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+        <GradientStop Offset="0" Color="#00FFFFFF" />
+        <GradientStop Offset="0.5" Color="#88FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+      </LinearGradientBrush>
+    </Setter>
+  </Style>
+  <Style Selector="Border.dyn-overlay.aurora">
+    <Setter Property="Background">
+      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Offset="0" Color="#553FD1FF" />
+        <GradientStop Offset="0.55" Color="#55FF8FD8" />
+        <GradientStop Offset="1" Color="#446DFFC4" />
+      </LinearGradientBrush>
+    </Setter>
   </Style>
 
   <!-- ================= 覆盖层 / 面板 ================= -->
@@ -262,8 +295,8 @@
     <Setter Property="Background" Value="{DynamicResource KidWallSurfaceBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource KidWallBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="18" />
-    <Setter Property="BoxShadow" Value="0 24 60 0 #8C000000" />
+    <Setter Property="CornerRadius" Value="24" />
+    <Setter Property="BoxShadow" Value="0 30 80 0 #99000000" />
   </Style>
   <Style Selector="TextBlock.panel-title">
     <Setter Property="FontSize" Value="18" />
@@ -282,6 +315,7 @@
   <Style Selector="TextBlock.setting-desc">
     <Setter Property="FontSize" Value="11.5" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextTertiaryBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
 
   <!-- 节标题 -->

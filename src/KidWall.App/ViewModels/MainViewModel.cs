@@ -1,7 +1,7 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using KidWall.App.ViewModels;
+using KidWall.App.Services;
 using KidWall.Core.Models;
 using KidWall.Core.Services;
 using System.Collections.ObjectModel;
@@ -21,6 +21,8 @@ public partial class MainViewModel : LocalizedViewModel
     private readonly AppPreferences _preferences;
     private readonly AppPreferencesStore _preferencesStore;
     private readonly IDesktopWallpaperService _wallpaperService;
+    private readonly IDynamicWallpaperService _dynamicWallpaperService;
+    private readonly IMainWindowService _mainWindowService;
     private readonly string _resDirectory;
     private readonly DispatcherTimer _rotateTimer;
     private readonly DispatcherTimer _messageTimer;
@@ -28,16 +30,21 @@ public partial class MainViewModel : LocalizedViewModel
 
     private List<WallpaperItemViewModel> _allItems = [];
     private string _appliedWallpaperId = string.Empty;
+    private bool _restoredInitialWallpaper;
 
     public MainViewModel(
         AppPreferences preferences,
         AppPreferencesStore preferencesStore,
         IDesktopWallpaperService wallpaperService,
+        IDynamicWallpaperService dynamicWallpaperService,
+        IMainWindowService mainWindowService,
         string resDirectory)
     {
         _preferences = preferences;
         _preferencesStore = preferencesStore;
         _wallpaperService = wallpaperService;
+        _dynamicWallpaperService = dynamicWallpaperService;
+        _mainWindowService = mainWindowService;
         _resDirectory = resDirectory;
 
         Categories.Add(new CategoryItemViewModel(KeyAll, OnCategorySelected));
@@ -89,7 +96,7 @@ public partial class MainViewModel : LocalizedViewModel
 
     public string DynamicBadgeText => L(Localization.Main.Card.Dynamic);
 
-    public string PreviewResolution => L(Localization.Preview.Labels.Resolution);
+    public string PreviewResolution => $"{L(Localization.Preview.Labels.Resolution)} 1920×1080";
 
     public string ApplyWallpaperText => L(Localization.Preview.Labels.Apply);
 
@@ -249,6 +256,7 @@ public partial class MainViewModel : LocalizedViewModel
             }
 
             RefreshFilter();
+            RestoreInitialWallpaper();
         }
         finally
         {
@@ -259,10 +267,59 @@ public partial class MainViewModel : LocalizedViewModel
     [RelayCommand]
     private void ApplyWallpaper(WallpaperItemViewModel item)
     {
-        if (item.IsDynamic)
+        ApplyWallpaperCore(item, showStatus: true, persistPreferences: true);
+    }
+
+    private bool ApplyWallpaperCore(WallpaperItemViewModel item, bool showStatus, bool persistPreferences)
+    {
+        try
         {
-            // 动态壁纸：全屏视频挂载到桌面壁纸层（WorkerW）
-            App.ShowDynamicWallpaper(item.FullPath);
+            if (item.IsDynamic)
+            {
+                // 动态壁纸：全屏视频挂载到桌面壁纸层（WorkerW）
+                if (!_dynamicWallpaperService.Show(item.FullPath))
+                {
+                    if (showStatus)
+                    {
+                        ShowStatus($"动态壁纸设置失败：{item.Name}");
+                    }
+
+                    return false;
+                }
+
+                foreach (var wallpaper in _allItems)
+                {
+                    wallpaper.IsCurrent = false;
+                }
+
+                item.IsCurrent = true;
+                _appliedWallpaperId = item.Id;
+                if (persistPreferences)
+                {
+                    SaveLastAppliedWallpaper(item);
+                }
+
+                if (showStatus)
+                {
+                    ShowStatus($"🎬 动态壁纸已应用：{item.Name}");
+                }
+
+                return true;
+            }
+
+            // 静态壁纸：先把系统桌面壁纸切过去，再收起动态宿主，避免中间闪底色。
+            if (!_wallpaperService.SetWallpaper(item.FullPath))
+            {
+                if (showStatus)
+                {
+                    ShowStatus("设置壁纸失败：文件不可用 🥺");
+                }
+
+                return false;
+            }
+
+            _dynamicWallpaperService.Stop();
+
             foreach (var wallpaper in _allItems)
             {
                 wallpaper.IsCurrent = false;
@@ -270,26 +327,26 @@ public partial class MainViewModel : LocalizedViewModel
 
             item.IsCurrent = true;
             _appliedWallpaperId = item.Id;
-            ShowStatus($"🎬 动态壁纸已应用：{item.Name}");
-            return;
-        }
-
-        // 静态壁纸：先关闭动态壁纸层，再应用静态图
-        App.CloseDynamicWallpaper();
-        if (_wallpaperService.SetWallpaper(item.FullPath))
-        {
-            foreach (var wallpaper in _allItems)
+            if (persistPreferences)
             {
-                wallpaper.IsCurrent = false;
+                SaveLastAppliedWallpaper(item);
             }
 
-            item.IsCurrent = true;
-            _appliedWallpaperId = item.Id;
-            ShowStatus(string.Format(L(Localization.Toast.Messages.Applied), item.Name));
+            if (showStatus)
+            {
+                ShowStatus(string.Format(L(Localization.Toast.Messages.Applied), item.Name));
+            }
+
+            return true;
         }
-        else
+        catch (Exception)
         {
-            ShowStatus("设置壁纸失败：文件不可用 🥺");
+            if (showStatus)
+            {
+                ShowStatus($"应用壁纸失败：{item.Name}");
+            }
+
+            return false;
         }
     }
 
@@ -308,6 +365,32 @@ public partial class MainViewModel : LocalizedViewModel
 
     [RelayCommand]
     private void ToggleSettings() => IsSettingsOpen = !IsSettingsOpen;
+
+    [RelayCommand]
+    private void MinimizeWindow() => _mainWindowService.Minimize();
+
+    [RelayCommand]
+    private void ToggleMaximizeWindow() => _mainWindowService.ToggleMaximize();
+
+    [RelayCommand]
+    private void CloseWindow() => _mainWindowService.CloseToTray();
+
+    [RelayCommand]
+    private async Task PickLocalFolderAsync()
+    {
+        var folder = await _mainWindowService.PickLocalFolderAsync();
+        if (!string.IsNullOrWhiteSpace(folder))
+        {
+            await AddLocalFolderAsync(folder);
+        }
+    }
+
+    [RelayCommand]
+    private void PrepareToClose()
+    {
+        PreviewItem = null;
+        IsSettingsOpen = false;
+    }
 
     [RelayCommand]
     private void SaveSettings()
@@ -436,6 +519,41 @@ public partial class MainViewModel : LocalizedViewModel
         StatusMessage = message;
         _messageTimer.Stop();
         _messageTimer.Start();
+    }
+
+    private void SaveLastAppliedWallpaper(WallpaperItemViewModel item)
+    {
+        _preferences.LastAppliedWallpaperId = item.Id;
+        _preferences.LastAppliedWallpaperPath = item.FullPath;
+        _preferencesStore.Save(_preferences);
+    }
+
+    private void RestoreInitialWallpaper()
+    {
+        if (_restoredInitialWallpaper)
+        {
+            return;
+        }
+
+        _restoredInitialWallpaper = true;
+
+        if (string.IsNullOrWhiteSpace(_preferences.LastAppliedWallpaperId) &&
+            string.IsNullOrWhiteSpace(_preferences.LastAppliedWallpaperPath))
+        {
+            return;
+        }
+
+        var item = _allItems.FirstOrDefault(w => w.Id == _preferences.LastAppliedWallpaperId)
+                   ?? _allItems.FirstOrDefault(w =>
+                       !string.IsNullOrWhiteSpace(_preferences.LastAppliedWallpaperPath) &&
+                       string.Equals(w.FullPath, _preferences.LastAppliedWallpaperPath, StringComparison.OrdinalIgnoreCase));
+
+        if (item is null)
+        {
+            return;
+        }
+
+        ApplyWallpaperCore(item, showStatus: false, persistPreferences: false);
     }
 
     partial void OnSearchTextChanged(string value)

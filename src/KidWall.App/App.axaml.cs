@@ -1,90 +1,46 @@
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using CommunityToolkit.Mvvm.Input;
+using KidWall.App.Services;
 using KidWall.App.ViewModels;
 using KidWall.App.Views;
 using KidWall.Core.Services;
 using Lang.Avalonia;
 using Lang.Avalonia.Json;
-using System.Globalization;
-using System.IO;
 
 namespace KidWall.App;
 
-public partial class App : Application
+public partial class App : Avalonia.Application
 {
     public static AppPreferencesStore PreferencesStore { get; private set; } = null!;
 
     public static IDesktopWallpaperService WallpaperService { get; private set; } = null!;
 
-    private static LibVLCSharp.Shared.LibVLC? _dynamicLibVlc;
-    private static LibVLCSharp.Shared.MediaPlayer? _dynamicPlayer;
-    private static LibVLCSharp.Shared.Media? _dynamicMedia;
-    private static IntPtr _dynamicPlayerWindow;
+    private Mutex? _singleInstanceMutex;
+    private MainWindow? _mainWindow;
+    private IDynamicWallpaperService? _dynamicWallpaperService;
+    private IClassicDesktopStyleApplicationLifetime? _desktopLifetime;
 
-    /// <summary>应用动态壁纸：LibVLC 视频直接渲染到桌面壁纸层（WorkerW）的原生子窗口。</summary>
-    public static void ShowDynamicWallpaper(string videoPath)
+    public App()
     {
-        try
-        {
-            CloseDynamicWallpaper();
-
-            _dynamicLibVlc ??= new LibVLCSharp.Shared.LibVLC();
-            var workerW = WindowsDynamicWallpaperService.FindDesktopWorkerW();
-            if (workerW == IntPtr.Zero)
-            {
-                return;
-            }
-
-            var width = 1920;
-            var height = 1080;
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime
-                {
-                    MainWindow: { } mainWindow
-                } && mainWindow.Screens.Primary is { } screen)
-            {
-                width = screen.Bounds.Width;
-                height = screen.Bounds.Height;
-            }
-
-            _dynamicPlayerWindow = WindowsDynamicWallpaperService.CreatePlayerWindow(workerW, width, height);
-            if (_dynamicPlayerWindow == IntPtr.Zero)
-            {
-                return;
-            }
-
-            _dynamicPlayer = new LibVLCSharp.Shared.MediaPlayer(_dynamicLibVlc)
-            {
-                Hwnd = _dynamicPlayerWindow
-            };
-
-            // 媒体源需持有引用，局部释放会导致播放停止
-            _dynamicMedia = new LibVLCSharp.Shared.Media(
-                _dynamicLibVlc,
-                new Uri(videoPath),
-                ":input-repeat=65535");
-            _dynamicPlayer.Play(_dynamicMedia);
-        }
-        catch (Exception)
-        {
-            CloseDynamicWallpaper();
-        }
+        DataContext = this;
+        ShowMainWindowCommand = new RelayCommand(ShowMainWindow);
+        TrayIconCommand = new RelayCommand(ShowMainWindow);
+        ExitApplicationCommand = new RelayCommand(ExitApp);
     }
 
-    /// <summary>关闭动态壁纸播放层（恢复静态壁纸）。</summary>
-    public static void CloseDynamicWallpaper()
-    {
-        _dynamicPlayer?.Stop();
-        _dynamicPlayer?.Dispose();
-        _dynamicPlayer = null;
+    public ICommand ShowMainWindowCommand { get; }
 
-        _dynamicMedia?.Dispose();
-        _dynamicMedia = null;
+    public ICommand TrayIconCommand { get; }
 
-        WindowsDynamicWallpaperService.DestroyPlayerWindow(_dynamicPlayerWindow);
-        _dynamicPlayerWindow = IntPtr.Zero;
-    }
+    public ICommand ExitApplicationCommand { get; }
 
     public override void Initialize()
     {
@@ -94,38 +50,137 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // 初始化 LibVLC（libvlc 原生库在输出目录 libvlc/win-x64/，供动态壁纸视频解码）
-            try
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
+        desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        const string mutexName = "KidWall_SingleInstance_7a8f3e2d";
+        bool createdNew;
+        _singleInstanceMutex = new Mutex(true, mutexName, out createdNew);
+        if (!createdNew)
+        {
+            _singleInstanceMutex.Dispose();
+            _singleInstanceMutex = null;
+            desktop.Shutdown();
+            return;
+        }
+
+        var dataDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KidWall");
+        var resDirectory = Path.Combine(AppContext.BaseDirectory, "res");
+        var libVlcDirectory = Path.Combine(AppContext.BaseDirectory, "libvlc", "win-x64");
+
+        try
+        {
+            if (Directory.Exists(libVlcDirectory))
             {
-                var libVlcPath = Path.Combine(AppContext.BaseDirectory, "libvlc", "win-x64");
-                if (Directory.Exists(libVlcPath))
-                {
-                    LibVLCSharp.Shared.Core.Initialize(libVlcPath);
-                }
+                LibVLCSharp.Shared.Core.Initialize(libVlcDirectory);
             }
-            catch (Exception)
+            else
             {
-                // libvlc 缺失时仅动态壁纸视频不可用，不影响其余功能
+                LibVLCSharp.Shared.Core.Initialize();
             }
+        }
+        catch
+        {
+            // libvlc 初始化失败时，动态预览和动态壁纸不可用，但主界面仍可运行。
+        }
 
-            var dataDirectory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KidWall");
-            var resDirectory = Path.Combine(AppContext.BaseDirectory, "res");
+        PreferencesStore = new AppPreferencesStore(dataDirectory);
+        var preferences = PreferencesStore.Load();
+        I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
+        WallpaperService = new WindowsDesktopWallpaperService();
+        _dynamicWallpaperService = OperatingSystem.IsWindows()
+            ? new WindowsDynamicWallpaperService()
+            : new NoOpDynamicWallpaperService();
 
-            PreferencesStore = new AppPreferencesStore(dataDirectory);
-            var preferences = PreferencesStore.Load();
-            I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
-            WallpaperService = new WindowsDesktopWallpaperService();
+        _mainWindow = new MainWindow();
+        var shellWindowService = new MainWindowService(_mainWindow);
+        _mainWindow.DataContext = new MainViewModel(
+            preferences,
+            PreferencesStore,
+            WallpaperService,
+            _dynamicWallpaperService,
+            shellWindowService,
+            resDirectory);
+        desktop.MainWindow = _mainWindow;
+        _desktopLifetime = desktop;
 
-            desktop.MainWindow = new MainWindow
+        desktop.Exit += (_, _) => CleanupRuntimeState();
+
+        bool silent = false;
+        foreach (var arg in Environment.GetCommandLineArgs())
+        {
+            if (arg.Equals("--silent", StringComparison.OrdinalIgnoreCase))
             {
-                DataContext = new MainViewModel(preferences, PreferencesStore, WallpaperService, resDirectory)
-            };
+                silent = true;
+                break;
+            }
+        }
+
+        if (!silent)
+        {
+            _mainWindow.Show();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void CleanupRuntimeState()
+    {
+        try
+        {
+            _dynamicWallpaperService?.Dispose();
+        }
+        catch
+        {
+        }
+        _dynamicWallpaperService = null;
+
+        try
+        {
+            _singleInstanceMutex?.ReleaseMutex();
+        }
+        catch
+        {
+        }
+        _singleInstanceMutex?.Dispose();
+        _singleInstanceMutex = null;
+    }
+
+    private void ShowMainWindow()
+    {
+        if (_mainWindow is null)
+        {
+            return;
+        }
+
+        if (!_mainWindow.IsVisible)
+        {
+            _mainWindow.Show();
+        }
+
+        if (_mainWindow.WindowState == WindowState.Minimized)
+        {
+            _mainWindow.WindowState = WindowState.Normal;
+        }
+
+        _mainWindow.Activate();
+        _mainWindow.Focus();
+    }
+
+    private void ExitApp()
+    {
+        if (_mainWindow is not null)
+        {
+            _mainWindow.AllowCloseToExit = true;
+        }
+
+        _desktopLifetime?.Shutdown();
     }
 
     private static void RegisterLocalization()

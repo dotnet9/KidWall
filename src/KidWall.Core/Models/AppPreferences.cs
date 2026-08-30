@@ -18,6 +18,12 @@ public sealed class AppPreferences
     /// <summary>屏蔽不适合内容（预留）。</summary>
     public bool ContentFilter { get; set; } = true;
 
+    /// <summary>最近一次应用的壁纸 ID。</summary>
+    public string LastAppliedWallpaperId { get; set; } = string.Empty;
+
+    /// <summary>最近一次应用的壁纸路径。</summary>
+    public string LastAppliedWallpaperPath { get; set; } = string.Empty;
+
     /// <summary>语言（zh-CN）。</summary>
     public string Language { get; set; } = "zh-CN";
 }

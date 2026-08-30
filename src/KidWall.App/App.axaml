@@ -2,9 +2,11 @@
     x:Class="KidWall.App.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:KidWall.App"
     xmlns:views="using:KidWall.App.Views"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:semi="https://irihi.tech/semi"
+    x:DataType="app:App"
     RequestedThemeVariant="Dark">
   <Application.DataTemplates>
     <DataTemplate DataType="vm:MainViewModel">
@@ -18,4 +20,21 @@
     <semi:SemiPopupAnimations />
     <StyleInclude Source="avares://KidWall.App/Styles/Index.axaml" />
   </Application.Styles>
+
+  <TrayIcon.Icons>
+    <TrayIcons>
+      <TrayIcon
+          Command="{Binding TrayIconCommand}"
+          Icon="/Assets/logo.ico"
+          ToolTipText="童壁 KidWall">
+        <TrayIcon.Menu>
+          <NativeMenu>
+            <NativeMenuItem Header="打开" Command="{Binding ShowMainWindowCommand}" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />
+          </NativeMenu>
+        </TrayIcon.Menu>
+      </TrayIcon>
+    </TrayIcons>
+  </TrayIcon.Icons>
 </Application>

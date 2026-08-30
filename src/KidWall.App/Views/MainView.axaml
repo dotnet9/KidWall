@@ -2,6 +2,7 @@
     x:Class="KidWall.App.Views.MainView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:KidWall.App.Controls"
     xmlns:vm="using:KidWall.App.ViewModels"
     x:CompileBindings="True"
     x:DataType="vm:MainViewModel">
@@ -73,9 +74,13 @@
           <DataTemplate x:DataType="vm:WallpaperItemViewModel">
             <Border Classes="card" Margin="0,0,20,20">
               <Grid>
-                <Image Source="{Binding Thumb}" Stretch="UniformToFill" />
-                <!-- 动态壁纸：叠加呼吸光晕模拟播放动效 -->
-                <Border Classes="dyn-overlay" IsVisible="{Binding IsDynamic}" />
+                <controls:DynamicWallpaperPreviewView
+                    IsHitTestVisible="False"
+                    MediaPath="{Binding PreviewMediaPath}"
+                    PosterSource="{Binding Thumb}"
+                    AutoPlay="{Binding IsDynamic}"
+                    EnableHoverPreview="False"
+                    Loop="True" />
                 <Border Background="{DynamicResource CardShadeBrush}" />
 
                 <!-- 整卡点击打开预览（透明覆盖层，ops 按钮在其上层仍可点击） -->

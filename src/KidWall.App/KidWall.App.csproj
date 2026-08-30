@@ -15,6 +15,7 @@
     <PackageReference Include="Lang.Avalonia" />
     <PackageReference Include="Lang.Avalonia.Json" />
     <PackageReference Include="LibVLCSharp" />
+    <PackageReference Include="LibVLCSharp.Avalonia" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" />
     <PackageReference Include="Irihi.Ursa" />
     <PackageReference Include="Irihi.Ursa.Themes.Semi" />
@@ -28,6 +29,13 @@
   <!-- 仓库根目录 res/ 壁纸资源：目录链接引用，编译时输出到 res/ -->
   <ItemGroup>
     <None Include="..\..\res\**\*" Link="res\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- 根目录 logo 资源：保留源文件在仓库根目录，引用时挂到 Assets/ 下 -->
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\logo.svg" Link="Assets\logo.svg" />
+    <AvaloniaResource Include="..\..\logo.png" Link="Assets\logo.png" />
+    <AvaloniaResource Include="..\..\logo.ico" Link="Assets\logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

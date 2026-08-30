@@ -48,10 +48,15 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     ];
 
     private readonly string _resDirectory;
+    private readonly string _coverCacheDirectory;
 
     public BuiltInWallpaperSource(string resDirectory)
     {
         _resDirectory = resDirectory;
+        _coverCacheDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "KidWall",
+            "Covers");
     }
 
     public string Name => "精选";
@@ -117,7 +122,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     }
 
     /// <summary>查找视频同名封面（jpg/png/bmp），缺失时生成一张渐变封面（.preview.bmp）。</summary>
-    private static string EnsureCover(string folder, string nameWithoutExtension)
+    private string EnsureCover(string folder, string nameWithoutExtension)
     {
         foreach (var extension in ImageExtensions)
         {
@@ -128,19 +133,20 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
             }
         }
 
-        var coverPath = Path.Combine(folder, nameWithoutExtension + ".preview.bmp");
+        var coverPath = Path.Combine(_coverCacheDirectory, Path.GetFileName(folder), nameWithoutExtension + ".preview.bmp");
         if (!File.Exists(coverPath))
         {
             try
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(coverPath)!);
                 var seed = nameWithoutExtension.GetHashCode();
                 var spec = CoverSpecs[Math.Abs(seed) % CoverSpecs.Length];
                 File.WriteAllBytes(coverPath, GradientBitmapFactory.Generate(1280, 720, spec, seed: seed));
             }
             catch (Exception)
             {
-                // 输出目录只读等场景下封面缺失：返回视频路径，界面层兜底为无图卡片
-                return Path.Combine(folder, nameWithoutExtension);
+                // 缓存写入失败时退回原资源目录，界面层再做最后兜底
+                return Path.Combine(folder, nameWithoutExtension + ".preview.bmp");
             }
         }
 
