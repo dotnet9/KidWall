@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KidWall.Core.Models;
+using Lang.Avalonia;
 
 namespace KidWall.App.ViewModels;
 
@@ -38,6 +39,20 @@ public partial class WallpaperItemViewModel : ObservableObject
     /// <summary>是否当前正在使用的桌面壁纸。</summary>
     [ObservableProperty]
     private bool _isCurrent;
+
+    /// <summary>是否已收藏。</summary>
+    [ObservableProperty]
+    private bool _isFavorite;
+
+    /// <summary>收藏按钮文案。</summary>
+    public string FavoriteText => IsFavorite
+        ? I18nManager.Instance.GetResource(Localization.Preview.Labels.Favorited)
+        : I18nManager.Instance.GetResource(Localization.Preview.Labels.Favorite);
+
+    partial void OnIsFavoriteChanged(bool value)
+    {
+        OnPropertyChanged(nameof(FavoriteText));
+    }
 
     private static Bitmap? LoadBitmap(string path, int decodeWidth)
     {

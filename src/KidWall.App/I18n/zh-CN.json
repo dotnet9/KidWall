@@ -25,6 +25,7 @@
     "Main": {
       "Categories": {
         "All": "全部",
+        "Recommended": "推荐",
         "Cartoon": "卡通",
         "Starry": "星空",
         "Illustration": "插画",
@@ -33,6 +34,7 @@
       },
       "Section": {
         "All": "全部壁纸",
+        "Recommended": "推荐壁纸",
         "Cartoon": "卡通壁纸",
         "Starry": "星空壁纸",
         "Illustration": "插画壁纸",
@@ -62,6 +64,8 @@
       "Labels": {
         "Resolution": "建议分辨率 1920×1080",
         "Apply": "✨ 设为壁纸",
+        "Favorite": "❤ 收藏",
+        "Favorited": "💛 已收藏",
         "Close": "✕"
       }
     },

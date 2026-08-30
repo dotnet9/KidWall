@@ -74,6 +74,8 @@
             <Border Classes="card" Margin="0,0,20,20">
               <Grid>
                 <Image Source="{Binding Thumb}" Stretch="UniformToFill" />
+                <!-- 动态壁纸：叠加呼吸光晕模拟播放动效 -->
+                <Border Classes="dyn-overlay" IsVisible="{Binding IsDynamic}" />
                 <Border Background="{DynamicResource CardShadeBrush}" />
 
                 <!-- 左上角徽标 -->

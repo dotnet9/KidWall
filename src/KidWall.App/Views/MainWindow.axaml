@@ -150,6 +150,8 @@
                   <Image
                       Source="{Binding PreviewItem.Preview}"
                       Stretch="UniformToFill" />
+                  <!-- 动态壁纸预览：叠加呼吸光晕模拟播放 -->
+                  <Border Classes="dyn-overlay" IsVisible="{Binding PreviewItem.IsDynamic}" />
                   <Border
                       Background="{DynamicResource CardShadeBrush}"
                       VerticalAlignment="Bottom">
@@ -164,18 +166,25 @@
                 </Grid>
               </Border>
 
-              <Button
+              <StackPanel
                   Grid.Row="2"
-                  Classes="primary-btn"
-                  HorizontalAlignment="Center"
                   Margin="0,0,0,14"
-                  Command="{Binding ApplyWallpaperCommand}"
-                  CommandParameter="{Binding PreviewItem}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <TextBlock Text="✨" />
-                  <TextBlock Text="{Binding ApplyWallpaperText}" />
-                </StackPanel>
-              </Button>
+                  HorizontalAlignment="Center"
+                  Orientation="Horizontal"
+                  Spacing="12">
+                <Button
+                    Classes="secondary-btn"
+                    Command="{Binding ToggleFavoriteCommand}"
+                    CommandParameter="{Binding PreviewItem}">
+                  <TextBlock Text="{Binding PreviewItem.FavoriteText}" />
+                </Button>
+                <Button Classes="primary-btn" Command="{Binding ApplyWallpaperCommand}" CommandParameter="{Binding PreviewItem}">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="✨" />
+                    <TextBlock Text="{Binding ApplyWallpaperText}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
             </Grid>
           </Border>
         </Panel>

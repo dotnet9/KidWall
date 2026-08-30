@@ -11,6 +11,7 @@ namespace KidWall.App.ViewModels;
 public partial class MainViewModel : LocalizedViewModel
 {
     private const string KeyAll = "all";
+    private const string KeyRecommended = "recommended";
     private const string KeyCartoon = "cartoon";
     private const string KeyStarry = "starry";
     private const string KeyIllustration = "illustration";
@@ -40,10 +41,11 @@ public partial class MainViewModel : LocalizedViewModel
         _resDirectory = resDirectory;
 
         Categories.Add(new CategoryItemViewModel(KeyAll, OnCategorySelected));
+        Categories.Add(new CategoryItemViewModel(KeyRecommended, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyCartoon, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyStarry, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyIllustration, OnCategorySelected));
-        Categories.Add(new CategoryItemViewModel(KeyDynamic, OnCategorySelected) { IsPlanned = true });
+        Categories.Add(new CategoryItemViewModel(KeyDynamic, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyLocal, OnCategorySelected));
 
         _rotateTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(Math.Max(1, _preferences.AutoRotateIntervalMinutes)) };
@@ -281,6 +283,13 @@ public partial class MainViewModel : LocalizedViewModel
     private void ClosePreview() => PreviewItem = null;
 
     [RelayCommand]
+    private void ToggleFavorite(WallpaperItemViewModel item)
+    {
+        item.IsFavorite = !item.IsFavorite;
+        ShowStatus(item.IsFavorite ? $"💛 已收藏：{item.Name}" : $"收藏已取消：{item.Name}");
+    }
+
+    [RelayCommand]
     private void ToggleSettings() => IsSettingsOpen = !IsSettingsOpen;
 
     [RelayCommand]
@@ -321,6 +330,7 @@ public partial class MainViewModel : LocalizedViewModel
 
     private static bool MatchCategory(WallpaperItemViewModel item, string key) => key switch
     {
+        KeyRecommended => item.Model.IsRecommended,
         KeyCartoon => item.Category == WallpaperCategory.Cartoon,
         KeyStarry => item.Category == WallpaperCategory.Starry,
         KeyIllustration => item.Category == WallpaperCategory.Illustration,
@@ -359,7 +369,6 @@ public partial class MainViewModel : LocalizedViewModel
             };
         }
     }
-
     private void RotateOnce()
     {
         var candidates = Wallpapers.Where(item => item.Id != _appliedWallpaperId).ToList();
@@ -420,18 +429,20 @@ public partial class MainViewModel : LocalizedViewModel
     protected override void RefreshLocalizedText()
     {
         Categories[0].DisplayName = L(Localization.Main.Categories.All);
-        Categories[1].DisplayName = L(Localization.Main.Categories.Cartoon);
-        Categories[2].DisplayName = L(Localization.Main.Categories.Starry);
-        Categories[3].DisplayName = L(Localization.Main.Categories.Illustration);
-        Categories[4].DisplayName = L(Localization.Main.Categories.Dynamic);
-        Categories[5].DisplayName = L(Localization.Main.Categories.Local);
+        Categories[1].DisplayName = L(Localization.Main.Categories.Recommended);
+        Categories[2].DisplayName = L(Localization.Main.Categories.Cartoon);
+        Categories[3].DisplayName = L(Localization.Main.Categories.Starry);
+        Categories[4].DisplayName = L(Localization.Main.Categories.Illustration);
+        Categories[5].DisplayName = L(Localization.Main.Categories.Dynamic);
+        Categories[6].DisplayName = L(Localization.Main.Categories.Local);
 
         Categories[0].SectionTitle = L(Localization.Main.Section.All);
-        Categories[1].SectionTitle = L(Localization.Main.Section.Cartoon);
-        Categories[2].SectionTitle = L(Localization.Main.Section.Starry);
-        Categories[3].SectionTitle = L(Localization.Main.Section.Illustration);
-        Categories[4].SectionTitle = L(Localization.Main.Section.Dynamic);
-        Categories[5].SectionTitle = L(Localization.Main.Section.Local);
+        Categories[1].SectionTitle = L(Localization.Main.Section.Recommended);
+        Categories[2].SectionTitle = L(Localization.Main.Section.Cartoon);
+        Categories[3].SectionTitle = L(Localization.Main.Section.Starry);
+        Categories[4].SectionTitle = L(Localization.Main.Section.Illustration);
+        Categories[5].SectionTitle = L(Localization.Main.Section.Dynamic);
+        Categories[6].SectionTitle = L(Localization.Main.Section.Local);
 
         foreach (var category in Categories)
         {

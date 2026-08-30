@@ -38,6 +38,7 @@ namespace Localization.Main
     public static class Categories
     {
         public static readonly string All = "Localization.Main.Categories.All";
+        public static readonly string Recommended = "Localization.Main.Categories.Recommended";
         public static readonly string Cartoon = "Localization.Main.Categories.Cartoon";
         public static readonly string Starry = "Localization.Main.Categories.Starry";
         public static readonly string Illustration = "Localization.Main.Categories.Illustration";
@@ -48,6 +49,7 @@ namespace Localization.Main
     public static class Section
     {
         public static readonly string All = "Localization.Main.Section.All";
+        public static readonly string Recommended = "Localization.Main.Section.Recommended";
         public static readonly string Cartoon = "Localization.Main.Section.Cartoon";
         public static readonly string Starry = "Localization.Main.Section.Starry";
         public static readonly string Illustration = "Localization.Main.Section.Illustration";
@@ -88,6 +90,8 @@ namespace Localization.Preview
     {
         public static readonly string Resolution = "Localization.Preview.Labels.Resolution";
         public static readonly string Apply = "Localization.Preview.Labels.Apply";
+        public static readonly string Favorite = "Localization.Preview.Labels.Favorite";
+        public static readonly string Favorited = "Localization.Preview.Labels.Favorited";
         public static readonly string Close = "Localization.Preview.Labels.Close";
     }
 
