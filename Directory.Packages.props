@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionOverrideEnabled>true</CentralPackageVersionOverrideEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Avalonia" Version="12.1.1" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.1" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />
+    <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
+    <PackageVersion Include="Lang.Avalonia" Version="12.1.1.2" />
+    <PackageVersion Include="Lang.Avalonia.Json" Version="12.1.1.2" />
+    <PackageVersion Include="Semi.Avalonia" Version="12.1.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageVersion Include="xunit.v3" Version="4.0.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
+    <PackageVersion Include="xunit.v3.runner.msbuild" Version="4.0.0" />
+  </ItemGroup>
+</Project>

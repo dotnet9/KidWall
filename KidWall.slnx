@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/design/">
+    <File Path="design/index.html" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/KidWall.Core/KidWall.Core.csproj" />
+    <Project Path="src/KidWall.App/KidWall.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KidWall.Core.Tests/KidWall.Core.Tests.csproj" />
+  </Folder>
+</Solution>
