@@ -62,6 +62,11 @@ namespace Localization.Main
         public static readonly string Count = "Localization.Main.Labels.Count";
     }
 
+    public static class Footer
+    {
+        public static readonly string Text = "Localization.Main.Footer.Text";
+    }
+
     public static class Card
     {
         public static readonly string Preview = "Localization.Main.Card.Preview";

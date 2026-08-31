@@ -44,6 +44,9 @@
       "Labels": {
         "Count": "共 {0} 张 · 点击卡片可预览"
       },
+      "Footer": {
+        "Text": "童壁 KidWall · 为儿童打造的纯净桌面壁纸 · 开源原型"
+      },
       "Card": {
         "Preview": "预览",
         "SetWallpaper": "设为壁纸",

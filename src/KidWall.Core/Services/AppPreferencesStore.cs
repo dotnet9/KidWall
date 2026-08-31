@@ -33,8 +33,15 @@ public sealed class AppPreferencesStore
 
     public void Save(AppPreferences preferences)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
-        var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(_filePath, json);
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+            var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_filePath, json);
+        }
+        catch (Exception)
+        {
+            // 偏好保存失败不影响壁纸应用等主流程
+        }
     }
 }

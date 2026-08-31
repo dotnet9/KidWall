@@ -10,7 +10,10 @@
       <GradientStop Offset="1" Color="#150A36" />
     </LinearGradientBrush>
     <SolidColorBrush x:Key="KidWallSurfaceBrush" Color="#241458" />
-    <SolidColorBrush x:Key="KidWallTitlebarBrush" Color="#1E0F52" />
+    <LinearGradientBrush x:Key="KidWallTitlebarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+      <GradientStop Offset="0" Color="#33FFFFFF" />
+      <GradientStop Offset="1" Color="#081E0F52" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="KidWallTextBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="KidWallTextSecondaryBrush" Color="#B8FFFFFF" />
     <SolidColorBrush x:Key="KidWallTextTertiaryBrush" Color="#73FFFFFF" />
@@ -20,6 +23,12 @@
     <LinearGradientBrush x:Key="KidWallAccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,0%">
       <GradientStop Offset="0" Color="#FFD166" />
       <GradientStop Offset="0.55" Color="#FF8FD8" />
+      <GradientStop Offset="1" Color="#4FD1FF" />
+    </LinearGradientBrush>
+
+    <!-- Toast 成功对勾 -->
+    <LinearGradientBrush x:Key="ToastTickBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#6DFFC4" />
       <GradientStop Offset="1" Color="#4FD1FF" />
     </LinearGradientBrush>
 
@@ -136,9 +145,9 @@
 
   <!-- ================= 分类胶囊 ================= -->
   <Style Selector="Button.category">
-    <Setter Property="CornerRadius" Value="16" />
-    <Setter Property="Padding" Value="15,8" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="20,9" />
+    <Setter Property="FontSize" Value="14" />
     <Setter Property="Background" Value="#1AFFFFFF" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
   </Style>
@@ -180,15 +189,23 @@
   <Style Selector="Border.card">
     <Setter Property="Width" Value="280" />
     <Setter Property="Height" Value="158" />
-    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="CornerRadius" Value="24" />
     <Setter Property="ClipToBounds" Value="True" />
     <Setter Property="BorderBrush" Value="{DynamicResource KidWallBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Background" Value="#26FFFFFF" />
+    <Setter Property="RenderTransformOrigin" Value="50%,100%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" />
+        <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.25" />
+      </Transitions>
+    </Setter>
   </Style>
   <Style Selector="Border.card:pointerover">
     <Setter Property="BorderBrush" Value="{DynamicResource KidWallAccentBrush}" />
-    <Setter Property="BoxShadow" Value="0 12 30 0 #66000000" />
+    <Setter Property="BoxShadow" Value="0 26 60 0 #B3000000" />
+    <Setter Property="RenderTransform" Value="translateY(-6px) scale(1.015)" />
   </Style>
 
   <!-- 卡片操作按钮（悬停浮现） -->
@@ -230,12 +247,12 @@
     <Setter Property="Fill" Value="#6DFFC4" />
   </Style>
   <Style Selector="TextBlock.card-name">
-    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="FontSize" Value="15" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Foreground" Value="White" />
   </Style>
   <Style Selector="TextBlock.card-tag">
-    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="FontSize" Value="11" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
   </Style>
 

@@ -126,12 +126,12 @@
               Classes="surface-panel"
               HorizontalAlignment="Center"
               Margin="0,16,0,0"
-              Width="760"
+              Width="920"
               ZIndex="1">
             <Grid RowDefinitions="Auto,Auto">
               <Border
                   Grid.Row="0"
-                  Height="428"
+                  Height="518"
                   Margin="18,54,18,10"
                   Background="#12000000"
                   BorderBrush="{DynamicResource KidWallBorderBrush}"
@@ -229,7 +229,7 @@
               CornerRadius="18,0,0,18"
               HorizontalAlignment="Right"
               Margin="0"
-              Width="380"
+              Width="400"
               ZIndex="1">
             <StackPanel Margin="26,22">
               <Grid ColumnDefinitions="*,Auto">
@@ -320,10 +320,27 @@
           VerticalAlignment="Bottom"
           Grid.RowSpan="2"
           ZIndex="400">
-        <TextBlock
-            FontSize="13"
-            Foreground="White"
-            Text="{Binding StatusMessage}" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Border
+              Background="{DynamicResource ToastTickBrush}"
+              CornerRadius="11"
+              Height="22"
+              VerticalAlignment="Center"
+              Width="22">
+            <TextBlock
+                FontSize="12"
+                FontWeight="Bold"
+                Foreground="#006633"
+                HorizontalAlignment="Center"
+                Text="✓"
+                VerticalAlignment="Center" />
+          </Border>
+          <TextBlock
+              FontSize="13"
+              Foreground="White"
+              Text="{Binding StatusMessage}"
+              VerticalAlignment="Center" />
+        </StackPanel>
       </Border>
     </Grid>
 

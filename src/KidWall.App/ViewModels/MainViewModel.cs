@@ -126,6 +126,8 @@ public partial class MainViewModel : LocalizedViewModel
 
     public string EmptyText => L(Localization.Main.Empty.Text);
 
+    public string FooterText => L(Localization.Main.Footer.Text);
+
     public string PlannedText => L(Localization.Main.Card.Planned);
 
     public ObservableCollection<CategoryItemViewModel> Categories { get; } = [];
@@ -318,11 +320,23 @@ public partial class MainViewModel : LocalizedViewModel
             }
 
             // 静态壁纸：先把系统桌面壁纸切过去，再收起动态宿主，避免中间闪底色。
-            if (!_wallpaperService.SetWallpaper(item.FullPath))
+            if (!File.Exists(item.FullPath))
             {
                 if (showStatus)
                 {
                     ShowStatus("设置壁纸失败：文件不可用 🥺");
+                }
+
+                return false;
+            }
+
+            if (!_wallpaperService.SetWallpaper(item.FullPath))
+            {
+                if (showStatus)
+                {
+                    ShowStatus(OperatingSystem.IsMacOS()
+                        ? "设置壁纸失败：请在「系统设置 → 隐私与安全性 → 自动化」中允许本程序控制 Finder 🥺"
+                        : "设置壁纸失败：文件不可用 🥺");
                 }
 
                 return false;
@@ -621,6 +635,7 @@ public partial class MainViewModel : LocalizedViewModel
         OnPropertyChanged(nameof(ContentFilterDesc));
         OnPropertyChanged(nameof(SaveSettingsText));
         OnPropertyChanged(nameof(EmptyText));
+        OnPropertyChanged(nameof(FooterText));
         OnPropertyChanged(nameof(PlannedText));
         OnPropertyChanged(nameof(SectionTitle));
         OnPropertyChanged(nameof(SectionIcon));

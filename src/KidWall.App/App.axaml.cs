@@ -69,8 +69,10 @@ public partial class App : Avalonia.Application
             return;
         }
 
-        var dataDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KidWall");
+        // macOS 上 ~/Library/Application Support 可能被开发沙箱拦截，统一使用 ~/.local/share/KidWall
+        var dataDirectory = OperatingSystem.IsMacOS()
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "KidWall")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KidWall");
         var resDirectory = Path.Combine(AppContext.BaseDirectory, "res");
         var libVlcDirectory = Path.Combine(AppContext.BaseDirectory, "libvlc", "win-x64");
 
@@ -93,7 +95,9 @@ public partial class App : Avalonia.Application
         PreferencesStore = new AppPreferencesStore(dataDirectory);
         var preferences = PreferencesStore.Load();
         I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
-        WallpaperService = new WindowsDesktopWallpaperService();
+        WallpaperService = OperatingSystem.IsWindows()
+            ? new WindowsDesktopWallpaperService()
+            : new MacOsDesktopWallpaperService();
         _dynamicWallpaperService = OperatingSystem.IsWindows()
             ? new WindowsDynamicWallpaperService()
             : new NoOpDynamicWallpaperService();
