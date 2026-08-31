@@ -159,6 +159,16 @@ public partial class MainViewModel : LocalizedViewModel
     [NotifyPropertyChangedFor(nameof(IsPreviewOpen))]
     private WallpaperItemViewModel? _previewItem;
 
+    partial void OnPreviewItemChanged(WallpaperItemViewModel? value)
+    {
+        // 预览对话框打开/关闭时，同步暂停/恢复卡片视频播放，
+        // 避免原生视频浮层窗口遮挡预览对话框。
+        foreach (var item in _allItems)
+        {
+            item.PreviewDialogOpen = value is not null;
+        }
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsStatusVisible))]
     private string? _statusMessage;

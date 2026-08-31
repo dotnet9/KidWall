@@ -83,7 +83,7 @@
                     Margin="2"
                     MediaPath="{Binding PreviewMediaPath}"
                     PosterSource="{Binding Thumb}"
-                    AutoPlay="{Binding IsDynamic}"
+                    AutoPlay="{Binding AutoPlay}"
                     EnableHoverPreview="False"
                     PreviewCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).OpenPreviewCommand, Mode=OneTime}"
                     ApplyCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).ApplyWallpaperCommand, Mode=OneTime}"

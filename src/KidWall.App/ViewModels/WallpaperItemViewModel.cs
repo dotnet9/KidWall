@@ -38,6 +38,18 @@ public partial class WallpaperItemViewModel : ObservableObject
 
     public bool IsLocal => Model.IsFromLocal;
 
+    /// <summary>
+    /// 卡片是否自动播放视频。预览对话框打开时暂停，避免原生视频浮层窗口
+    /// 盖住预览对话框。
+    /// </summary>
+    public bool AutoPlay => IsDynamic && !PreviewDialogOpen;
+
+    /// <summary>预览对话框是否打开（由主界面同步）。</summary>
+    [ObservableProperty]
+    private bool _previewDialogOpen;
+
+    partial void OnPreviewDialogOpenChanged(bool value) => OnPropertyChanged(nameof(AutoPlay));
+
     public WallpaperCategory Category => Model.Category;
 
     public string CategoryKey => Category switch
