@@ -9,7 +9,7 @@ using LibVLC = LibVLCSharp.Shared.LibVLC;
 using LibVLCSharp.Shared;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 using AvaloniaUserControl = Avalonia.Controls.UserControl;
-using AvaloniaVideoView = KidWall.App.Controls.PointerTransparentVideoView;
+using AvaloniaVideoView = LibVLCSharp.Avalonia.VideoView;
 using AvaloniaRoutedEventArgs = Avalonia.Interactivity.RoutedEventArgs;
 
 namespace KidWall.App.Controls;
@@ -216,6 +216,19 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         private set => SetValue(IsVideoVisibleProperty, value);
     }
 
+    public static readonly StyledProperty<bool> IsVideoHostVisibleProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, bool>(nameof(IsVideoHostVisible), false);
+
+    /// <summary>
+    /// Keeps the native video HWND alive before playback starts. LibVLC must
+    /// receive that HWND before Play; otherwise it opens its own output window.
+    /// </summary>
+    public bool IsVideoHostVisible
+    {
+        get => GetValue(IsVideoHostVisibleProperty);
+        private set => SetValue(IsVideoHostVisibleProperty, value);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -225,6 +238,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
             change.Property == EnableHoverPreviewProperty ||
             change.Property == LoopProperty)
         {
+            if (change.Property == MediaPathProperty)
+            {
+                IsVideoHostVisible = !string.IsNullOrWhiteSpace(MediaPath);
+            }
+
             ApplyOverlayContent();
             if (_isLoaded)
             {
@@ -267,6 +285,7 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     private void OnLoaded(object? sender, AvaloniaRoutedEventArgs e)
     {
         _isLoaded = true;
+        IsVideoHostVisible = !string.IsNullOrWhiteSpace(MediaPath);
         ApplyOverlayContent();
         AttachMediaPlayer();
         ApplyMediaState();
@@ -303,6 +322,10 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
             return;
         }
 
+        // VideoView hosts Content in a separate top-level window. Keep the
+        // item context explicit instead of relying on inheritance across
+        // that window boundary.
+        overlay.DataContext = DataContext;
         overlay.PreviewCommand = PreviewCommand;
         overlay.ApplyCommand = ApplyCommand;
         overlay.CommandParameter = CommandParameter ?? DataContext;

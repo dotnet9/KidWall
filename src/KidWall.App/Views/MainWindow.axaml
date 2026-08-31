@@ -140,7 +140,6 @@
                   CornerRadius="20">
                 <Grid>
                   <controls:DynamicWallpaperPreviewView
-                      IsHitTestVisible="False"
                       Margin="8"
                       MediaPath="{Binding PreviewItem.PreviewMediaPath}"
                       PosterSource="{Binding PreviewItem.Preview}"

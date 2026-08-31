@@ -243,6 +243,17 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
         // sits behind the icon view. It is idempotent when the window exists.
         SendMessageTimeout(progman, 0x052C, IntPtr.Zero, IntPtr.Zero, SmtoNormal, 1000, out _);
 
+        // Recent Explorer builds create the background WorkerW as a child of
+        // Progman. Prefer that handle when it is available; unrelated
+        // top-level WorkerW windows are also present and cannot host the
+        // wallpaper surface reliably.
+        var progmanWorker = FindWindowEx(progman, IntPtr.Zero, "WorkerW", null);
+        if (progmanWorker != IntPtr.Zero &&
+            FindWindowEx(progmanWorker, IntPtr.Zero, "SHELLDLL_DefView", null) == IntPtr.Zero)
+        {
+            return progmanWorker;
+        }
+
         // The reliable topology is: WorkerW(SHELLDLL_DefView) followed by a
         // sibling WorkerW without SHELLDLL_DefView. Use EnumWindows so this
         // also works when Explorer changes the z-order of top-level windows.
