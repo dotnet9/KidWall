@@ -1,13 +1,15 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
+using System.Windows.Input;
 using LibVLC = LibVLCSharp.Shared.LibVLC;
-using LibVLCSharp.Avalonia;
 using LibVLCSharp.Shared;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 using AvaloniaUserControl = Avalonia.Controls.UserControl;
-using AvaloniaVideoView = LibVLCSharp.Avalonia.VideoView;
+using AvaloniaVideoView = KidWall.App.Controls.PointerTransparentVideoView;
 using AvaloniaRoutedEventArgs = Avalonia.Interactivity.RoutedEventArgs;
 
 namespace KidWall.App.Controls;
@@ -27,6 +29,7 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     });
 
     private readonly DispatcherTimer _hoverTimer;
+    private readonly Border _overlayPlaceholder;
     private AvaloniaVideoView? _videoView;
     private MediaPlayer? _mediaPlayer;
     private Media? _media;
@@ -44,6 +47,16 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         _hoverTimer.Tick += OnHoverTimerTick;
 
         _videoView = PART_VideoView;
+        _overlayPlaceholder = new Border
+        {
+            Width = 1,
+            Height = 1,
+            Background = Brushes.Transparent,
+            IsHitTestVisible = false,
+        };
+        // Keep Content non-null so LibVLCSharp creates its floating overlay
+        // window before a data-bound card overlay arrives.
+        _videoView.Content = _overlayPlaceholder;
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
@@ -58,6 +71,82 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     {
         get => GetValue(MediaPathProperty);
         set => SetValue(MediaPathProperty, value);
+    }
+
+    public static readonly StyledProperty<Control?> OverlayContentProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, Control?>(nameof(OverlayContent));
+
+    /// <summary>
+    /// Optional content rendered in LibVLCSharp's top-level overlay window.
+    /// Native video HWNDs otherwise cover Avalonia siblings.
+    /// </summary>
+    public Control? OverlayContent
+    {
+        get => GetValue(OverlayContentProperty);
+        set => SetValue(OverlayContentProperty, value);
+    }
+
+    public static readonly StyledProperty<ICommand?> PreviewCommandProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, ICommand?>(nameof(PreviewCommand));
+
+    public ICommand? PreviewCommand
+    {
+        get => GetValue(PreviewCommandProperty);
+        set => SetValue(PreviewCommandProperty, value);
+    }
+
+    public static readonly StyledProperty<ICommand?> ApplyCommandProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, ICommand?>(nameof(ApplyCommand));
+
+    public ICommand? ApplyCommand
+    {
+        get => GetValue(ApplyCommandProperty);
+        set => SetValue(ApplyCommandProperty, value);
+    }
+
+    public static readonly StyledProperty<object?> CommandParameterProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, object?>(nameof(CommandParameter));
+
+    public object? CommandParameter
+    {
+        get => GetValue(CommandParameterProperty);
+        set => SetValue(CommandParameterProperty, value);
+    }
+
+    public static readonly StyledProperty<string?> PreviewTextProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, string?>(nameof(PreviewText));
+
+    public string? PreviewText
+    {
+        get => GetValue(PreviewTextProperty);
+        set => SetValue(PreviewTextProperty, value);
+    }
+
+    public static readonly StyledProperty<string?> ApplyTextProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, string?>(nameof(ApplyText));
+
+    public string? ApplyText
+    {
+        get => GetValue(ApplyTextProperty);
+        set => SetValue(ApplyTextProperty, value);
+    }
+
+    public static readonly StyledProperty<string?> CurrentTextProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, string?>(nameof(CurrentText));
+
+    public string? CurrentText
+    {
+        get => GetValue(CurrentTextProperty);
+        set => SetValue(CurrentTextProperty, value);
+    }
+
+    public static readonly StyledProperty<string?> DynamicTextProperty =
+        AvaloniaProperty.Register<DynamicWallpaperPreviewView, string?>(nameof(DynamicText));
+
+    public string? DynamicText
+    {
+        get => GetValue(DynamicTextProperty);
+        set => SetValue(DynamicTextProperty, value);
     }
 
     public static readonly StyledProperty<AvaloniaBitmap?> PosterSourceProperty =
@@ -136,10 +225,28 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
             change.Property == EnableHoverPreviewProperty ||
             change.Property == LoopProperty)
         {
+            ApplyOverlayContent();
             if (_isLoaded)
             {
                 ApplyMediaState();
             }
+        }
+
+        if (change.Property == OverlayContentProperty)
+        {
+            ApplyOverlayContent();
+        }
+
+        if (change.Property == PreviewCommandProperty ||
+            change.Property == ApplyCommandProperty ||
+            change.Property == CommandParameterProperty ||
+            change.Property == PreviewTextProperty ||
+            change.Property == ApplyTextProperty ||
+            change.Property == CurrentTextProperty ||
+            change.Property == DynamicTextProperty ||
+            change.Property == DataContextProperty)
+        {
+            SyncOverlayProperties();
         }
 
         if (change.Property == IsVisibleProperty && _isLoaded)
@@ -160,6 +267,7 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     private void OnLoaded(object? sender, AvaloniaRoutedEventArgs e)
     {
         _isLoaded = true;
+        ApplyOverlayContent();
         AttachMediaPlayer();
         ApplyMediaState();
     }
@@ -170,7 +278,38 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         _isHovering = false;
         _hoverTimer.Stop();
         StopPlayback();
+        ApplyOverlayContent();
         DisposeMediaPlayer();
+    }
+
+    private void ApplyOverlayContent()
+    {
+        if (_videoView is null)
+        {
+            return;
+        }
+
+        var shouldShowOverlay = AutoPlay && !string.IsNullOrWhiteSpace(MediaPath);
+        _videoView.Content = shouldShowOverlay
+            ? OverlayContent ?? _overlayPlaceholder
+            : _overlayPlaceholder;
+        SyncOverlayProperties();
+    }
+
+    private void SyncOverlayProperties()
+    {
+        if (_videoView?.Content is not DynamicCardOverlay overlay)
+        {
+            return;
+        }
+
+        overlay.PreviewCommand = PreviewCommand;
+        overlay.ApplyCommand = ApplyCommand;
+        overlay.CommandParameter = CommandParameter ?? DataContext;
+        overlay.PreviewText = PreviewText;
+        overlay.ApplyText = ApplyText;
+        overlay.CurrentText = CurrentText;
+        overlay.DynamicText = DynamicText;
     }
 
     private void OnPointerEntered(object? sender, PointerEventArgs e)
@@ -222,7 +361,7 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
 
     private void AttachMediaPlayer()
     {
-        if (_videoView is null)
+        if (_videoView is null || (!AutoPlay && !EnableHoverPreview))
         {
             return;
         }
@@ -250,6 +389,10 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         _mediaPlayer.Stopped += OnMediaPlayerStopped;
         _mediaPlayer.EndReached += OnMediaPlayerEnded;
         _mediaPlayer.EncounteredError += OnMediaPlayerError;
+        if (_videoView is not null)
+        {
+            _videoView.MediaPlayer = _mediaPlayer;
+        }
     }
 
     private void StartPlayback()
@@ -293,7 +436,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
                 media.AddOption(":input-repeat=65535");
             }
 
+            media.AddOption(":no-audio");
+
             _media = media;
+            // Keep the poster above the video until LibVLC confirms that a
+            // decoded frame is actually being presented.
             IsVideoVisible = true;
             IsPosterVisible = true;
 
@@ -378,6 +525,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
+            if (!ReferenceEquals(sender, _mediaPlayer) || _media is null || _mediaPlayer?.IsPlaying != true)
+            {
+                return;
+            }
+
             IsPosterVisible = false;
             IsVideoVisible = true;
         });
@@ -387,6 +539,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
+            if (!ReferenceEquals(sender, _mediaPlayer) || _mediaPlayer?.IsPlaying == true)
+            {
+                return;
+            }
+
             IsVideoVisible = false;
             IsPosterVisible = true;
         });
@@ -396,6 +553,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
+            if (!ReferenceEquals(sender, _mediaPlayer) || Loop)
+            {
+                return;
+            }
+
             IsVideoVisible = false;
             IsPosterVisible = true;
         });
@@ -405,6 +567,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
+            if (!ReferenceEquals(sender, _mediaPlayer))
+            {
+                return;
+            }
+
             IsVideoVisible = false;
             IsPosterVisible = true;
         });

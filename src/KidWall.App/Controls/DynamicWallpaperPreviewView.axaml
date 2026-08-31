@@ -3,19 +3,19 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:KidWall.App.Controls"
-    xmlns:libvlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
     Background="Transparent"
     ClipToBounds="True">
   <Grid ClipToBounds="True">
+    <controls:PointerTransparentVideoView
+        x:Name="PART_VideoView"
+        IsVisible="{Binding IsVideoVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch" />
+    <!-- Keep the poster above the video until the first decoded frame. -->
     <Image
         x:Name="PART_Poster"
         IsVisible="{Binding IsPosterVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
         Source="{Binding PosterSource, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
         Stretch="UniformToFill" />
-    <libvlc:VideoView
-        x:Name="PART_VideoView"
-        IsVisible="{Binding IsVideoVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch" />
   </Grid>
 </UserControl>

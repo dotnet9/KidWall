@@ -12,16 +12,20 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
 {
     private const uint SmtoNormal = 0x0000;
     private const int GwlStyle = -16;
+    private const int SmXVirtualScreen = 76;
+    private const int SmYVirtualScreen = 77;
     private const int SmCxVirtualScreen = 78;
     private const int SmCyVirtualScreen = 79;
     private const uint SwpFrameChanged = 0x0020;
-
     private const uint SwpNoActivate = 0x0010;
+    private const uint SwpShowWindow = 0x0040;
     private static readonly IntPtr HwndBottom = new(1);
 
     private const uint WsChild = 0x40000000;
     private const uint WsVisible = 0x10000000;
     private const uint WsPopup = 0x80000000;
+    private const uint WsExNoActivate = 0x08000000;
+    private const uint WsExToolWindow = 0x00000080;
 
     private readonly object _sync = new();
 
@@ -30,38 +34,50 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
     private Media? _media;
     private IntPtr _playerWindow;
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string? lpszWindow);
 
-    [DllImport("user32.dll")]
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
     private static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam, uint flags, uint timeout, out IntPtr result);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", SetLastError = true)]
     private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
     [DllImport("user32.dll")]
+    private static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
 
-    [DllImport("user32.dll")]
-    private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, long dwNewLong);
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
+    private static extern IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
     [DllImport("user32.dll")]
     private static extern int GetSystemMetrics(int nIndex);
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern IntPtr CreateWindowEx(uint dwExStyle, string lpClassName, string lpWindowName, uint dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", SetLastError = true)]
     private static extern bool DestroyWindow(IntPtr hWnd);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr GetModuleHandle(string? lpModuleName);
 
     /// <inheritdoc />
-    public bool IsSupported => true;
+    public bool IsSupported => OperatingSystem.IsWindows();
 
     /// <inheritdoc />
     public bool IsRunning => _playerWindow != IntPtr.Zero;
@@ -69,7 +85,7 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
     /// <inheritdoc />
     public bool Show(string videoPath)
     {
-        if (string.IsNullOrWhiteSpace(videoPath) || !File.Exists(videoPath))
+        if (!IsSupported || string.IsNullOrWhiteSpace(videoPath) || !File.Exists(videoPath))
         {
             return false;
         }
@@ -98,15 +114,21 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
 
                 player = new MediaPlayer(_libVlc)
                 {
-                    Hwnd = playerWindow
+                    Hwnd = playerWindow,
+                    Mute = true,
+                    Volume = 0,
                 };
 
                 media = new Media(
                     _libVlc,
                     new Uri(Path.GetFullPath(videoPath), UriKind.Absolute),
-                    ":input-repeat=65535");
+                    ":input-repeat=65535",
+                    ":no-audio");
 
-                player.Play(media);
+                if (!player.Play(media))
+                {
+                    throw new InvalidOperationException("LibVLC rejected the wallpaper media.");
+                }
 
                 StopCore();
                 _playerWindow = playerWindow;
@@ -176,7 +198,7 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
         var bounds = GetVirtualScreenBounds();
 
         var window = CreateWindowEx(
-            0,
+            WsExNoActivate | WsExToolWindow,
             "Static",
             string.Empty,
             WsPopup | WsVisible,
@@ -190,7 +212,12 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
             return IntPtr.Zero;
         }
 
-        ConfigureWallpaperWindow(window, parentWorkerW, bounds);
+        if (!ConfigureWallpaperWindow(window, parentWorkerW, bounds))
+        {
+            DestroyPlayerWindow(window);
+            return IntPtr.Zero;
+        }
+
         return window;
     }
 
@@ -212,15 +239,47 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
             return IntPtr.Zero;
         }
 
-        SendMessageTimeout(progman, 0x052C, new IntPtr(0xD), IntPtr.Zero, SmtoNormal, 1000, out _);
+        // This undocumented message asks Explorer to create the WorkerW that
+        // sits behind the icon view. It is idempotent when the window exists.
+        SendMessageTimeout(progman, 0x052C, IntPtr.Zero, IntPtr.Zero, SmtoNormal, 1000, out _);
 
-        IntPtr workerW = IntPtr.Zero;
-        while ((workerW = FindWindowEx(IntPtr.Zero, workerW, "WorkerW", null)) != IntPtr.Zero)
+        // The reliable topology is: WorkerW(SHELLDLL_DefView) followed by a
+        // sibling WorkerW without SHELLDLL_DefView. Use EnumWindows so this
+        // also works when Explorer changes the z-order of top-level windows.
+        var workerW = IntPtr.Zero;
+        for (var attempt = 0; attempt < 5 && workerW == IntPtr.Zero; attempt++)
         {
-            var defView = FindWindowEx(workerW, IntPtr.Zero, "SHELLDLL_DefView", null);
-            if (defView == IntPtr.Zero)
+            EnumWindows((topLevel, _) =>
             {
-                return workerW;
+                var defView = FindWindowEx(topLevel, IntPtr.Zero, "SHELLDLL_DefView", null);
+                if (defView == IntPtr.Zero)
+                {
+                    return true;
+                }
+
+                workerW = FindWindowEx(IntPtr.Zero, topLevel, "WorkerW", null);
+                return false;
+            }, IntPtr.Zero);
+
+            if (workerW == IntPtr.Zero)
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        if (workerW != IntPtr.Zero)
+        {
+            return workerW;
+        }
+
+        // Some Explorer builds expose the background WorkerW directly. Keep a
+        // conservative fallback for those builds and for shell replacements.
+        var candidate = IntPtr.Zero;
+        while ((candidate = FindWindowEx(IntPtr.Zero, candidate, "WorkerW", null)) != IntPtr.Zero)
+        {
+            if (FindWindowEx(candidate, IntPtr.Zero, "SHELLDLL_DefView", null) == IntPtr.Zero)
+            {
+                return candidate;
             }
         }
 
@@ -241,8 +300,7 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
             return false;
         }
 
-        ConfigureWallpaperWindow(windowHandle, workerW, GetVirtualScreenBounds());
-        return true;
+        return ConfigureWallpaperWindow(windowHandle, workerW, GetVirtualScreenBounds());
     }
 
     private void StopCore()
@@ -265,18 +323,31 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
         _playerWindow = IntPtr.Zero;
     }
 
-    private static void ConfigureWallpaperWindow(IntPtr windowHandle, IntPtr workerW, (int X, int Y, int Width, int Height) bounds)
+    private static bool ConfigureWallpaperWindow(IntPtr windowHandle, IntPtr workerW, (int X, int Y, int Width, int Height) bounds)
     {
-        SetParent(windowHandle, workerW);
-
+        // SetParent intentionally does not change WS_CHILD/WS_POPUP. Set the
+        // child style first, then reparent and force the cached style to apply.
         var style = GetWindowLong(windowHandle, GwlStyle);
-        SetWindowLongPtr(windowHandle, GwlStyle, (style | WsChild | WsVisible) & ~WsPopup);
+        var childStyle = (style | WsChild | WsVisible) & ~WsPopup;
+        SetWindowLongPtr(windowHandle, GwlStyle, new IntPtr(childStyle));
+        SetParent(windowHandle, workerW);
+        if (GetParent(windowHandle) != workerW)
+        {
+            return false;
+        }
 
-        SetWindowPos(windowHandle, HwndBottom, 0, 0, bounds.Width, bounds.Height, SwpNoActivate | SwpFrameChanged);
+        return SetWindowPos(
+            windowHandle,
+            HwndBottom,
+            0,
+            0,
+            bounds.Width,
+            bounds.Height,
+            SwpNoActivate | SwpFrameChanged | SwpShowWindow);
     }
 
     private static (int X, int Y, int Width, int Height) GetVirtualScreenBounds() =>
-        (0, 0, GetSystemMetrics(SmCxVirtualScreen), GetSystemMetrics(SmCyVirtualScreen));
+        (GetSystemMetrics(SmXVirtualScreen), GetSystemMetrics(SmYVirtualScreen), GetSystemMetrics(SmCxVirtualScreen), GetSystemMetrics(SmCyVirtualScreen));
 
     private static long GetWindowLong(IntPtr hWnd, int nIndex)
     {
@@ -286,6 +357,18 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
         }
 
         return GetWindowLong32(hWnd, nIndex);
+    }
+
+    private static void SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr value)
+    {
+        if (IntPtr.Size == 8)
+        {
+            SetWindowLongPtr64(hWnd, nIndex, value);
+        }
+        else
+        {
+            SetWindowLong32(hWnd, nIndex, value);
+        }
     }
 
     [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]

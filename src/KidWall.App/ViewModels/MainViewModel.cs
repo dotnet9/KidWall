@@ -96,7 +96,7 @@ public partial class MainViewModel : LocalizedViewModel
 
     public string DynamicBadgeText => L(Localization.Main.Card.Dynamic);
 
-    public string PreviewResolution => $"{L(Localization.Preview.Labels.Resolution)} 1920×1080";
+    public string PreviewResolution => L(Localization.Preview.Labels.Resolution);
 
     public string ApplyWallpaperText => L(Localization.Preview.Labels.Apply);
 
@@ -110,7 +110,9 @@ public partial class MainViewModel : LocalizedViewModel
 
     public string AutoRotateTitle => L(Localization.Settings.AutoRotate.Title);
 
-    public string AutoRotateDesc => L(Localization.Settings.AutoRotate.Desc);
+    public string AutoRotateDesc => string.Format(
+        L(Localization.Settings.AutoRotate.Desc),
+        Math.Max(1, _preferences.AutoRotateIntervalMinutes));
 
     public string BatterySaverTitle => L(Localization.Settings.BatterySaver.Title);
 
@@ -152,16 +154,24 @@ public partial class MainViewModel : LocalizedViewModel
     private bool _isSettingsOpen;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsPreviewOpen))]
     private WallpaperItemViewModel? _previewItem;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsStatusVisible))]
     private string? _statusMessage;
 
     public string SectionTitle => SelectedCategory?.SectionTitle ?? string.Empty;
 
+    public string SectionIcon => SelectedCategory?.Icon ?? string.Empty;
+
     public string CountText => string.Format(L(Localization.Main.Labels.Count), Wallpapers.Count);
 
     public string DynamicPlannedText => L(Localization.Main.Status.DynamicPlanned);
+
+    public bool IsPreviewOpen => PreviewItem is not null;
+
+    public bool IsStatusVisible => !string.IsNullOrWhiteSpace(StatusMessage);
 
     // ---------- 设置项（直接绑定到偏好，变化即保存） ----------
 
@@ -453,6 +463,7 @@ public partial class MainViewModel : LocalizedViewModel
 
         UpdateCategoryCounts();
         OnPropertyChanged(nameof(SectionTitle));
+        OnPropertyChanged(nameof(SectionIcon));
         OnPropertyChanged(nameof(CountText));
         OnPropertyChanged(nameof(ShowEmpty));
         OnPropertyChanged(nameof(ShowDynamicPlanned));
@@ -612,6 +623,7 @@ public partial class MainViewModel : LocalizedViewModel
         OnPropertyChanged(nameof(EmptyText));
         OnPropertyChanged(nameof(PlannedText));
         OnPropertyChanged(nameof(SectionTitle));
+        OnPropertyChanged(nameof(SectionIcon));
         OnPropertyChanged(nameof(CountText));
     }
 }

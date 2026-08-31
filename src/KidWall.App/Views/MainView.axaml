@@ -24,10 +24,14 @@
               CornerRadius="16"
               FontSize="13"
               Foreground="{Binding ForegroundBrush}"
-              Padding="15,8">
+            Padding="15,8">
             <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="{Binding Icon}" VerticalAlignment="Center" />
               <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
-              <Border Classes="category-count" VerticalAlignment="Center">
+              <Border
+                  Background="{Binding CountBackgroundBrush}"
+                  Classes="category-count"
+                  VerticalAlignment="Center">
                 <TextBlock
                     Classes="category-count"
                     Foreground="{Binding ForegroundBrush}"
@@ -53,6 +57,7 @@
         Margin="0,14,0,14">
       <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <Border Classes="section-badge" />
+        <TextBlock FontSize="17" Text="{Binding SectionIcon}" VerticalAlignment="Center" />
         <TextBlock Classes="section-title" Text="{Binding SectionTitle}" />
       </StackPanel>
       <TextBlock
@@ -75,13 +80,49 @@
             <Border Classes="card" Margin="0,0,20,20">
               <Grid>
                 <controls:DynamicWallpaperPreviewView
-                    IsHitTestVisible="False"
+                    Margin="2"
                     MediaPath="{Binding PreviewMediaPath}"
                     PosterSource="{Binding Thumb}"
                     AutoPlay="{Binding IsDynamic}"
                     EnableHoverPreview="False"
-                    Loop="True" />
+                    PreviewCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).OpenPreviewCommand, Mode=OneTime}"
+                    ApplyCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).ApplyWallpaperCommand, Mode=OneTime}"
+                    CommandParameter="{Binding Mode=OneTime}"
+                    PreviewText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).PreviewButtonText, Mode=OneTime}"
+                    ApplyText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).SetWallpaperButtonText, Mode=OneTime}"
+                    CurrentText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CurrentBadgeText, Mode=OneTime}"
+                    DynamicText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DynamicBadgeText, Mode=OneTime}"
+                    Loop="True">
+                  <controls:DynamicWallpaperPreviewView.OverlayContent>
+                    <controls:DynamicCardOverlay
+                        IsVisible="{Binding IsDynamic}" />
+                  </controls:DynamicWallpaperPreviewView.OverlayContent>
+                </controls:DynamicWallpaperPreviewView>
+                <Border Classes="dyn-overlay" IsVisible="{Binding IsDynamic}" />
                 <Border Background="{DynamicResource CardShadeBrush}" />
+                <!-- Keep the rounded card edge visible above media content. -->
+                <Border
+                    Background="Transparent"
+                    BorderBrush="{DynamicResource KidWallBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    IsHitTestVisible="False" />
+                <Border
+                    Background="#88000000"
+                    CornerRadius="18"
+                    IsHitTestVisible="False"
+                    IsVisible="{Binding IsDynamic}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="42"
+                    Height="42">
+                  <TextBlock
+                      FontSize="19"
+                      Foreground="White"
+                      HorizontalAlignment="Center"
+                      Text="▶"
+                      VerticalAlignment="Center" />
+                </Border>
 
                 <!-- 整卡点击打开预览（透明覆盖层，ops 按钮在其上层仍可点击） -->
                 <Button
@@ -117,7 +158,7 @@
                     Spacing="2"
                     VerticalAlignment="Bottom">
                   <TextBlock Classes="card-name" Text="{Binding Name}" />
-                  <TextBlock Classes="card-tag" Text="{Binding Tags}" />
+                  <TextBlock Classes="card-tag" Text="{Binding DisplayTags}" />
                 </StackPanel>
 
                 <!-- 悬停操作 -->

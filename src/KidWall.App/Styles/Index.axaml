@@ -4,11 +4,15 @@
 
   <!-- ================= 设计令牌 ================= -->
   <Styles.Resources>
-    <SolidColorBrush x:Key="KidWallWindowBackground" Color="#1A0D48" />
+    <LinearGradientBrush x:Key="KidWallWindowBackground" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Offset="0" Color="#1B1440" />
+      <GradientStop Offset="0.68" Color="#2A0E55" />
+      <GradientStop Offset="1" Color="#150A36" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="KidWallSurfaceBrush" Color="#241458" />
     <SolidColorBrush x:Key="KidWallTitlebarBrush" Color="#1E0F52" />
     <SolidColorBrush x:Key="KidWallTextBrush" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="KidWallTextSecondaryBrush" Color="#B8FFB8FF" />
+    <SolidColorBrush x:Key="KidWallTextSecondaryBrush" Color="#B8FFFFFF" />
     <SolidColorBrush x:Key="KidWallTextTertiaryBrush" Color="#73FFFFFF" />
     <SolidColorBrush x:Key="KidWallBorderBrush" Color="#2EFFFFFF" />
     <SolidColorBrush x:Key="KidWallAccentBrush" Color="#FFD166" />

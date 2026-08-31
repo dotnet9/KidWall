@@ -6,7 +6,7 @@ namespace KidWall.Core.Services;
 /// 精选壁纸源：扫描仓库 res/ 目录（编译时链接输出到应用目录 res/）下的分类子目录。
 /// 目录结构与分类映射：
 ///   res/cartoon/* → 卡通 · res/starry/* → 星空 · res/illustration/* → 插画
-///   res/dynamic/*.webm|mp4 → 动态壁纸（真实视频），自动生成渐变封面供列表展示
+///   res/dynamic/*.webm|mp4 → 动态壁纸（真实视频），自动生成封面供列表展示
 /// </summary>
 public sealed class BuiltInWallpaperSource : IWallpaperSource
 {
@@ -34,7 +34,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
     private static readonly string[] VideoExtensions = [".webm", ".mp4", ".ogv", ".mov"];
 
-    /// <summary>动态视频封面（1280×720 渐变底图，避免视频封面缺失）。</summary>
+    /// <summary>动态视频封面（16:9 渐变底图，避免视频封面缺失）。</summary>
     private static readonly GradientSpec[] CoverSpecs =
     [
         new("星空紫", "cover", WallpaperCategory.Dynamic,
@@ -139,9 +139,12 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(coverPath)!);
-                var seed = nameWithoutExtension.GetHashCode();
-                var spec = CoverSpecs[Math.Abs(seed) % CoverSpecs.Length];
-                File.WriteAllBytes(coverPath, GradientBitmapFactory.Generate(1280, 720, spec, seed: seed));
+                var seed = StableHash(nameWithoutExtension);
+                var spec = CoverSpecs[(seed & int.MaxValue) % CoverSpecs.Length];
+                // The gallery only displays a 280x158 card. A 640x360 cover
+                // keeps first launch fast while retaining enough detail for
+                // the larger preview poster.
+                File.WriteAllBytes(coverPath, GradientBitmapFactory.Generate(640, 360, spec, seed: seed));
             }
             catch (Exception)
             {
@@ -151,5 +154,20 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
         }
 
         return coverPath;
+    }
+
+    private static int StableHash(string value)
+    {
+        unchecked
+        {
+            var hash = unchecked((int)2166136261);
+            foreach (var character in value)
+            {
+                hash ^= character;
+                hash *= 16777619;
+            }
+
+            return hash;
+        }
     }
 }

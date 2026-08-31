@@ -32,7 +32,7 @@ public sealed class Wallpaper
     /// <summary>缩略图路径（用于网格展示）。</summary>
     public string ThumbPath { get; }
 
-    /// <summary>是否动态壁纸（动态分类为静态底图 + 播放动效模拟）。</summary>
+    /// <summary>是否动态壁纸（视频文件，列表显示封面，预览和桌面播放使用原视频）。</summary>
     public bool IsDynamic { get; set; }
 
     /// <summary>是否精选（推荐分类）。</summary>

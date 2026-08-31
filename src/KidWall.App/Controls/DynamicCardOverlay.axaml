@@ -1,0 +1,135 @@
+<UserControl
+    x:Class="KidWall.App.Controls.DynamicCardOverlay"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:KidWall.App.Controls"
+    xmlns:vm="using:KidWall.App.ViewModels"
+    x:CompileBindings="True"
+    x:DataType="vm:WallpaperItemViewModel"
+    Background="Transparent"
+    ClipToBounds="True">
+  <Border
+      Classes="dynamic-card-overlay"
+      ClipToBounds="True"
+      Background="Transparent">
+    <Grid
+        Background="Transparent"
+        PointerPressed="OnRootPointerPressed">
+      <Border Classes="dyn-overlay" />
+      <Border Background="{DynamicResource CardShadeBrush}" />
+      <Border
+          Background="Transparent"
+          BorderBrush="{DynamicResource KidWallBorderBrush}"
+          BorderThickness="1"
+          CornerRadius="16"
+          IsHitTestVisible="False" />
+
+      <Border
+          Background="#88000000"
+          CornerRadius="18"
+          HorizontalAlignment="Center"
+          IsHitTestVisible="False"
+          VerticalAlignment="Center"
+          Width="42"
+          Height="42">
+        <TextBlock
+            FontSize="19"
+            Foreground="White"
+            HorizontalAlignment="Center"
+            Text="▶"
+            VerticalAlignment="Center" />
+      </Border>
+
+      <StackPanel
+          Margin="10"
+          HorizontalAlignment="Left"
+          Orientation="Horizontal"
+          Spacing="6"
+          VerticalAlignment="Top">
+        <Border Classes="badge" IsVisible="{Binding IsCurrent}">
+          <TextBlock
+              Classes="badge"
+              Text="{Binding CurrentText, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}" />
+        </Border>
+        <Border Classes="badge">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <Ellipse Classes="badge-dot" VerticalAlignment="Center" />
+            <TextBlock
+                Classes="badge"
+                Text="{Binding DynamicText, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <StackPanel
+          Margin="14,20,14,10"
+          Spacing="2"
+          VerticalAlignment="Bottom">
+        <TextBlock Classes="card-name" Text="{Binding Name}" />
+        <TextBlock Classes="card-tag" Text="{Binding DisplayTags}" />
+      </StackPanel>
+
+      <StackPanel
+          Classes="dynamic-card-actions"
+          HorizontalAlignment="Right"
+          IsVisible="{Binding IsActionsVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+          Orientation="Horizontal"
+          Spacing="6"
+          VerticalAlignment="Bottom"
+          Margin="0,0,10,10">
+        <Button
+            Classes="card-ops"
+            Command="{Binding PreviewCommand, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+            CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock FontSize="11" Text="👁" />
+            <TextBlock Text="{Binding PreviewText, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}" />
+          </StackPanel>
+        </Button>
+        <Button
+            Classes="card-ops set"
+            Command="{Binding ApplyCommand, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+            CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <TextBlock FontSize="11" Text="✨" />
+            <TextBlock Text="{Binding ApplyText, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <!-- Opaque quarter-circles mask the square corners of the native video window. -->
+      <Border
+          Background="{DynamicResource KidWallSurfaceBrush}"
+          CornerRadius="0,0,18,0"
+          Height="18"
+          HorizontalAlignment="Left"
+          IsHitTestVisible="False"
+          VerticalAlignment="Top"
+          Width="18" />
+      <Border
+          Background="{DynamicResource KidWallSurfaceBrush}"
+          CornerRadius="0,0,0,18"
+          Height="18"
+          HorizontalAlignment="Right"
+          IsHitTestVisible="False"
+          VerticalAlignment="Top"
+          Width="18" />
+      <Border
+          Background="{DynamicResource KidWallSurfaceBrush}"
+          CornerRadius="0,18,0,0"
+          Height="18"
+          HorizontalAlignment="Left"
+          IsHitTestVisible="False"
+          VerticalAlignment="Bottom"
+          Width="18" />
+      <Border
+          Background="{DynamicResource KidWallSurfaceBrush}"
+          CornerRadius="18,0,0,0"
+          Height="18"
+          HorizontalAlignment="Right"
+          IsHitTestVisible="False"
+          VerticalAlignment="Bottom"
+          Width="18" />
+    </Grid>
+  </Border>
+</UserControl>

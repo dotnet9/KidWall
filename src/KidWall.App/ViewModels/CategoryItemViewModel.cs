@@ -9,19 +9,35 @@ public partial class CategoryItemViewModel : ObservableObject
 {
     private static readonly IBrush InactiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#1AFFFFFF"));
     private static readonly IBrush ActiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#FFD166"));
-    private static readonly IBrush InactiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#B8FFB8FF"));
+    private static readonly IBrush InactiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#B8FFFFFF"));
     private static readonly IBrush ActiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#3A2500"));
+    private static readonly IBrush InactiveCountBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#33FFFFFF"));
+    private static readonly IBrush ActiveCountBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#2E3A2500"));
 
     public CategoryItemViewModel(
         string key,
         Action<CategoryItemViewModel> onSelect)
     {
         Key = key;
+        Icon = key switch
+        {
+            "all" => "🪄",
+            "recommended" => "🌟",
+            "cartoon" => "🐣",
+            "starry" => "🌙",
+            "illustration" => "🎨",
+            "dynamic" => "🎞️",
+            "local" => "📁",
+            _ => string.Empty,
+        };
         SelectCommand = new RelayCommand(() => onSelect(this));
     }
 
-    /// <summary>筛选键：all / cartoon / starry / illustration / dynamic / local。</summary>
+    /// <summary>筛选键：all / recommended / cartoon / starry / illustration / dynamic / local。</summary>
     public string Key { get; }
+
+    /// <summary>原型中的分类图标。</summary>
+    public string Icon { get; }
 
     public ICommand SelectCommand { get; }
 
@@ -33,7 +49,7 @@ public partial class CategoryItemViewModel : ObservableObject
     [ObservableProperty]
     private string _sectionTitle = string.Empty;
 
-    /// <summary>规划中功能（动态壁纸）。</summary>
+    /// <summary>规划中功能（保留给未来的分类）。</summary>
     [ObservableProperty]
     private bool _isPlanned;
 
@@ -55,9 +71,12 @@ public partial class CategoryItemViewModel : ObservableObject
     /// <summary>选中态前景。</summary>
     public IBrush ForegroundBrush => IsSelected ? ActiveForeground : InactiveForeground;
 
+    public IBrush CountBackgroundBrush => IsSelected ? ActiveCountBackground : InactiveCountBackground;
+
     partial void OnIsSelectedChanged(bool value)
     {
         OnPropertyChanged(nameof(BackgroundBrush));
         OnPropertyChanged(nameof(ForegroundBrush));
+        OnPropertyChanged(nameof(CountBackgroundBrush));
     }
 }

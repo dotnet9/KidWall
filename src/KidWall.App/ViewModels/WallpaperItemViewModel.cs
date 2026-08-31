@@ -32,11 +32,33 @@ public partial class WallpaperItemViewModel : ObservableObject
 
     public string Tags => Model.Tags;
 
+    public string DisplayTags => $"{CategoryDisplayName} · #{CategoryKey}";
+
     public bool IsDynamic => Model.IsDynamic;
 
     public bool IsLocal => Model.IsFromLocal;
 
     public WallpaperCategory Category => Model.Category;
+
+    public string CategoryKey => Category switch
+    {
+        WallpaperCategory.Cartoon => "cartoon",
+        WallpaperCategory.Starry => "starry",
+        WallpaperCategory.Illustration => "illustration",
+        WallpaperCategory.Dynamic => "dynamic",
+        WallpaperCategory.Local => "local",
+        _ => "wallpaper",
+    };
+
+    public string CategoryDisplayName => Category switch
+    {
+        WallpaperCategory.Cartoon => "卡通",
+        WallpaperCategory.Starry => "星空",
+        WallpaperCategory.Illustration => "插画",
+        WallpaperCategory.Dynamic => "动态壁纸",
+        WallpaperCategory.Local => "本地",
+        _ => "壁纸",
+    };
 
     /// <summary>网格缩略图。</summary>
     public AvaloniaBitmap? Thumb { get; }
