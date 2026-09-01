@@ -240,7 +240,11 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         {
             if (change.Property == MediaPathProperty)
             {
-                IsVideoHostVisible = !string.IsNullOrWhiteSpace(MediaPath);
+                UpdateVideoHostVisibility();
+            }
+            else if (change.Property == AutoPlayProperty || change.Property == EnableHoverPreviewProperty)
+            {
+                UpdateVideoHostVisibility();
             }
 
             ApplyOverlayContent();
@@ -285,7 +289,7 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
     private void OnLoaded(object? sender, AvaloniaRoutedEventArgs e)
     {
         _isLoaded = true;
-        IsVideoHostVisible = !string.IsNullOrWhiteSpace(MediaPath);
+        UpdateVideoHostVisibility();
         ApplyOverlayContent();
         AttachMediaPlayer();
         ApplyMediaState();
@@ -358,6 +362,14 @@ public partial class DynamicWallpaperPreviewView : AvaloniaUserControl
         _isHovering = false;
         _hoverTimer.Stop();
         StopPlayback();
+    }
+
+    private void UpdateVideoHostVisibility()
+    {
+        // Keep native video hosts out of gallery cards. The prototype uses
+        // lightweight visual effects in the gallery; real video is reserved
+        // for the preview surface and desktop wallpaper playback.
+        IsVideoHostVisible = !string.IsNullOrWhiteSpace(MediaPath) && (AutoPlay || EnableHoverPreview);
     }
 
     private void OnHoverTimerTick(object? sender, EventArgs e)

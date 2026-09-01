@@ -87,6 +87,8 @@ public class BuiltInWallpaperSourceTests
             "cartoon/02-unicorn-rainbow.jpg",
             "cartoon/03-other.jpg",
             "starry/01-moon-stars.jpg",
+            "dynamic/04-aurora-halibut.webm",
+            "dynamic/03-sky-day-night.webm",
             "dynamic/01-big-buck-bunny.webm");
 
         try
@@ -95,10 +97,12 @@ public class BuiltInWallpaperSourceTests
             var wallpapers = await source.LoadAsync();
 
             var recommended = wallpapers.Where(w => w.IsRecommended).Select(w => w.Name).ToList();
-            Assert.Contains("01-dino-balloons", recommended);
-            Assert.Contains("02-unicorn-rainbow", recommended);
-            Assert.Contains("01-moon-stars", recommended);
-            Assert.Contains("01-big-buck-bunny", recommended);
+            Assert.Contains("小恐龙气球派对", recommended);
+            Assert.Contains("极光海洋", recommended);
+            Assert.Contains("星星雨", recommended);
+            Assert.DoesNotContain("彩虹独角兽", recommended);
+            Assert.DoesNotContain("月亮睡着了", recommended);
+            Assert.DoesNotContain("01-big-buck-bunny", wallpapers.Select(w => w.Name));
             Assert.DoesNotContain("03-other", recommended);
         }
         finally

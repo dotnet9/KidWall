@@ -81,6 +81,8 @@
     <Setter Property="Height" Value="34" />
     <Setter Property="CornerRadius" Value="11" />
     <Setter Property="Background" Value="{DynamicResource BrandMarkBrush}" />
+    <Setter Property="RenderTransform" Value="translateY(0) rotate(-3deg)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
@@ -95,7 +97,7 @@
     <Setter Property="Padding" Value="14,4" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="MaxWidth" Value="440" />
+    <Setter Property="MaxWidth" Value="460" />
   </Style>
   <Style Selector="TextBox.search:focus">
     <Setter Property="BorderBrush" Value="{DynamicResource KidWallAccentBrush}" />
@@ -108,6 +110,16 @@
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Background" Value="#2EFFFFFF" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextBrush}" />
+    <Setter Property="RenderTransform" Value="translateY(0)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button.secondary-btn:pointerover">
+    <Setter Property="RenderTransform" Value="translateY(-2px)" />
   </Style>
   <Style Selector="Button.primary-btn">
     <Setter Property="CornerRadius" Value="16" />
@@ -116,6 +128,16 @@
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
     <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="RenderTransform" Value="translateY(0)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button.primary-btn:pointerover">
+    <Setter Property="RenderTransform" Value="translateY(-2px)" />
   </Style>
 
   <!-- 糖果窗口按钮 -->
@@ -129,6 +151,7 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    <Setter Property="RenderTransform" Value="translateY(0) rotate(0deg)" />
   </Style>
   <Style Selector="Button.candy.moon">
     <Setter Property="Background" Value="{DynamicResource CandyMoonBrush}" />
@@ -145,11 +168,22 @@
 
   <!-- ================= 分类胶囊 ================= -->
   <Style Selector="Button.category">
-    <Setter Property="CornerRadius" Value="999" />
-    <Setter Property="Padding" Value="20,9" />
+    <Setter Property="CornerRadius" Value="20" />
+    <Setter Property="MinHeight" Value="40" />
+    <Setter Property="Padding" Value="20,8" />
     <Setter Property="FontSize" Value="14" />
     <Setter Property="Background" Value="#1AFFFFFF" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
+    <Setter Property="RenderTransform" Value="translateY(0)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button.category:pointerover">
+    <Setter Property="RenderTransform" Value="translateY(-2px)" />
   </Style>
   <Style Selector="Button.category:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="#2EFFFFFF" />
@@ -161,7 +195,7 @@
   </Style>
   <Style Selector="Border.category-count">
     <Setter Property="Background" Value="#33FFFFFF" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="999" />
     <Setter Property="Padding" Value="6,1" />
     <Setter Property="MinWidth" Value="22" />
   </Style>
@@ -177,7 +211,7 @@
   </Style>
   <Style Selector="Border.category-planned">
     <Setter Property="Background" Value="#66FFFFFF" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="999" />
     <Setter Property="Padding" Value="5,1" />
   </Style>
   <Style Selector="TextBlock.category-planned">
@@ -208,14 +242,47 @@
     <Setter Property="RenderTransform" Value="translateY(-6px) scale(1.015)" />
   </Style>
 
+  <Style Selector="Image.wallpaper-media">
+    <Setter Property="RenderTransform" Value="scale(1)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Border.card:pointerover Image.wallpaper-media">
+    <Setter Property="RenderTransform" Value="scale(1.08)" />
+  </Style>
+  <Style Selector="Border.card-shade">
+    <Setter Property="Opacity" Value="0.9" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Border.card:pointerover Border.card-shade">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
   <!-- 卡片操作按钮（悬停浮现） -->
   <Style Selector="Border.card Button.card-ops">
-    <Setter Property="IsVisible" Value="False" />
     <Setter Property="Opacity" Value="0" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Setter Property="RenderTransform" Value="translateY(8px)" />
+    <Setter Property="RenderTransformOrigin" Value="50%,100%" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" />
+      </Transitions>
+    </Setter>
   </Style>
   <Style Selector="Border.card:pointerover Button.card-ops">
-    <Setter Property="IsVisible" Value="True" />
     <Setter Property="Opacity" Value="1" />
+    <Setter Property="IsHitTestVisible" Value="True" />
+    <Setter Property="RenderTransform" Value="translateY(0)" />
   </Style>
   <Style Selector="Button.card-ops">
     <Setter Property="CornerRadius" Value="12" />
@@ -223,6 +290,14 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="Background" Value="#99000000" />
     <Setter Property="Foreground" Value="White" />
+  </Style>
+  <Style Selector="StackPanel.dynamic-card-actions">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" />
+      </Transitions>
+    </Setter>
   </Style>
   <Style Selector="Button.card-ops.set">
     <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
@@ -233,7 +308,7 @@
   <!-- 徽标（动态 / 当前 / 规划中） -->
   <Style Selector="Border.badge">
     <Setter Property="Background" Value="#73000000" />
-    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="CornerRadius" Value="999" />
     <Setter Property="Padding" Value="8,3" />
   </Style>
   <Style Selector="TextBlock.badge">
@@ -245,6 +320,19 @@
     <Setter Property="Width" Value="7" />
     <Setter Property="Height" Value="7" />
     <Setter Property="Fill" Value="#6DFFC4" />
+    <Style.Animations>
+      <Animation Duration="0:0:1.4" IterationCount="Infinite" Easing="SineEaseInOut">
+        <KeyFrame Cue="0%">
+          <Setter Property="Opacity" Value="1" />
+        </KeyFrame>
+        <KeyFrame Cue="50%">
+          <Setter Property="Opacity" Value="0.6" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="Opacity" Value="1" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
   </Style>
   <Style Selector="TextBlock.card-name">
     <Setter Property="FontSize" Value="15" />

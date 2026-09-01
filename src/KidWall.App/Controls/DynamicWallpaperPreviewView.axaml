@@ -14,9 +14,18 @@
         VerticalAlignment="Stretch" />
     <!-- Keep the poster above the video until the first decoded frame. -->
     <Image
+        Classes="wallpaper-media"
         x:Name="PART_Poster"
         IsVisible="{Binding IsPosterVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
         Source="{Binding PosterSource, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
-        Stretch="UniformToFill" />
+        Stretch="UniformToFill"
+        RenderTransform="scale(1)"
+        RenderTransformOrigin="50%,50%">
+      <Image.Transitions>
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.6" />
+        </Transitions>
+      </Image.Transitions>
+    </Image>
   </Grid>
 </UserControl>

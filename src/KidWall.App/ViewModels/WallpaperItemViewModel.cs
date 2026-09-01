@@ -19,6 +19,7 @@ public partial class WallpaperItemViewModel : ObservableObject
         Model = model;
         Thumb = LoadBitmap(model.ThumbPath, 480);
         Preview = LoadBitmap(model.IsDynamic ? model.ThumbPath : model.FullPath, 1280);
+        _isAnimated = ResolveIsAnimated(model);
         _overlayKind = ResolveOverlayKind(model);
     }
 
@@ -35,6 +36,9 @@ public partial class WallpaperItemViewModel : ObservableObject
     public string DisplayTags => $"{CategoryDisplayName} · #{CategoryKey}";
 
     public bool IsDynamic => Model.IsDynamic;
+
+    /// <summary>原型中的播放光效，既可用于视频，也可用于静态壁纸卡片。</summary>
+    public bool IsAnimated => _isAnimated;
 
     public bool IsLocal => Model.IsFromLocal;
 
@@ -81,11 +85,11 @@ public partial class WallpaperItemViewModel : ObservableObject
     /// <summary>动态壁纸的真实预览视频路径；静态壁纸为空。</summary>
     public string? PreviewMediaPath => IsDynamic ? FullPath : null;
 
-    public bool IsTwinkleOverlay => _overlayKind == DynamicOverlayKind.Twinkle;
+    public bool IsTwinkleOverlay => IsAnimated && _overlayKind == DynamicOverlayKind.Twinkle;
 
-    public bool IsFlowOverlay => _overlayKind == DynamicOverlayKind.Flow;
+    public bool IsFlowOverlay => IsAnimated && _overlayKind == DynamicOverlayKind.Flow;
 
-    public bool IsAuroraOverlay => _overlayKind == DynamicOverlayKind.Aurora;
+    public bool IsAuroraOverlay => IsAnimated && _overlayKind == DynamicOverlayKind.Aurora;
 
     /// <summary>是否当前正在使用的桌面壁纸。</summary>
     [ObservableProperty]
@@ -106,26 +110,46 @@ public partial class WallpaperItemViewModel : ObservableObject
     }
 
     private readonly DynamicOverlayKind _overlayKind;
+    private readonly bool _isAnimated;
+
+    private static bool ResolveIsAnimated(Wallpaper model)
+    {
+        if (model.IsDynamic)
+        {
+            return true;
+        }
+
+        var hint = $"{model.Name} {model.FullPath}".ToLowerInvariant();
+        return hint.Contains("moon-stars")
+            || hint.Contains("rocket-space")
+            || hint.Contains("galaxy-slide")
+            || hint.Contains("whale-stars");
+    }
 
     private static DynamicOverlayKind ResolveOverlayKind(Wallpaper model)
     {
-        if (!model.IsDynamic)
+        var hint = $"{model.Name} {model.FullPath}".ToLowerInvariant();
+        if (hint.Contains("salzdahlum") || hint.Contains("night-sky") || hint.Contains("galaxy-slide"))
         {
             return DynamicOverlayKind.Flow;
         }
 
-        var hint = $"{model.Name} {model.FullPath}".ToLowerInvariant();
         if (hint.Contains("aurora"))
         {
             return DynamicOverlayKind.Aurora;
         }
 
-        if (hint.Contains("night") || hint.Contains("moon") || hint.Contains("star"))
+        if (hint.Contains("moon-stars") || hint.Contains("rocket-space") || hint.Contains("sky-day-night"))
         {
             return DynamicOverlayKind.Twinkle;
         }
 
-        if (hint.Contains("sky") || hint.Contains("bunny") || hint.Contains("flow"))
+        if (hint.Contains("whale-stars"))
+        {
+            return DynamicOverlayKind.Aurora;
+        }
+
+        if (hint.Contains("flow"))
         {
             return DynamicOverlayKind.Flow;
         }

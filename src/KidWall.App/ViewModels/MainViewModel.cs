@@ -16,7 +16,6 @@ public partial class MainViewModel : LocalizedViewModel
     private const string KeyStarry = "starry";
     private const string KeyIllustration = "illustration";
     private const string KeyDynamic = "dynamic";
-    private const string KeyLocal = "local";
 
     private readonly AppPreferences _preferences;
     private readonly AppPreferencesStore _preferencesStore;
@@ -53,7 +52,6 @@ public partial class MainViewModel : LocalizedViewModel
         Categories.Add(new CategoryItemViewModel(KeyStarry, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyIllustration, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyDynamic, OnCategorySelected));
-        Categories.Add(new CategoryItemViewModel(KeyLocal, OnCategorySelected));
 
         _rotateTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(Math.Max(1, _preferences.AutoRotateIntervalMinutes)) };
         _rotateTimer.Tick += (_, _) => RotateOnce();
@@ -469,7 +467,6 @@ public partial class MainViewModel : LocalizedViewModel
         KeyStarry => item.Category == WallpaperCategory.Starry,
         KeyIllustration => item.Category == WallpaperCategory.Illustration,
         KeyDynamic => item.IsDynamic,
-        KeyLocal => item.IsLocal,
         _ => true,
     };
 
@@ -604,7 +601,6 @@ public partial class MainViewModel : LocalizedViewModel
         Categories[3].DisplayName = L(Localization.Main.Categories.Starry);
         Categories[4].DisplayName = L(Localization.Main.Categories.Illustration);
         Categories[5].DisplayName = L(Localization.Main.Categories.Dynamic);
-        Categories[6].DisplayName = L(Localization.Main.Categories.Local);
 
         Categories[0].SectionTitle = L(Localization.Main.Section.All);
         Categories[1].SectionTitle = L(Localization.Main.Section.Recommended);
@@ -612,7 +608,6 @@ public partial class MainViewModel : LocalizedViewModel
         Categories[3].SectionTitle = L(Localization.Main.Section.Starry);
         Categories[4].SectionTitle = L(Localization.Main.Section.Illustration);
         Categories[5].SectionTitle = L(Localization.Main.Section.Dynamic);
-        Categories[6].SectionTitle = L(Localization.Main.Section.Local);
 
         foreach (var category in Categories)
         {

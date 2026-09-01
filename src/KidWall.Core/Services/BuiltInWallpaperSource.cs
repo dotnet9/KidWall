@@ -22,13 +22,58 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     private static readonly HashSet<string> RecommendedFiles =
     [
         "cartoon/01-dino-balloons",
-        "cartoon/02-unicorn-rainbow",
-        "starry/01-moon-stars",
         "starry/02-rocket-space",
-        "illustration/01-mushroom-forest",
-        "illustration/02-underwater",
+        "starry/03-galaxy-slide",
+        "illustration/04-whale-stars",
+        "dynamic/04-aurora-halibut",
+        "dynamic/03-sky-day-night",
+    ];
+
+    // The prototype presents the built-in gallery as one interleaved collection,
+    // rather than grouping cards by their resource directory.
+    private static readonly Dictionary<string, int> PrototypeOrder = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["cartoon/01-dino-balloons"] = 1,
+        ["starry/01-moon-stars"] = 2,
+        ["illustration/01-mushroom-forest"] = 3,
+        ["dynamic/04-aurora-halibut"] = 4,
+        ["cartoon/02-unicorn-rainbow"] = 5,
+        ["starry/02-rocket-space"] = 6,
+        ["illustration/02-underwater"] = 7,
+        ["dynamic/02-night-sky"] = 8,
+        ["cartoon/03-kitten-nap"] = 9,
+        ["starry/03-galaxy-slide"] = 10,
+        ["illustration/03-cloud-castle"] = 11,
+        ["dynamic/03-sky-day-night"] = 12,
+        ["cartoon/04-penguin-ice"] = 13,
+        ["illustration/04-whale-stars"] = 14,
+        ["dynamic/05-aurora-salzdahlum"] = 15,
+        ["cartoon/05-robot-flower"] = 16,
+    };
+
+    private static readonly Dictionary<string, string> DisplayNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["cartoon/01-dino-balloons"] = "小恐龙气球派对",
+        ["starry/01-moon-stars"] = "月亮睡着了",
+        ["illustration/01-mushroom-forest"] = "蘑菇森林",
+        ["dynamic/04-aurora-halibut"] = "极光海洋",
+        ["cartoon/02-unicorn-rainbow"] = "彩虹独角兽",
+        ["starry/02-rocket-space"] = "火箭出发啦",
+        ["illustration/02-underwater"] = "海底小世界",
+        ["dynamic/02-night-sky"] = "星光流转",
+        ["cartoon/03-kitten-nap"] = "小猫睡午觉",
+        ["starry/03-galaxy-slide"] = "银河滑滑梯",
+        ["illustration/03-cloud-castle"] = "云上城堡",
+        ["dynamic/03-sky-day-night"] = "星星雨",
+        ["cartoon/04-penguin-ice"] = "企鹅去南极",
+        ["illustration/04-whale-stars"] = "星空鲸鱼",
+        ["dynamic/05-aurora-salzdahlum"] = "彩虹泡泡",
+        ["cartoon/05-robot-flower"] = "机器人小帮手",
+    };
+
+    private static readonly HashSet<string> HiddenFromPrototype =
+    [
         "dynamic/01-big-buck-bunny",
-        "dynamic/02-night-sky",
     ];
 
     private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
@@ -81,6 +126,11 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
             {
                 ct.ThrowIfCancellationRequested();
                 var extension = Path.GetExtension(file).ToLowerInvariant();
+                var relativeKey = Path.Combine(directory, Path.GetFileNameWithoutExtension(file)).Replace('\\', '/');
+                if (HiddenFromPrototype.Contains(relativeKey))
+                {
+                    continue;
+                }
 
                 if (isDynamic)
                 {
@@ -91,8 +141,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
                     }
 
                     var cover = EnsureCover(folder, Path.GetFileNameWithoutExtension(file));
-                    var relativeKey = Path.Combine(directory, Path.GetFileNameWithoutExtension(file)).Replace('\\', '/');
-                    wallpapers.Add(new Wallpaper($"res:{file}", Path.GetFileNameWithoutExtension(file), category, file, cover)
+                    wallpapers.Add(new Wallpaper($"res:{file}", GetDisplayName(relativeKey, file), category, file, cover)
                     {
                         Tags = "动态 儿童 视频",
                         IsDynamic = true,
@@ -107,8 +156,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
                         continue;
                     }
 
-                    var relativeKey = Path.Combine(directory, Path.GetFileNameWithoutExtension(file)).Replace('\\', '/');
-                    wallpapers.Add(new Wallpaper($"res:{file}", Path.GetFileNameWithoutExtension(file), category, file, file)
+                    wallpapers.Add(new Wallpaper($"res:{file}", GetDisplayName(relativeKey, file), category, file, file)
                     {
                         Tags = $"{directory} 儿童",
                         IsRecommended = RecommendedFiles.Contains(relativeKey),
@@ -118,7 +166,30 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
             }
         }
 
-        return Task.FromResult<IReadOnlyList<Wallpaper>>(wallpapers);
+        return Task.FromResult<IReadOnlyList<Wallpaper>>(
+            wallpapers
+                .OrderBy(GetPrototypeOrder)
+                .ThenBy(w => w.FullPath, StringComparer.OrdinalIgnoreCase)
+                .ToList());
+    }
+
+    private static string GetDisplayName(string relativeKey, string path) =>
+        DisplayNames.TryGetValue(relativeKey, out var displayName)
+            ? displayName
+            : Path.GetFileNameWithoutExtension(path);
+
+    private static int GetPrototypeOrder(Wallpaper wallpaper)
+    {
+        var directory = wallpaper.Category switch
+        {
+            WallpaperCategory.Cartoon => "cartoon",
+            WallpaperCategory.Starry => "starry",
+            WallpaperCategory.Illustration => "illustration",
+            WallpaperCategory.Dynamic => "dynamic",
+            _ => string.Empty,
+        };
+        var relativeKey = $"{directory}/{Path.GetFileNameWithoutExtension(wallpaper.FullPath)}";
+        return PrototypeOrder.TryGetValue(relativeKey, out var order) ? order : int.MaxValue;
     }
 
     /// <summary>查找视频同名封面（jpg/png/bmp），缺失时生成一张渐变封面（.preview.bmp）。</summary>

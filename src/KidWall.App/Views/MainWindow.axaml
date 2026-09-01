@@ -9,7 +9,7 @@
     x:CompileBindings="True"
     x:DataType="vm:MainViewModel"
     Background="{DynamicResource KidWallWindowBackground}"
-    Icon="/Assets/logo.ico"
+    Icon="avares://KidWall.App/Assets/logo.ico"
     ExtendClientAreaTitleBarHeightHint="60"
     ExtendClientAreaToDecorationsHint="True"
     FontFamily="YouYuan, Microsoft YaHei UI, Microsoft YaHei, Segoe UI"
@@ -29,14 +29,14 @@
           Grid.Row="0"
           Background="{DynamicResource KidWallTitlebarBrush}"
           behaviors:TitleBarDragBehavior.IsEnabled="True">
-        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+        <Grid ColumnDefinitions="Auto,460,Auto,*,Auto" ColumnSpacing="18">
           <!-- 品牌区 -->
           <StackPanel
               Margin="16,0,0,0"
               Orientation="Horizontal"
               Spacing="10"
               VerticalAlignment="Center">
-            <Border Classes="brand-mark">
+            <Border Classes="brand-mark" x:Name="PART_BrandMark">
               <TextBlock
                   HorizontalAlignment="Center"
                   Text="🎈"
@@ -49,7 +49,7 @@
           </StackPanel>
 
           <!-- 搜索框 -->
-          <Grid Grid.Column="1" MaxWidth="440" VerticalAlignment="Center">
+          <Grid Grid.Column="1" Width="460" MaxWidth="460" VerticalAlignment="Center">
             <TextBox
                 Classes="search"
                 Padding="38,4,14,4"
@@ -67,9 +67,8 @@
           <!-- 右侧操作区 -->
           <StackPanel
               Grid.Column="2"
-              Margin="0,0,10,0"
               Orientation="Horizontal"
-              Spacing="8"
+              Spacing="10"
               VerticalAlignment="Center">
             <Button Classes="secondary-btn" Command="{Binding PickLocalFolderCommand}">
               <StackPanel Orientation="Horizontal" Spacing="6">
@@ -84,21 +83,32 @@
               </StackPanel>
             </Button>
 
+          </StackPanel>
+
+          <StackPanel
+              Grid.Column="4"
+              Margin="0,0,10,0"
+              Orientation="Horizontal"
+              Spacing="7"
+              VerticalAlignment="Center">
             <Button
+                x:Name="PART_MinimizeButton"
                 Classes="candy moon"
-                Command="{Binding MinimizeWindowCommand}"
+                Click="OnMinimizeClick"
                 ToolTip.Tip="{Binding MinimizeTip}">
               <TextBlock Text="🌙" />
             </Button>
             <Button
+                x:Name="PART_MaximizeButton"
                 Classes="candy star"
-                Command="{Binding ToggleMaximizeWindowCommand}"
+                Click="OnMaximizeClick"
                 ToolTip.Tip="{Binding MaximizeTip}">
               <TextBlock Text="⭐" />
             </Button>
             <Button
+                x:Name="PART_CloseButton"
                 Classes="candy hand"
-                Command="{Binding CloseWindowCommand}"
+                Click="OnCloseClick"
                 ToolTip.Tip="{Binding CloseTip}">
               <TextBlock Text="👋" />
             </Button>
@@ -107,14 +117,27 @@
       </Grid>
 
       <!-- ================= 内容区 ================= -->
-      <views:MainView Grid.Row="1" />
+      <ScrollViewer
+          Effect="{Binding IsSettingsOpen, Converter={StaticResource BooleanToBlurEffectConverter}}"
+          Grid.Row="1"
+          HorizontalContentAlignment="Center"
+          HorizontalScrollBarVisibility="Disabled"
+          VerticalScrollBarVisibility="Auto">
+        <views:MainView />
+      </ScrollViewer>
 
       <!-- ================= 预览层 ================= -->
       <Border
-          IsVisible="{Binding IsPreviewOpen}"
-          Background="#990A1628"
-          Grid.RowSpan="2"
-          ZIndex="300">
+              IsHitTestVisible="{Binding IsPreviewOpen}"
+              Opacity="{Binding IsPreviewOpen, Converter={StaticResource BooleanToOpacityConverter}}"
+              Background="#990A1628"
+              Grid.RowSpan="2"
+              ZIndex="300">
+        <Border.Transitions>
+          <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+          </Transitions>
+        </Border.Transitions>
         <Grid>
           <Button
               Background="Transparent"
@@ -126,8 +149,17 @@
               Classes="surface-panel"
               HorizontalAlignment="Center"
               Margin="0,16,0,0"
+              Opacity="{Binding IsPreviewOpen, Converter={StaticResource BooleanToOpacityConverter}}"
+              RenderTransform="{Binding IsPreviewOpen, Converter={StaticResource BooleanToTransformConverter}, ConverterParameter=preview}"
+              RenderTransformOrigin="50%,50%"
               Width="920"
               ZIndex="1">
+            <Border.Transitions>
+              <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" />
+              </Transitions>
+            </Border.Transitions>
             <Grid RowDefinitions="Auto,Auto">
               <Border
                   Grid.Row="0"
@@ -213,10 +245,16 @@
 
       <!-- ================= 设置层 ================= -->
       <Border
-          IsVisible="{Binding IsSettingsOpen}"
-          Background="#660A1628"
-          Grid.RowSpan="2"
+              IsHitTestVisible="{Binding IsSettingsOpen}"
+              Opacity="{Binding IsSettingsOpen, Converter={StaticResource BooleanToOpacityConverter}}"
+              Background="#660A1628"
+              Grid.Row="1"
           ZIndex="250">
+        <Border.Transitions>
+          <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
+          </Transitions>
+        </Border.Transitions>
         <Grid>
           <Button
               Background="Transparent"
@@ -229,8 +267,15 @@
               CornerRadius="18,0,0,18"
               HorizontalAlignment="Right"
               Margin="0"
+              RenderTransform="{Binding IsSettingsOpen, Converter={StaticResource BooleanToTransformConverter}, ConverterParameter=drawer}"
+              RenderTransformOrigin="100%,50%"
               Width="400"
               ZIndex="1">
+            <Border.Transitions>
+              <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35" />
+              </Transitions>
+            </Border.Transitions>
             <StackPanel Margin="26,22">
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Classes="panel-title" Text="{Binding SettingsTitle}" />
@@ -310,7 +355,10 @@
 
       <!-- ================= 消息提示 ================= -->
       <Border
-          IsVisible="{Binding IsStatusVisible}"
+              IsHitTestVisible="{Binding IsStatusVisible}"
+              Opacity="{Binding IsStatusVisible, Converter={StaticResource BooleanToOpacityConverter}}"
+              RenderTransform="{Binding IsStatusVisible, Converter={StaticResource BooleanToTransformConverter}, ConverterParameter=toast}"
+              RenderTransformOrigin="50%,100%"
           Background="#E6140C3C"
           BorderBrush="{DynamicResource KidWallAccentBrush}"
           BorderThickness="1"
@@ -320,6 +368,12 @@
           VerticalAlignment="Bottom"
           Grid.RowSpan="2"
           ZIndex="400">
+        <Border.Transitions>
+          <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.4" />
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.4" />
+          </Transitions>
+        </Border.Transitions>
         <StackPanel Orientation="Horizontal" Spacing="10">
           <Border
               Background="{DynamicResource ToastTickBrush}"
@@ -343,6 +397,11 @@
         </StackPanel>
       </Border>
     </Grid>
+
+    <Canvas
+        x:Name="PART_ParticleLayer"
+        IsHitTestVisible="False"
+        ZIndex="500" />
 
     <!-- 窗口顶部品牌渐变线 -->
     <Border

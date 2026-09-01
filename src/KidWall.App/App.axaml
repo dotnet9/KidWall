@@ -3,11 +3,17 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="using:KidWall.App"
+    xmlns:converters="using:KidWall.App.Converters"
     xmlns:views="using:KidWall.App.Views"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:semi="https://irihi.tech/semi"
     x:DataType="app:App"
     RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <converters:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
+    <converters:BooleanToTransformConverter x:Key="BooleanToTransformConverter" />
+    <converters:BooleanToBlurEffectConverter x:Key="BooleanToBlurEffectConverter" />
+  </Application.Resources>
   <Application.DataTemplates>
     <DataTemplate DataType="vm:MainViewModel">
       <views:MainView />
@@ -25,7 +31,7 @@
     <TrayIcons>
       <TrayIcon
           Command="{Binding TrayIconCommand}"
-          Icon="/Assets/logo.ico"
+          Icon="avares://KidWall.App/Assets/logo.ico"
           ToolTipText="童壁 KidWall">
         <TrayIcon.Menu>
           <NativeMenu>

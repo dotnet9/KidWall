@@ -15,30 +15,16 @@
     <Grid
         Background="Transparent"
         PointerPressed="OnRootPointerPressed">
-      <Border Classes="dyn-overlay" />
-      <Border Background="{DynamicResource CardShadeBrush}" />
+      <Border Classes="dyn-overlay twinkle" IsVisible="{Binding IsTwinkleOverlay}" />
+      <Border Classes="dyn-overlay flow" IsVisible="{Binding IsFlowOverlay}" />
+      <Border Classes="dyn-overlay aurora" IsVisible="{Binding IsAuroraOverlay}" />
+      <Border Classes="card-shade" Background="{DynamicResource CardShadeBrush}" />
       <Border
           Background="Transparent"
           BorderBrush="{DynamicResource KidWallBorderBrush}"
           BorderThickness="1"
-          CornerRadius="16"
+          CornerRadius="24"
           IsHitTestVisible="False" />
-
-      <Border
-          Background="#88000000"
-          CornerRadius="18"
-          HorizontalAlignment="Center"
-          IsHitTestVisible="False"
-          VerticalAlignment="Center"
-          Width="42"
-          Height="42">
-        <TextBlock
-            FontSize="19"
-            Foreground="White"
-            HorizontalAlignment="Center"
-            Text="▶"
-            VerticalAlignment="Center" />
-      </Border>
 
       <StackPanel
           Margin="10"
@@ -72,9 +58,12 @@
       <StackPanel
           Classes="dynamic-card-actions"
           HorizontalAlignment="Right"
-          IsVisible="{Binding IsActionsVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+          IsHitTestVisible="{Binding IsActionsVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+          Opacity="{Binding IsActionsVisible, Converter={StaticResource BooleanToOpacityConverter}, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
           Orientation="Horizontal"
           Spacing="6"
+          RenderTransform="{Binding IsActionsVisible, Converter={StaticResource BooleanToTransformConverter}, ConverterParameter=actions, RelativeSource={RelativeSource AncestorType=controls:DynamicCardOverlay}}"
+          RenderTransformOrigin="50%,100%"
           VerticalAlignment="Bottom"
           Margin="0,0,10,10">
         <Button
@@ -100,36 +89,36 @@
       <!-- Opaque quarter-circles mask the square corners of the native video window. -->
       <Border
           Background="{DynamicResource KidWallSurfaceBrush}"
-          CornerRadius="0,0,18,0"
-          Height="18"
+          CornerRadius="0,0,24,0"
+          Height="24"
           HorizontalAlignment="Left"
           IsHitTestVisible="False"
           VerticalAlignment="Top"
-          Width="18" />
+          Width="24" />
       <Border
           Background="{DynamicResource KidWallSurfaceBrush}"
-          CornerRadius="0,0,0,18"
-          Height="18"
+          CornerRadius="0,0,0,24"
+          Height="24"
           HorizontalAlignment="Right"
           IsHitTestVisible="False"
           VerticalAlignment="Top"
-          Width="18" />
+          Width="24" />
       <Border
           Background="{DynamicResource KidWallSurfaceBrush}"
-          CornerRadius="0,18,0,0"
-          Height="18"
+          CornerRadius="0,24,0,0"
+          Height="24"
           HorizontalAlignment="Left"
           IsHitTestVisible="False"
           VerticalAlignment="Bottom"
-          Width="18" />
+          Width="24" />
       <Border
           Background="{DynamicResource KidWallSurfaceBrush}"
-          CornerRadius="18,0,0,0"
-          Height="18"
+          CornerRadius="24,0,0,0"
+          Height="24"
           HorizontalAlignment="Right"
           IsHitTestVisible="False"
           VerticalAlignment="Bottom"
-          Width="18" />
+          Width="24" />
     </Grid>
   </Border>
 </UserControl>

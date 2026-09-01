@@ -8,7 +8,14 @@ namespace KidWall.App.ViewModels;
 public partial class CategoryItemViewModel : ObservableObject
 {
     private static readonly IBrush InactiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#1AFFFFFF"));
-    private static readonly IBrush ActiveBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#FFD166"));
+    private static readonly IBrush ActiveBackground = new LinearGradientBrush
+    {
+        GradientStops =
+        [
+            new GradientStop(Avalonia.Media.Color.Parse("#FFD166"), 0),
+            new GradientStop(Avalonia.Media.Color.Parse("#FF9D5C"), 1),
+        ],
+    };
     private static readonly IBrush InactiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#B8FFFFFF"));
     private static readonly IBrush ActiveForeground = new SolidColorBrush(Avalonia.Media.Color.Parse("#3A2500"));
     private static readonly IBrush InactiveCountBackground = new SolidColorBrush(Avalonia.Media.Color.Parse("#33FFFFFF"));
