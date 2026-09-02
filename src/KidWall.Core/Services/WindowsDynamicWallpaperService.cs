@@ -493,11 +493,15 @@ public sealed class WindowsDynamicWallpaperService : IDynamicWallpaperService
                 Volume = 0,
             };
 
+            // 按播放窗口的宽高比裁剪视频，保证视频铺满整块显示器，
+            // 避免源视频比例与屏幕不一致时出现黑边（封面模式）。
+            var bounds = target.Bounds;
             media = new Media(
                 libVlc,
                 new Uri(Path.GetFullPath(videoPath), UriKind.Absolute),
-                ":input-repeat=65535",
-                ":no-audio");
+                $":input-repeat=65535",
+                ":no-audio",
+                $":crop={bounds.Width}:{bounds.Height}");
 
             if (!player.Play(media))
             {
