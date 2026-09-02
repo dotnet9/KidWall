@@ -10,4 +10,9 @@
   <ItemGroup>
     <PackageReference Include="LibVLCSharp" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- 内嵌默认壁纸目录配置：运行目录 res/wallpapers.json 缺失时使用 -->
+    <EmbeddedResource Include="..\..\res\wallpapers.json" LogicalName="KidWall.Core.wallpapers.json" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,31 @@
+{
+  "categories": [
+    { "directory": "cartoon", "category": "cartoon" },
+    { "directory": "starry", "category": "starry" },
+    { "directory": "illustration", "category": "illustration" },
+    { "directory": "dynamic", "category": "dynamic", "dynamic": true }
+  ],
+  "imageExtensions": [ ".jpg", ".jpeg", ".png", ".bmp", ".webp" ],
+  "videoExtensions": [ ".webm", ".mp4", ".ogv", ".mov" ],
+  "hidden": [],
+  "items": {
+    "cartoon/01-dino-balloons": { "name": "小恐龙气球派对", "order": 1, "recommended": true },
+    "starry/01-moon-stars": { "name": "月亮睡着了", "order": 2 },
+    "illustration/01-mushroom-forest": { "name": "蘑菇森林", "order": 3 },
+    "dynamic/04-aurora-halibut": { "name": "极光海洋", "order": 4, "recommended": true },
+    "cartoon/02-unicorn-rainbow": { "name": "彩虹独角兽", "order": 5 },
+    "starry/02-rocket-space": { "name": "火箭出发啦", "order": 6, "recommended": true },
+    "illustration/02-underwater": { "name": "海底小世界", "order": 7 },
+    "dynamic/02-night-sky": { "name": "星光流转", "order": 8 },
+    "cartoon/03-kitten-nap": { "name": "小猫睡午觉", "order": 9 },
+    "starry/03-galaxy-slide": { "name": "银河滑滑梯", "order": 10, "recommended": true },
+    "illustration/03-cloud-castle": { "name": "云上城堡", "order": 11 },
+    "dynamic/03-sky-day-night": { "name": "星星雨", "order": 12, "recommended": true },
+    "cartoon/04-penguin-ice": { "name": "企鹅去南极", "order": 13 },
+    "illustration/04-whale-stars": { "name": "星空鲸鱼", "order": 14, "recommended": true },
+    "dynamic/05-aurora-salzdahlum": { "name": "彩虹泡泡", "order": 15 },
+    "cartoon/05-robot-flower": { "name": "机器人小帮手", "order": 16 },
+    "dynamic/06-space-blackhole": { "name": "宇宙漩涡", "order": 17, "recommended": true },
+    "dynamic/01-big-buck-bunny": { "name": "小兔班尼", "order": 18 }
+  }
+}
