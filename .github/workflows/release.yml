@@ -1,4 +1,4 @@
-name: release
+﻿name: release
 
 # 推送 v* 标签发布 KidWall Windows 安装包（win-x64 / win-x86，Inno Setup 中文向导）。
 # KidWall 依赖 user32 切壁纸接口与 Windows 版 VLC 原生库，仅发布 Windows 版本。
@@ -64,17 +64,30 @@ jobs:
           "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "版本：$version"
 
-      - name: 发布（自包含单文件，带版本元数据）
+      - name: 发布（x64 走 NativeAOT；x86 不受 NativeAOT 支持，保持自包含单文件）
         shell: pwsh
         env:
           ARCH: ${{ matrix.arch }}
         run: |
+          $aotArgs = @()
+          $singleFile = "true"
+          if ($env:ARCH -eq "x64") {
+            $singleFile = "false"
+            $aotArgs = @(
+              "-p:PublishAot=true",
+              "-p:PublishTrimmed=true",
+              "-p:IlcGenerateCompleteTypeMetadata=true",
+              "-p:IlcTrimMetadata=false",
+              "-p:IlcSingleThreaded=true"
+            )
+          }
           dotnet publish src/KidWall.App/KidWall.App.csproj `
             -c Release `
             -f net10.0-windows `
             -r "win-$env:ARCH" `
             --self-contained true `
-            -p:PublishSingleFile=true `
+            @aotArgs `
+            -p:PublishSingleFile=$singleFile `
             -p:PublishTrimmed=false `
             -p:DebugType=none `
             -p:DebugSymbols=false `
