@@ -1,4 +1,4 @@
-# 打包 Linux .deb 安装包（dpkg-deb，在 ubuntu runner 上运行）。
+﻿# 打包 Linux .deb 安装包（dpkg-deb，在 ubuntu runner 上运行）。
 # 用法：pwsh scripts/package_linux_deb.ps1 -RuntimeIdentifier linux-x64 -Version 1.2.3
 param(
     [Parameter(Mandatory = $true)]
@@ -18,7 +18,7 @@ $scriptRoot = (Resolve-Path -LiteralPath $PSScriptRoot).Path
 $repositoryRoot = (Resolve-Path -LiteralPath (Join-Path $scriptRoot "..")).Path
 
 if ([string]::IsNullOrWhiteSpace($SourceDirectory)) {
-    $SourceDirectory = Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall"
+    $SourceDirectory = Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App"
 }
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
     $OutputDirectory = Join-Path $repositoryRoot "artifacts/release"
@@ -60,7 +60,7 @@ Section: utils
 Priority: optional
 Description: KidWall 儿童模式壁纸应用
 "@
-Set-Content -LiteralPath (Join-Path $staging "DEBIAN/control") -Value $control -Encoding UTF8 -NoNewline
+Set-Content -LiteralPath (Join-Path $staging "DEBIAN/control") -Value ($control + [Environment]::NewLine) -Encoding UTF8
 
 # dpkg-deb 需要 posix 权限语义；control 文件权限固定 644
 if ($IsLinux) {

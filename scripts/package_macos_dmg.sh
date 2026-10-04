@@ -8,7 +8,7 @@ VERSION="${2:?usage: package_macos_dmg.sh <osx-x64|osx-arm64> <version>}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PUBLISH_DIR="${PUBLISH_DIR:-$REPO_ROOT/artifacts/publish/$RID/KidWall}"
+PUBLISH_DIR="${PUBLISH_DIR:-$REPO_ROOT/artifacts/publish/$RID/KidWall.App}"
 OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/artifacts/release}"
 APP_NAME="KidWall"
 
