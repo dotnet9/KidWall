@@ -1,3 +1,5 @@
+﻿using System.Diagnostics;
+using System.Reflection;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -18,6 +20,7 @@ public partial class MainViewModel : LocalizedViewModel
     private const string KeyDynamic = "dynamic";
 
     private readonly AppPreferences _preferences;
+    private readonly UpdateChecker _updateChecker = new("dotnet9", "KidWall");
     private readonly AppPreferencesStore _preferencesStore;
     private readonly IDesktopWallpaperService _wallpaperService;
     private readonly IDynamicWallpaperService _dynamicWallpaperService;
@@ -121,6 +124,8 @@ public partial class MainViewModel : LocalizedViewModel
     public string ContentFilterDesc => L(Localization.Settings.ContentFilter.Desc);
 
     public string SaveSettingsText => L(Localization.Settings.Page.Save);
+
+    public string CheckUpdateText => L(Localization.Settings.Page.CheckUpdate);
 
     public string EmptyText => L(Localization.Main.Empty.Text);
 
@@ -430,6 +435,41 @@ public partial class MainViewModel : LocalizedViewModel
         _preferencesStore.Save(_preferences);
         IsSettingsOpen = false;
         ShowStatus(L(Localization.Toast.Messages.Saved));
+    }
+
+    [RelayCommand]
+    private async Task CheckUpdateAsync()
+    {
+        ShowStatus(L(Localization.Toast.Messages.CheckingUpdate));
+        Version current = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(1, 0, 0);
+        UpdateCheckResult result = await _updateChecker.CheckAsync(current);
+        if (!result.Succeeded)
+        {
+            ShowStatus(string.Format(L(Localization.Toast.Messages.UpdateCheckFailed), result.Error));
+            return;
+        }
+
+        if (result.Update is { } update)
+        {
+            // 仅提醒不自动下载：提示并打开发布页
+            ShowStatus(string.Format(L(Localization.Toast.Messages.UpdateAvailable), update.Tag));
+            OpenReleasePage(update.PageUrl);
+            return;
+        }
+
+        ShowStatus(L(Localization.Toast.Messages.UpToDate));
+    }
+
+    private void OpenReleasePage(string url)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+        catch
+        {
+            // 打不开浏览器就忽略，状态条已给出提示
+        }
     }
 
     // ---------- 本地文件夹 ----------

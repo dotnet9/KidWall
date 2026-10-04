@@ -76,7 +76,8 @@
       "Page": {
         "Title": "⚙ 简单设置",
         "Subtitle": "儿童模式 · 一键守护",
-        "Save": "保存设置"
+        "Save": "保存设置",
+        "CheckUpdate": "检查更新"
       },
       "AutoStart": {
         "Title": "开机自启",
@@ -105,7 +106,11 @@
         "Closed": "👋 拜拜～童壁去托盘玩啦",
         "Reopened": "🎈 童壁醒啦！",
         "LocalImported": "已导入 {0} 张本地壁纸",
-        "AutoRotated": "自动换了一张：{0}"
+        "AutoRotated": "自动换了一张：{0}",
+        "CheckingUpdate": "🔍 正在检查更新…",
+        "UpdateAvailable": "🎉 发现新版本 {0}，已打开发布页",
+        "UpToDate": "✅ 当前已是最新版本",
+        "UpdateCheckFailed": "⚠️ 检查更新失败：{0}"
       }
     }
   }

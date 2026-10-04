@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="KidWall.App.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -347,6 +347,14 @@
                   Margin="0,28,0,0"
                   Command="{Binding SaveSettingsCommand}">
                 <TextBlock Text="{Binding SaveSettingsText}" />
+              </Button>
+
+              <Button
+                  Classes="secondary-btn"
+                  HorizontalAlignment="Stretch"
+                  Margin="0,12,0,0"
+                  Command="{Binding CheckUpdateCommand}">
+                <TextBlock Text="{Binding CheckUpdateText}" />
               </Button>
             </StackPanel>
           </Border>
