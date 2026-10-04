@@ -24,10 +24,12 @@ $tfm = if ($RuntimeIdentifier.StartsWith("win-", [StringComparison]::OrdinalIgno
 # win-x64 走 NativeAOT（完整反射元数据保全）；win-x86 不受 NativeAOT 支持，保持自包含单文件
 $aotArgs = @()
 $singleFile = "true"
+$trimmed = "false"
 if ($RuntimeIdentifier -eq "win-x64") {
     $singleFile = "false"
-    $aotArgs = @("-p:PublishAot=true", "-p:PublishTrimmed=true",
+    $trimmed = "true"
+    $aotArgs = @("-p:PublishAot=true",
         "-p:IlcGenerateCompleteTypeMetadata=true", "-p:IlcTrimMetadata=false", "-p:IlcSingleThreaded=true")
 }
-dotnet publish (Join-Path $repositoryRoot "src/KidWall.App/KidWall.App.csproj") -c Release -f $tfm -r $RuntimeIdentifier --self-contained true @aotArgs -p:PublishSingleFile=$singleFile -p:PublishTrimmed=false -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App")
+dotnet publish (Join-Path $repositoryRoot "src/KidWall.App/KidWall.App.csproj") -c Release -f $tfm -r $RuntimeIdentifier --self-contained true @aotArgs -p:PublishSingleFile=$singleFile -p:PublishTrimmed=$trimmed -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App")
 if ($LASTEXITCODE -ne 0) { throw "publish failed for $RuntimeIdentifier" }

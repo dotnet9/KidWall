@@ -71,11 +71,12 @@ jobs:
         run: |
           $aotArgs = @()
           $singleFile = "true"
+          $trimmed = "false"
           if ($env:ARCH -eq "x64") {
             $singleFile = "false"
+            $trimmed = "true"
             $aotArgs = @(
               "-p:PublishAot=true",
-              "-p:PublishTrimmed=true",
               "-p:IlcGenerateCompleteTypeMetadata=true",
               "-p:IlcTrimMetadata=false",
               "-p:IlcSingleThreaded=true"
@@ -88,7 +89,7 @@ jobs:
             --self-contained true `
             @aotArgs `
             -p:PublishSingleFile=$singleFile `
-            -p:PublishTrimmed=false `
+            -p:PublishTrimmed=$trimmed `
             -p:DebugType=none `
             -p:DebugSymbols=false `
             -p:Version=$env:APP_VERSION `
