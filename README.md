@@ -22,3 +22,7 @@ KidWall 依赖 Windows 切壁纸接口与 Windows 版 VLC 原生库，仅发布 
 dotnet publish src/KidWall.App/KidWall.App.csproj -c Release -f net10.0-windows -r win-x64 --self-contained true -p:PublishSingleFile=true -o artifacts/publish/win-x64/KidWall.App
 ./scripts/build_installer.ps1 -Version 1.0.0
 ```
+
+## 发布
+
+标准发布流程与发布说明规范见 [docs/RELEASE.md](docs/RELEASE.md)。
