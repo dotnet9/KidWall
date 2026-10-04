@@ -21,15 +21,17 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 Write-Host "发布 $RuntimeIdentifier (Version=$Version)"
 
 $tfm = if ($RuntimeIdentifier.StartsWith("win-", [StringComparison]::OrdinalIgnoreCase)) { "net10.0-windows" } else { "net10.0" }
-# win-x64 走 NativeAOT（完整反射元数据保全）；win-x86 不受 NativeAOT 支持，保持自包含单文件
+# win-x64 / Linux / macOS 走 NativeAOT（完整反射元数据保全）；win-x86 不受 NativeAOT 支持，保持自包含单文件；
+# macOS 保留符号（ld_classic 不支持压缩调试段）
 $aotArgs = @()
 $singleFile = "true"
 $trimmed = "false"
-if ($RuntimeIdentifier -eq "win-x64") {
+if ($RuntimeIdentifier -ne "win-x86") {
     $singleFile = "false"
     $trimmed = "true"
     $aotArgs = @("-p:PublishAot=true",
         "-p:IlcGenerateCompleteTypeMetadata=true", "-p:IlcTrimMetadata=false", "-p:IlcSingleThreaded=true")
+    if ($RuntimeIdentifier.StartsWith("osx-", [StringComparison]::OrdinalIgnoreCase)) { $aotArgs += "-p:StripSymbols=false" }
 }
 dotnet publish (Join-Path $repositoryRoot "src/KidWall.App/KidWall.App.csproj") -c Release -f $tfm -r $RuntimeIdentifier --self-contained true @aotArgs -p:PublishSingleFile=$singleFile -p:PublishTrimmed=$trimmed -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App")
 if ($LASTEXITCODE -ne 0) { throw "publish failed for $RuntimeIdentifier" }

@@ -376,6 +376,15 @@ public partial class MainViewModel : LocalizedViewModel
 
             return true;
         }
+        catch (PlatformNotSupportedException ex)
+        {
+            if (showStatus)
+            {
+                ShowStatus(ex.Message);
+            }
+
+            return false;
+        }
         catch (Exception)
         {
             if (showStatus)

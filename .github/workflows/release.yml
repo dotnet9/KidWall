@@ -1,7 +1,9 @@
 ﻿name: release
 
-# 推送 v* 标签发布 KidWall Windows 安装包（win-x64 / win-x86，Inno Setup 中文向导）。
-# KidWall 依赖 user32 切壁纸接口与 Windows 版 VLC 原生库，仅发布 Windows 版本。
+# 推送 v* 标签发布 KidWall 全平台产物：
+# win-x64 / win-x86 用 Inno Setup 生成中文安装包（x64 走 NativeAOT，x86 保持自包含单文件）；
+# linux-x64 / linux-arm64 / osx-x64 / osx-arm64 发布 NativeAOT 自包含 zip（+ SHA-256）。
+# 壁纸设置在 Linux 上尚未适配，应用内会给出「正在开发中」的友好提示。
 on:
   push:
     tags:
@@ -32,18 +34,34 @@ jobs:
         run: dotnet test KidWall.slnx -c Release
 
   publish:
-    name: 发布 ${{ matrix.arch }}
+    name: 发布 ${{ matrix.rid }}
     needs: test
     strategy:
       fail-fast: false
       matrix:
         include:
-          - arch: x64
-          - arch: x86
-    runs-on: windows-latest
+          - rid: win-x64
+            os: windows-latest
+            arch: x64
+          - rid: win-x86
+            os: windows-latest
+            arch: x86
+          - rid: linux-x64
+            os: ubuntu-latest
+          - rid: linux-arm64
+            os: ubuntu-24.04-arm
+          - rid: osx-x64
+            os: macos-14
+          - rid: osx-arm64
+            os: macos-14
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: 安装 NativeAOT 依赖 (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
 
       - name: 安装 .NET SDK
         uses: actions/setup-dotnet@v4
@@ -64,59 +82,30 @@ jobs:
           "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "版本：$version"
 
-      - name: 发布（x64 走 NativeAOT；x86 不受 NativeAOT 支持，保持自包含单文件）
+      # Windows：x64 走 NativeAOT（完整反射元数据保全）；x86 不受 NativeAOT 支持，保持自包含单文件。
+      # Linux / macOS：NativeAOT 自包含；macOS 保留符号（ld_classic 不支持压缩调试段）。
+      - name: 发布
         shell: pwsh
-        env:
-          ARCH: ${{ matrix.arch }}
-        run: |
-          $aotArgs = @()
-          $singleFile = "true"
-          $trimmed = "false"
-          if ($env:ARCH -eq "x64") {
-            $singleFile = "false"
-            $trimmed = "true"
-            $aotArgs = @(
-              "-p:PublishAot=true",
-              "-p:IlcGenerateCompleteTypeMetadata=true",
-              "-p:IlcTrimMetadata=false",
-              "-p:IlcSingleThreaded=true"
-            )
-          }
-          dotnet publish src/KidWall.App/KidWall.App.csproj `
-            -c Release `
-            -f net10.0-windows `
-            -r "win-$env:ARCH" `
-            --self-contained true `
-            @aotArgs `
-            -p:PublishSingleFile=$singleFile `
-            -p:PublishTrimmed=$trimmed `
-            -p:DebugType=none `
-            -p:DebugSymbols=false `
-            -p:Version=$env:APP_VERSION `
-            -o "artifacts/publish/win-$env:ARCH/KidWall.App"
-          if ($LASTEXITCODE -ne 0) { throw "publish failed for win-$env:ARCH" }
-
-          # 原生库自带的 pdb 不参与运行，剔除以减小安装包体积
-          Get-ChildItem "artifacts/publish/win-$env:ARCH/KidWall.App" -Recurse -File |
-            Where-Object { $_.Extension -in ".pdb", ".xml" } |
-            Remove-Item -Force
+        run: pwsh scripts/publish.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
 
       - name: 构建 Windows 安装包
+        if: runner.os == 'Windows'
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: scripts/KidWall.iss
           options: >-
             /DAppVersion=${{ env.APP_VERSION }}
             /DAppArch=${{ matrix.arch }}
-            /DSourceDir=${{ github.workspace }}\artifacts\publish\win-${{ matrix.arch }}\KidWall.App
+            /DSourceDir=${{ github.workspace }}\artifacts\publish\${{ matrix.rid }}\KidWall.App
             /DOutputDir=${{ github.workspace }}\artifacts\release
 
-      - name: 计算安装包 SHA-256
+      - name: 计算安装包 SHA-256 (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
-        env:
-          ARCH: ${{ matrix.arch }}
         run: |
-          $installerName = "KidWall-v$env:APP_VERSION-win-$env:ARCH-setup.exe"
+          $installerName = "KidWall-v$env:APP_VERSION-win-setup.exe"
+          if ('${{ matrix.rid }}' -eq 'win-x64') { $installerName = "KidWall-v$env:APP_VERSION-win-x64-setup.exe" }
+          if ('${{ matrix.rid }}' -eq 'win-x86') { $installerName = "KidWall-v$env:APP_VERSION-win-x86-setup.exe" }
           $installerPath = Join-Path "artifacts/release" $installerName
           if (-not (Test-Path -LiteralPath $installerPath -PathType Leaf)) {
             throw "Installer was not produced: $installerPath"
@@ -124,10 +113,20 @@ jobs:
           $sha = (Get-FileHash -LiteralPath $installerPath -Algorithm SHA256).Hash.ToLowerInvariant()
           "$sha  $installerName" | Set-Content -LiteralPath "$installerPath.sha256" -Encoding ASCII
 
+      - name: 打包 Linux deb 安装包
+        if: runner.os == 'Linux'
+        shell: pwsh
+        run: pwsh scripts/package_linux_deb.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION -Force
+
+      - name: 打包 macOS dmg 安装镜像
+        if: runner.os == 'MacOSX'
+        shell: bash
+        run: chmod +x scripts/package_macos_dmg.sh && ./scripts/package_macos_dmg.sh '${{ matrix.rid }}' "$APP_VERSION"
+
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
-          name: KidWall-win-${{ matrix.arch }}
+          name: KidWall-${{ matrix.rid }}
           path: artifacts/release/*
           if-no-files-found: error
 
@@ -187,4 +186,6 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/release/*.exe
+            artifacts/release/*.deb
+            artifacts/release/*.dmg
             artifacts/release/*.sha256

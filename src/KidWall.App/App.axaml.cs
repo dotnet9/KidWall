@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -97,7 +97,9 @@ public partial class App : Avalonia.Application
         I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
         WallpaperService = OperatingSystem.IsWindows()
             ? new WindowsDesktopWallpaperService()
-            : new MacOsDesktopWallpaperService();
+            : OperatingSystem.IsMacOS()
+                ? new MacOsDesktopWallpaperService()
+                : new LinuxDesktopWallpaperService();
         _dynamicWallpaperService = OperatingSystem.IsWindows()
             ? new WindowsDynamicWallpaperService()
             : new NoOpDynamicWallpaperService();
