@@ -18,12 +18,16 @@
 
 
 - Windows x64：`KidWall-v*-win-x64-setup.exe`（简体中文安装向导）
+- Linux x64 / arm64：`KidWall-*-linux-x64.deb`、`KidWall-*-linux-arm64.deb`
+- macOS x64 / arm64：`KidWall-*-osx-x64.dmg`、`KidWall-*-osx-arm64.dmg`
+
+> 各平台功能差异：Windows 支持全部功能（静态 + 动态壁纸）；macOS 支持静态壁纸；Linux 壁纸设置开发中（应用内提示）；动态壁纸（依赖 VLC）仅 Windows 生效。
 
 ## CI/CD：自动发布安装包
 
-推送 `v*` 标签（例如 `v1.0.0`，与 `Directory.Build.props` 的 `<Version>` 一致）会触发 [.github/workflows/release.yml](.github/workflows/release.yml)：先跑全部测试，再发布 win-x64 自包含程序，用 Inno Setup 打包简体中文安装向导 `KidWall-v版本-win-x64-setup.exe`（附 `.sha256` 校验），最后创建 GitHub Release。也可以在 Actions 页面手动触发并输入版本号。
+推送 `v*` 标签（例如 `v1.0.0`，与 `Directory.Build.props` 的 `<Version>` 一致）会触发 [.github/workflows/release.yml](.github/workflows/release.yml)：先跑全部测试，再为 win-x64 / linux-x64 / linux-arm64 / osx-x64 / osx-arm64 五个平台发布自包含程序，分别打包为 Inno Setup 中文安装包（Windows）、deb（Linux）、dmg（macOS），最后创建 GitHub Release。也可以在 Actions 页面手动触发并输入版本号。
 
-KidWall 依赖 Windows 切壁纸接口与 Windows 版 VLC 原生库，仅发布 Windows 版本。
+动态壁纸依赖 Windows 切壁纸接口与 Windows 版 VLC 原生库，仅 Windows 生效；macOS 支持静态壁纸，Linux 壁纸设置开发中。
 
 本机构建安装包（需安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)）：
 
