@@ -43,9 +43,6 @@ jobs:
           - rid: win-x64
             os: windows-latest
             arch: x64
-          - rid: win-x86
-            os: windows-latest
-            arch: x86
           - rid: linux-x64
             os: ubuntu-latest
           - rid: linux-arm64
