@@ -10,9 +10,16 @@
 
 > 适合家长给孩子电脑配置桌面，自定义孩子喜欢的卡通、星空、插画桌面背景。
 
+## 下载安装
+
+从 [GitHub Releases](https://github.com/dotnet9/KidWall/releases/latest) 下载最新安装包（附 `.sha256` 校验）：
+
+
+- Windows x64：`KidWall-v*-win-x64-setup.exe`（简体中文安装向导）
+
 ## CI/CD：自动发布安装包
 
-推送 `v*` 标签（例如 `v1.0.0`，与 `Directory.Build.props` 的 `<Version>` 一致）会触发 [.github/workflows/release.yml](.github/workflows/release.yml)：先跑全部测试，再分别发布 win-x64 / win-x86 自包含程序，用 Inno Setup 打包简体中文安装向导 `KidWall-v版本-win-x64-setup.exe` / `-win-x86-setup.exe`（附 `.sha256` 校验），最后创建 GitHub Release。也可以在 Actions 页面手动触发并输入版本号。
+推送 `v*` 标签（例如 `v1.0.0`，与 `Directory.Build.props` 的 `<Version>` 一致）会触发 [.github/workflows/release.yml](.github/workflows/release.yml)：先跑全部测试，再发布 win-x64 自包含程序，用 Inno Setup 打包简体中文安装向导 `KidWall-v版本-win-x64-setup.exe`（附 `.sha256` 校验），最后创建 GitHub Release。也可以在 Actions 页面手动触发并输入版本号。
 
 KidWall 依赖 Windows 切壁纸接口与 Windows 版 VLC 原生库，仅发布 Windows 版本。
 
