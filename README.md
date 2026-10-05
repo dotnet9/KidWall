@@ -10,6 +10,8 @@
 
 > 适合家长给孩子电脑配置桌面，自定义孩子喜欢的卡通、星空、插画桌面背景。
 
+![KidWall 界面预览](docs/media/design-home.png)
+
 ## 下载安装
 
 从 [GitHub Releases](https://github.com/dotnet9/KidWall/releases/latest) 下载最新安装包（附 `.sha256` 校验）：
