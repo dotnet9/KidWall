@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lang.Avalonia;
+using CodeWF.Avalonia.Lang;
 
 namespace KidWall.App.ViewModels;
 

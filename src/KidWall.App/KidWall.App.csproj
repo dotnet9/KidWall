@@ -11,12 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeWF.Tools.UpdateChecking" />
+    <PackageReference Include="CodeWF.Toolkit.Core" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
-    <PackageReference Include="Lang.Avalonia" />
-    <PackageReference Include="Lang.Avalonia.Json" />
+    <PackageReference Include="CodeWF.Avalonia.Lang" />
     <PackageReference Include="LibVLCSharp" />
     <PackageReference Include="LibVLCSharp.Avalonia" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" />

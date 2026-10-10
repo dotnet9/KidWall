@@ -12,8 +12,8 @@ using KidWall.App.Services;
 using KidWall.App.ViewModels;
 using KidWall.App.Views;
 using KidWall.Core.Services;
-using Lang.Avalonia;
-using Lang.Avalonia.Json;
+using CodeWF.Avalonia.Lang;
+using CodeWF.Avalonia.Lang.Json;
 
 namespace KidWall.App;
 

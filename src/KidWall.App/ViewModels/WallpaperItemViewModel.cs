@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using KidWall.Core.Models;
-using Lang.Avalonia;
+using CodeWF.Avalonia.Lang;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace KidWall.App.ViewModels;

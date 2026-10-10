@@ -4,15 +4,15 @@
     <CentralPackageVersionOverrideEnabled>true</CentralPackageVersionOverrideEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="CodeWF.Tools.UpdateChecking" Version="1.3.16" />
+    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.0-preview.1" />
     <PackageVersion Include="Avalonia" Version="12.1.1" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.1.1" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.1" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />
     <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
-    <PackageVersion Include="Lang.Avalonia" Version="12.1.1.2" />
-    <PackageVersion Include="Lang.Avalonia.Json" Version="12.1.1.2" />
+    <PackageVersion Include="CodeWF.Avalonia.Lang" Version="12.1.4.0-preview.1" />
+
     <PackageVersion Include="LibVLCSharp" Version="3.10.1" />
     <PackageVersion Include="LibVLCSharp.Avalonia" Version="3.10.1" />
     <PackageVersion Include="Semi.Avalonia" Version="12.1.0.1" />

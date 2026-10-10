@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using KidWall.App.Services;
 using KidWall.Core.Models;
 using KidWall.Core.Services;
-using CodeWF.Tools.UpdateChecking;
+using CodeWF.Toolkit.Core.UpdateChecking;
 using System.Collections.ObjectModel;
 
 namespace KidWall.App.ViewModels;
