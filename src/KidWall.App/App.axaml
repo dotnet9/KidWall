@@ -7,6 +7,7 @@
     xmlns:views="using:KidWall.App.Views"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:semi="https://irihi.tech/semi"
+    xmlns:codewf="https://codewf.com"
     x:DataType="app:App"
     RequestedThemeVariant="Dark">
   <Application.Resources>
@@ -24,6 +25,7 @@
     <semi:SemiTheme Locale="zh-CN" />
     <semi:UrsaSemiTheme Locale="zh-CN" />
     <semi:SemiPopupAnimations />
+    <codewf:ACSemiTheme />
     <StyleInclude Source="avares://KidWall.App/Styles/Index.axaml" />
   </Application.Styles>
 

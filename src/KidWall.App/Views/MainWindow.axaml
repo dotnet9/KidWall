@@ -1,8 +1,9 @@
-﻿<Window
+﻿<codewf:CodeWFWindow
     x:Class="KidWall.App.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:KidWall.App.Behaviors"
+    xmlns:codewf="https://codewf.com"
     xmlns:controls="using:KidWall.App.Controls"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:views="using:KidWall.App.Views"
@@ -10,116 +11,80 @@
     x:DataType="vm:MainViewModel"
     Background="{DynamicResource KidWallWindowBackground}"
     Icon="avares://KidWall.App/Assets/logo.ico"
-    ExtendClientAreaTitleBarHeightHint="60"
-    ExtendClientAreaToDecorationsHint="True"
     FontFamily="YouYuan, Microsoft YaHei UI, Microsoft YaHei, Segoe UI"
     Height="820"
     MinHeight="640"
     MinWidth="1000"
     Title="{Binding WindowTitle}"
     Width="1280"
-    WindowDecorations="BorderOnly"
+    TitleBarHeight="60"
+    TitleBarBackground="{DynamicResource KidWallTitlebarBrush}"
+    TitleBarBorderBrush="{DynamicResource KidWallAccentGradientBrush}"
+    TitleBarBorderThickness="0,0,0,3"
     behaviors:WindowCloseBehavior.IsEnabled="True"
     WindowStartupLocation="CenterScreen">
-  <Panel>
-    <Grid RowDefinitions="60,*">
-
-      <!-- ================= 标题栏 ================= -->
-      <Grid
-          Grid.Row="0"
-          Background="{DynamicResource KidWallTitlebarBrush}"
-          behaviors:TitleBarDragBehavior.IsEnabled="True">
-        <Grid ColumnDefinitions="Auto,460,Auto,*,Auto" ColumnSpacing="18">
-          <!-- 品牌区 -->
-          <StackPanel
-              Margin="16,0,0,0"
-              Orientation="Horizontal"
-              Spacing="10"
-              VerticalAlignment="Center">
-            <Border Classes="brand-mark" x:Name="PART_BrandMark">
-              <TextBlock
-                  HorizontalAlignment="Center"
-                  Text="🎈"
-                  VerticalAlignment="Center" />
-            </Border>
-            <StackPanel Spacing="1" VerticalAlignment="Center">
-              <TextBlock Classes="win-title" Text="{Binding WindowTitle}" />
-              <TextBlock Classes="win-subtitle" Text="{Binding WindowSubtitle}" />
-            </StackPanel>
-          </StackPanel>
-
-          <!-- 搜索框 -->
-          <Grid Grid.Column="1" Width="460" MaxWidth="460" VerticalAlignment="Center">
-            <TextBox
-                Classes="search"
-                Padding="38,4,14,4"
-                Text="{Binding SearchText, Mode=TwoWay}"
-                VerticalAlignment="Center"
-                PlaceholderText="{Binding SearchPlaceholder}" />
-            <TextBlock
-                Margin="14,0,0,0"
-                FontSize="16"
-                IsHitTestVisible="False"
-                Text="🔎"
-                VerticalAlignment="Center" />
-          </Grid>
-
-          <!-- 右侧操作区 -->
-          <StackPanel
-              Grid.Column="2"
-              Orientation="Horizontal"
-              Spacing="10"
-              VerticalAlignment="Center">
-            <Button Classes="secondary-btn" Command="{Binding PickLocalFolderCommand}">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="📁" />
-                <TextBlock Text="{Binding LocalButtonText}" />
-              </StackPanel>
-            </Button>
-            <Button Classes="primary-btn" Command="{Binding ToggleSettingsCommand}">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="⚙" />
-                <TextBlock Text="{Binding SettingsButtonText}" />
-              </StackPanel>
-            </Button>
-
-          </StackPanel>
-
-          <StackPanel
-              Grid.Column="4"
-              Margin="0,0,10,0"
-              Orientation="Horizontal"
-              Spacing="7"
-              VerticalAlignment="Center">
-            <Button
-                x:Name="PART_MinimizeButton"
-                Classes="candy moon"
-                Click="OnMinimizeClick"
-                ToolTip.Tip="{Binding MinimizeTip}">
-              <TextBlock Text="🌙" />
-            </Button>
-            <Button
-                x:Name="PART_MaximizeButton"
-                Classes="candy star"
-                Click="OnMaximizeClick"
-                ToolTip.Tip="{Binding MaximizeTip}">
-              <TextBlock Text="⭐" />
-            </Button>
-            <Button
-                x:Name="PART_CloseButton"
-                Classes="candy hand"
-                Click="OnCloseClick"
-                ToolTip.Tip="{Binding CloseTip}">
-              <TextBlock Text="👋" />
-            </Button>
-          </StackPanel>
-        </Grid>
+  <codewf:CodeWFWindow.LeftContent>
+    <!-- 品牌区 -->
+    <StackPanel
+        Margin="16,0,0,0"
+        Orientation="Horizontal"
+        Spacing="10"
+        VerticalAlignment="Center">
+      <Border Classes="brand-mark" x:Name="PART_BrandMark">
+        <TextBlock
+            HorizontalAlignment="Center"
+            Text="🎈"
+            VerticalAlignment="Center" />
+      </Border>
+      <StackPanel Spacing="1" VerticalAlignment="Center">
+        <TextBlock Classes="win-title" Text="{Binding WindowTitle}" />
+        <TextBlock Classes="win-subtitle" Text="{Binding WindowSubtitle}" />
+      </StackPanel>
+    </StackPanel>
+  </codewf:CodeWFWindow.LeftContent>
+  <codewf:CodeWFWindow.RightContent>
+    <!-- 搜索框与右侧操作区 -->
+    <StackPanel
+        Margin="0,0,10,0"
+        Orientation="Horizontal"
+        Spacing="18"
+        VerticalAlignment="Center">
+      <Grid Width="460" MaxWidth="460" VerticalAlignment="Center">
+        <TextBox
+            Classes="search"
+            Padding="38,4,14,4"
+            Text="{Binding SearchText, Mode=TwoWay}"
+            VerticalAlignment="Center"
+            PlaceholderText="{Binding SearchPlaceholder}" />
+        <TextBlock
+            Margin="14,0,0,0"
+            FontSize="16"
+            IsHitTestVisible="False"
+            Text="🔎"
+            VerticalAlignment="Center" />
       </Grid>
+      <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <Button Classes="secondary-btn" Command="{Binding PickLocalFolderCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="📁" />
+            <TextBlock Text="{Binding LocalButtonText}" />
+          </StackPanel>
+        </Button>
+        <Button Classes="primary-btn" Command="{Binding ToggleSettingsCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="⚙" />
+            <TextBlock Text="{Binding SettingsButtonText}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </StackPanel>
+  </codewf:CodeWFWindow.RightContent>
+  <Panel>
+    <Grid>
 
       <!-- ================= 内容区 ================= -->
       <ScrollViewer
           Effect="{Binding IsSettingsOpen, Converter={StaticResource BooleanToBlurEffectConverter}}"
-          Grid.Row="1"
           HorizontalContentAlignment="Center"
           HorizontalScrollBarVisibility="Disabled"
           VerticalScrollBarVisibility="Auto">
@@ -131,7 +96,6 @@
               IsHitTestVisible="{Binding IsPreviewOpen}"
               Opacity="{Binding IsPreviewOpen, Converter={StaticResource BooleanToOpacityConverter}}"
               Background="#990A1628"
-              Grid.RowSpan="2"
               ZIndex="300">
         <Border.Transitions>
           <Transitions>
@@ -248,7 +212,6 @@
               IsHitTestVisible="{Binding IsSettingsOpen}"
               Opacity="{Binding IsSettingsOpen, Converter={StaticResource BooleanToOpacityConverter}}"
               Background="#660A1628"
-              Grid.Row="1"
           ZIndex="250">
         <Border.Transitions>
           <Transitions>
@@ -374,7 +337,6 @@
           HorizontalAlignment="Center"
           Padding="20,10"
           VerticalAlignment="Bottom"
-          Grid.RowSpan="2"
           ZIndex="400">
         <Border.Transitions>
           <Transitions>
@@ -410,13 +372,5 @@
         x:Name="PART_ParticleLayer"
         IsHitTestVisible="False"
         ZIndex="500" />
-
-    <!-- 窗口顶部品牌渐变线 -->
-    <Border
-        Background="{DynamicResource KidWallAccentGradientBrush}"
-        Height="3"
-        IsHitTestVisible="False"
-        VerticalAlignment="Top"
-        ZIndex="99" />
   </Panel>
-</Window>
+</codewf:CodeWFWindow>
