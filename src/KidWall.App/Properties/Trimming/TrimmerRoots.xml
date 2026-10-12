@@ -1,0 +1,30 @@
+<linker>
+  <!-- KidWall 自身 -->
+  <assembly fullname="KidWall.App" preserve="all" />
+  <assembly fullname="KidWall.Core" preserve="all" />
+
+  <!-- CodeWF 库（XAML 反射绑定） -->
+  <assembly fullname="CodeWF.Avalonia.Controls" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Lang" preserve="all" />
+  <assembly fullname="CodeWF.Toolkit.Core" preserve="all" />
+
+  <!-- 主题与控件库 -->
+  <assembly fullname="Semi.Avalonia" preserve="all" />
+  <assembly fullname="Ursa" preserve="all" />
+  <assembly fullname="Ursa.Themes.Semi" preserve="all" />
+  <assembly fullname="Irihi.Avalonia.Shared" preserve="all" />
+  <assembly fullname="Irihi.Avalonia.Shared.Contracts" preserve="all" />
+
+  <!-- 壁纸播放（LibVLC 互操作） -->
+  <assembly fullname="LibVLCSharp" preserve="all" />
+  <assembly fullname="LibVLCSharp.Avalonia" preserve="all" />
+
+  <!-- Avalonia 渲染与标记 -->
+  <assembly fullname="Avalonia" preserve="all" />
+  <assembly fullname="Avalonia.Base" preserve="all" />
+  <assembly fullname="Avalonia.Controls" preserve="all" />
+  <assembly fullname="Avalonia.Desktop" preserve="all" />
+  <assembly fullname="Avalonia.Markup" preserve="all" />
+  <assembly fullname="Avalonia.Markup.Xaml" preserve="all" />
+  <assembly fullname="Avalonia.Fonts.Inter" preserve="all" />
+</linker>
