@@ -10,7 +10,13 @@
 
 > 适合家长给孩子电脑配置桌面，自定义孩子喜欢的卡通、星空、插画桌面背景。
 
-![KidWall 界面预览](docs/media/design-home.png)
+当前版本：1.0.7。支持中英文动态切换，浅色、深色、跟随系统三种模式，以及与 CodeWF Demo 共用的八套配色。
+
+![KidWall 原生深色图库](docs/media/kidwall-native-dark.png)
+
+![KidWall 原生浅色图库](docs/media/kidwall-native-light.png)
+
+截图来自 Windows NativeAOT 验证器加载真实界面与仓库静态图片。原型入口是 [design/index.html](design/index.html)，验证范围及差异见 [界面验收记录](docs/UI-VERIFICATION.md)。
 
 ## 下载安装
 
@@ -32,8 +38,8 @@
 本机构建安装包（需安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)）：
 
 ```powershell
-dotnet publish src/KidWall.App/KidWall.App.csproj -c Release -f net10.0-windows -r win-x64 --self-contained true -p:PublishSingleFile=true -o artifacts/publish/win-x64/KidWall.App
-./scripts/build_installer.ps1 -Version 1.0.0
+pwsh scripts/publish.ps1 -RuntimeIdentifier win-x64
+./scripts/build_installer.ps1 -Version 1.0.7
 ```
 
 ## 发布

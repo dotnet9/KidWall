@@ -5,6 +5,7 @@
     <RootNamespace>KidWall.Core.Tests</RootNamespace>
     <AssemblyName>KidWall.Core.Tests</AssemblyName>
     <IsPackable>false</IsPackable>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
 
   <ItemGroup>
