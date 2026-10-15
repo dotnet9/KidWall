@@ -114,6 +114,7 @@ const { chromium } = require('playwright');
     await setLanguage('zh-CN');
     await page.locator('button[onclick="closeDrawer()"]').first().click();
     assert.equal(await page.locator('#grid .badge').count(), await page.evaluate(() => WALLPAPERS.filter(item => item.cat === '动态').length));
+    await setMode('Dark');
     await page.locator('.win').screenshot({ path: path.join(output, 'gallery-dark.png'), animations: 'disabled' });
     assert.deepEqual(errors, []);
     await standalone.verify(page);
