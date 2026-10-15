@@ -106,6 +106,7 @@ foreach(var language in model.Appearance.Languages)
 }
 var about = new AboutWindow { DataContext = model };
 about.Show();
+Pump();Check(!about.GetVisualDescendants().OfType<Button>().Single(button=>button.Name=="PART_MinimizeButton").IsEnabled && !about.GetVisualDescendants().OfType<Button>().Single(button=>button.Name=="PART_MaximizeRestoreButton").IsEnabled,"About respects disabled minimize and maximize capabilities");
 foreach(var language in model.Appearance.Languages)
 {
     model.Appearance.SelectedLanguage=language;Pump();
