@@ -24,6 +24,8 @@
   }
   function localize() {
     document.documentElement.lang = language;
+    const captionLabels=language==='zh-CN'?{minimize:'最小化',maximize:'最大化',close:'关闭'}:{minimize:'Minimize',maximize:'Maximize',close:'Close'};
+    document.querySelectorAll('[data-about-action]').forEach(button=>{button.title=captionLabels[button.dataset.aboutAction];button.setAttribute('aria-label',button.title);});
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: node => node.parentElement.closest('script,style,[data-key]') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
     while (walker.nextNode()) {
       const node = walker.currentNode;

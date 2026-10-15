@@ -63,9 +63,12 @@ const { chromium } = require('playwright');
       assert.equal(await page.locator('#update-cancel').isVisible(), false);
       assert.equal(await page.locator('#about-build-time').textContent(), '2026-10-15 00:00:00');
       assert.ok(await page.locator('.about-window').evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth) >= 1));
+      assert.equal(await page.locator('.about-controls button').count(),3);
+      assert.equal(await page.locator('[data-about-action="minimize"]').isDisabled(),true);assert.equal(await page.locator('[data-about-action="maximize"]').isDisabled(),true);
       assert.ok(await page.locator('.about-brand img').evaluate(image => image.complete && image.naturalWidth > 0));
       await page.locator('.about-window').screenshot({ path: path.join(output, `about-${language}.png`) });
       await page.locator('#about-close').click();
+      assert.equal(await page.locator('#about-overlay').evaluate(element=>element.classList.contains('show')),false);
     }
     await page.locator('#about-open').click();
     await page.locator('#update-action').click();
