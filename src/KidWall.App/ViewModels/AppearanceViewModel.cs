@@ -75,7 +75,6 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
             CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = culture;
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = culture;
             I18nManager.Instance.Culture = culture;
-            App.ApplyThirdPartyCulture(value.Key);
             _store.Save(_preferences);
         }
     }

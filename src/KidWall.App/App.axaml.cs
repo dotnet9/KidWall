@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using KidWall.App.Services;
 using KidWall.App.ViewModels;
@@ -104,7 +105,6 @@ public partial class App : Avalonia.Application
         var preferences = PreferencesStore.Load();
         preferences.Language = string.Equals(preferences.Language, "en-US", StringComparison.OrdinalIgnoreCase) ? "en-US" : "zh-CN";
         I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
-        ApplyThirdPartyCulture(preferences.Language);
         WallpaperService = OperatingSystem.IsWindows()
             ? new WindowsDesktopWallpaperService()
             : OperatingSystem.IsMacOS()
@@ -213,13 +213,23 @@ public partial class App : Avalonia.Application
         };
 
         I18nManager.Instance.Register(langPlugin, new CultureInfo("zh-CN"), out _);
+        I18nManager.Instance.CultureChanged += OnCultureChanged;
+        ApplyControlCulture();
     }
 
-    public static void ApplyThirdPartyCulture(string culture)
+
+    private static void OnCultureChanged(object? sender, EventArgs args)
     {
-        if (Current is not { } app) return;
-        foreach (var semi in app.Styles.OfType<Semi.Avalonia.SemiTheme>()) semi.Locale = CultureInfo.GetCultureInfo(culture);
-        foreach (var ursa in app.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>()) ursa.Locale = CultureInfo.GetCultureInfo(culture);
+        if (Dispatcher.UIThread.CheckAccess()) ApplyControlCulture();
+        else Dispatcher.UIThread.Post(ApplyControlCulture);
+    }
+
+    /// <summary>更新主题内置文案，保留宿主资源的同键覆盖。</summary>
+    private static void ApplyControlCulture()
+    {
+        if (Application.Current is not { } application || I18nManager.Instance.Culture is not { } culture) return;
+        foreach (var theme in application.Styles.OfType<Semi.Avalonia.SemiTheme>()) theme.Locale = culture;
+        foreach (var theme in application.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>()) theme.Locale = culture;
     }
 
     private void RefreshThemeAliases()

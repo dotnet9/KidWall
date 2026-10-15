@@ -37,6 +37,7 @@ var fake = new FakeUpdates();
 using var model = new MainViewModel(preferences,store,wallpaper,new FakeDynamic(),new FakeWindow(),samples,fake,_=>{},()=>throw new InvalidOperationException("Unexpected exit"));
 var window = new MainWindow { DataContext = model, AllowCloseToExit = true };
 window.Show(); Complete(model.LoadCommand.ExecuteAsync(null)); Pump();
+ControlLocaleVerification.Run(window, ["zh-CN", "en-US"]);
 Check(model.Wallpapers.Count == 1,"Real wallpaper catalog loads through generated JSON metadata");
 Check(wallpaper.Calls == 0,"Verification never changes desktop wallpaper");
 Check(model.Appearance.Modes.Count == 3 && model.Appearance.Palettes.Count == 8,"Three independent modes and eight palettes");
