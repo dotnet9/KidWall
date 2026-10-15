@@ -1,6 +1,6 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <Authors>Dotnet9</Authors>
     <RepositoryUrl>https://github.com/dotnet9/KidWall</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

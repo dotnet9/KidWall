@@ -104,6 +104,15 @@ jobs:
         shell: pwsh
         run: pwsh scripts/publish.ps1 -RuntimeIdentifier '${{ matrix.rid }}' -Version $env:APP_VERSION
 
+      - name: 验证 Windows 正式原生产物
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $directory = Join-Path $env:RUNNER_TEMP ('kidwall-runtime-' + [guid]::NewGuid().ToString('N'))
+          $executable = (Resolve-Path 'artifacts/publish/win-x64/KidWall.App/KidWall.App.exe').Path
+          $process = Start-Process -FilePath $executable -ArgumentList @('--verify-runtime', $directory) -WindowStyle Hidden -PassThru -Wait
+          if ($process.ExitCode -ne 0) { throw "正式 NativeAOT 运行验证失败：$($process.ExitCode)" }
+
       - name: 构建 Windows 安装包
         if: runner.os == 'Windows'
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
