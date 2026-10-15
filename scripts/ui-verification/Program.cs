@@ -38,6 +38,19 @@ using var model = new MainViewModel(preferences,store,wallpaper,new FakeDynamic(
 var window = new MainWindow { DataContext = model, AllowCloseToExit = true };
 window.Show(); Complete(model.LoadCommand.ExecuteAsync(null)); Pump();
 ControlLocaleVerification.Run(window, ["zh-CN", "en-US"]);
+var liveLanguageButton=window.GetVisualDescendants().OfType<Button>().Single(button=>button.Flyout is MenuFlyout);
+var liveLanguageMenu=(MenuFlyout)liveLanguageButton.Flyout!;
+foreach(var culture in new[]{"en-US","zh-CN"})
+{
+    Task.Run(()=>I18nManager.Instance.Culture=new System.Globalization.CultureInfo(culture)).GetAwaiter().GetResult();Pump();
+    Check(model.Appearance.SelectedLanguage?.Key==culture,"Background global culture updates the actual appearance selection: "+culture);
+    liveLanguageMenu.ShowAt(liveLanguageButton);Pump();
+    var returnCulture=culture=="en-US"?"zh-CN":"en-US";
+    liveLanguageMenu.ItemsSource!.Cast<LanguageOption>().Single(option=>option.Key==returnCulture).SelectCommand!.Execute(null);
+    liveLanguageMenu.Hide();Pump();
+    Check(I18nManager.Instance.Culture?.Name==returnCulture && model.Appearance.SelectedLanguage?.Key==returnCulture,
+        "The same language menu switches back after background culture changes: "+returnCulture);
+}
 Check(model.Wallpapers.Count == 1,"Real wallpaper catalog loads through generated JSON metadata");
 Check(wallpaper.Calls == 0,"Verification never changes desktop wallpaper");
 Check(model.Appearance.Modes.Count == 3 && model.Appearance.Palettes.Count == 8,"Three independent modes and eight palettes");

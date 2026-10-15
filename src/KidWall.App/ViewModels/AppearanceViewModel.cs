@@ -2,6 +2,7 @@
 using System.Globalization;
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Toolkit.Lang;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,6 +21,7 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
     private AppearanceOption? _mode, _palette;
     private LanguageOption? _language;
     private bool _refreshing;
+    private bool _disposed;
     public AppearanceViewModel(AppPreferences preferences, AppPreferencesStore store)
     {
         _preferences = preferences; _store = store;
@@ -79,7 +81,13 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
         }
     }
     private static string T(string key) => I18nManager.Instance.GetResource(key);
-    private void OnCultureChanged(object? sender, EventArgs args) => Refresh();
+    /// <summary>全局切语可能来自后台线程，主题资源和绑定集合在 UI 线程刷新。</summary>
+    private void OnCultureChanged(object? sender, EventArgs args)
+    {
+        if (_disposed) return;
+        if (Dispatcher.UIThread.CheckAccess()) Refresh();
+        else Dispatcher.UIThread.Post(() => { if (!_disposed) Refresh(); });
+    }
     private void Refresh()
     {
         _refreshing = true;
@@ -107,7 +115,11 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
         }
         finally { _refreshing = false; }
     }
-    public void Dispose() => I18nManager.Instance.CultureChanged -= OnCultureChanged;
+    public void Dispose()
+    {
+        _disposed = true;
+        I18nManager.Instance.CultureChanged -= OnCultureChanged;
+    }
 }
 
 public sealed record AppearanceOption(string Key, string DisplayName, IBrush Swatch);
