@@ -3,6 +3,7 @@
 
 ✨ 核心特性
 - 🖼️ 静态图片壁纸：本地图片一键设置桌面
+- 💛 收藏与本地图库：收藏和导入目录持久化，刷新或重启后恢复，支持独立分类筛选
 - 🎞️ 动态壁纸支持：动画、视频类动态桌面
 - 🧒 面向儿童：界面简洁，壁纸资源偏向童趣画风
 - ⚡ 轻量低占用：后台资源消耗小，不打扰孩子学习使用电脑
@@ -10,7 +11,7 @@
 
 > 适合家长给孩子电脑配置桌面，自定义孩子喜欢的卡通、星空、插画桌面背景。
 
-当前版本：1.0.7。支持中英文动态切换，浅色、深色、跟随系统三种模式，以及与 CodeWF Demo 共用的八套配色。
+当前版本：1.0.8。标题栏展示与 CodeWF Demo 共用的八个配色点、Ursa 三态主题按钮和 Semi 语言菜单，支持中英文动态切换；设置页保留功能参数。
 
 ![KidWall 原生深色图库](docs/media/kidwall-native-dark.png)
 
@@ -39,7 +40,7 @@
 
 ```powershell
 pwsh scripts/publish.ps1 -RuntimeIdentifier win-x64
-./scripts/build_installer.ps1 -Version 1.0.7
+./scripts/build_installer.ps1 -Version 1.0.8
 ```
 
 ## 发布
