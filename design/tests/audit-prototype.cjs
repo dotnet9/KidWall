@@ -28,6 +28,10 @@ const { chromium } = require('playwright');
     await page.goto(standalone.url);
     assert.ok(await page.locator('.win').evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth) >= 1));
     assert.equal(await page.locator('.t-ctrl button').count(), 3);
+    assert.ok(await page.locator('.titlebar').evaluate(element=>{
+      const brand=element.querySelector('.t-app').getBoundingClientRect(),search=element.querySelector('.search').getBoundingClientRect(),appearance=element.querySelector('.title-appearance').getBoundingClientRect();
+      return Math.abs(search.width-220)<1 && Math.abs((search.left+search.right)/2-(brand.right+appearance.left)/2)<2;
+    }),'Search stays centered between the brand and appearance controls as in the native window');
     assert.deepEqual(await page.locator('.t-ctrl button').evaluateAll(buttons=>buttons.map(button=>button.getAttribute('onclick'))),['minWin(event)','maxWin(event)','closeWin(event)']);
     await page.locator('.t-ctrl button').nth(0).click();
     assert.ok(await page.locator('#win').evaluate(element=>element.classList.contains('min') && getComputedStyle(element).pointerEvents==='none'));
