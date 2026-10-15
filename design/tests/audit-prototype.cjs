@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
   async function checkAppearanceLanguage(language){
     const matches=await page.evaluate(expected=>{
       const words=KIDWALL_RESOURCES[expected].Localization.Appearance,mode=document.getElementById('theme-toggle'),languageButton=document.getElementById('language-toggle');
-      return document.documentElement.lang===expected && mode.title===words.Mode+': '+words[mode.dataset.mode] && mode.getAttribute('aria-label')===mode.title && languageButton.title===words.Language && languageButton.getAttribute('aria-label')===languageButton.title && [...document.querySelectorAll('button[data-palette]')].every(button=>button.title===words[button.dataset.palette] && button.getAttribute('aria-label')===button.title);
+      return document.documentElement.lang===expected && document.querySelector('footer').textContent===KIDWALL_RESOURCES[expected].Localization.Main.Footer.Text && mode.title===words.Mode+': '+words[mode.dataset.mode] && mode.getAttribute('aria-label')===mode.title && languageButton.title===words.Language && languageButton.getAttribute('aria-label')===languageButton.title && [...document.querySelectorAll('button[data-palette]')].every(button=>button.title===words[button.dataset.palette] && button.getAttribute('aria-label')===button.title);
     },language);
     assert.ok(matches,'Title-bar language, tooltips and accessibility labels switch immediately: '+language);
   }
