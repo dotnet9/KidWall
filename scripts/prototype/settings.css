@@ -1,7 +1,8 @@
 /* 外观、设置和关于与当前应用实现保持一致，壁纸卡片保留原有交互。 */
-body { background:var(--app-bg,#fff); }
+body { background:color-mix(in srgb,var(--accent) 12%,var(--app-bg,#fff)); }
 [hidden] { display:none!important; }
 .win { background:var(--app-bg,#fff); border-color:var(--stroke); border-radius:8px; }
+.win,.win.full { border:1px solid var(--stroke); box-shadow:0 24px 72px #0005,0 0 0 1px color-mix(in srgb,var(--ink) 12%,transparent); }
 .titlebar,.drawer,.stage,.about-window { background:var(--surface,#f7f6fc); }
 .titlebar { border-bottom:3px solid var(--accent); }
 .titlebar .search { margin-left:auto; flex:none; width:460px; }
