@@ -1,0 +1,48 @@
+/* 外观、设置和关于与当前应用实现保持一致，壁纸卡片保留原有交互。 */
+body { background:var(--app-bg,#fff); }
+[hidden] { display:none!important; }
+.win { background:var(--app-bg,#fff); border-color:var(--stroke); border-radius:8px; }
+.titlebar,.drawer,.stage,.about-window { background:var(--surface,#f7f6fc); }
+.titlebar { border-bottom:3px solid var(--accent); }
+.titlebar .search { margin-left:auto; flex:none; width:460px; }
+.titlebar .t-ctrl { margin-left:0; gap:0; padding:0; }
+.titlebar .t-ctrl button { width:32px; height:60px; border-radius:0; box-shadow:none; animation:none; background:transparent; color:var(--ink); font-size:16px; }
+.titlebar .t-ctrl button:hover { transform:none; background:var(--glass); }
+.titlebar .t-ctrl button:last-child:hover { background:#c42b1c; color:#fff; }
+.t-title,.bar h2 { color:var(--ink); }
+.search input { color:var(--ink); }
+.search input::placeholder { color:var(--ink-3); }
+.search svg { stroke:var(--ink-3); }
+.cat,.btn,.switch,.search { color:var(--ink); }
+.cat .cnt { color:var(--ink-2); }
+.cat.active .cnt { color:#fff; }
+.cat.active,.btn.primary { background:var(--primary); color:#fff; }
+.card .meta { color:#fff; }
+.card .tag { color:rgba(255,255,255,.72); }
+.card .btn { color:#fff; }
+.drawer .row { border-color:var(--stroke); }
+.switch:disabled { opacity:.4; cursor:default; }
+.appearance-row { display:grid; grid-template-columns:100px 1fr; gap:10px; align-items:center; margin:12px 0; font-size:14px; }
+.appearance-row select { min-width:0; width:100%; height:34px; border:1px solid var(--stroke); border-radius:6px; color:var(--ink); background:var(--glass); padding:0 10px; text-align:left; }
+.about-link { width:100%; margin-top:16px; justify-content:center; }
+.about-overlay { position:fixed; inset:0; background:#0a052866; z-index:200; display:none; place-items:center; padding:20px; }
+.about-overlay.show { display:grid; }
+.about-window { width:min(600px,100%); height:620px; max-height:90vh; overflow:auto; border:1px solid var(--stroke); border-radius:0; box-shadow:var(--shadow); color:var(--ink); font-size:14px; }
+.about-head { display:flex; align-items:center; justify-content:space-between; height:32px; padding-left:26px; background:var(--glass); }
+.about-head b { font-weight:400; }
+.about-head .btn { width:32px; height:32px; border-radius:0; padding:0; background:transparent; color:var(--ink); font-size:16px; box-shadow:none; }
+.about-head .btn:hover { background:#c42b1c; color:#fff; transform:none; }
+.about-body { padding:28px; }
+.about-brand { display:grid; grid-template-columns:56px 1fr; gap:16px; align-items:center; }
+.about-brand img { width:56px; height:56px; object-fit:contain; }
+.about-window h2 { font-size:22px; margin:0 0 6px; }
+.about-window p { margin:0 0 12px; line-height:1.4; }
+.about-brand p { margin:0; color:var(--ink-2); }
+.about-details { display:grid; grid-template-columns:110px 1fr; gap:14px 12px; margin:18px 0; }
+.about-window hr { border:0; border-top:1px solid var(--stroke); margin:18px 0; }
+.about-window .btn { font-size:14px; padding:6px 12px; }
+.about-window #update-action { border-radius:18px; }
+.about-window #update-status { min-height:20px; margin-top:12px; }
+.about-window small { display:block; color:var(--ink-3); margin-top:18px; font-size:14px; }
+.about-window progress { width:100%; accent-color:var(--accent); margin:12px 0; }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
