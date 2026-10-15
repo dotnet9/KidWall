@@ -278,23 +278,23 @@
   .modal.show { display:flex; animation:fadeIn .25s; }
   @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
   .modal .stage {
-    width:min(960px,100%); border-radius:var(--r-lg); overflow:hidden;
+    position:relative; width:min(920px,100%); padding-top:54px; background:var(--surface); border-radius:var(--r-lg); overflow:hidden;
     border:1px solid var(--stroke); box-shadow:0 30px 80px rgba(0,0,0,.6);
     animation:pop .3s cubic-bezier(.2,1.4,.4,1);
   }
   @keyframes pop { from{transform:scale(.92);opacity:0;} to{transform:scale(1);opacity:1;} }
-  .stage .imgbox { position:relative; aspect-ratio:16/9; overflow:hidden; }
+  .stage .imgbox { position:relative; height:518px; margin:0 18px 10px; overflow:hidden; border:1px solid var(--stroke); border-radius:20px; }
   .stage .imgbox img { width:100%; height:100%; object-fit:cover; }
   .stage .info {
     display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-    padding:16px 20px; background:rgba(20,10,60,.92);
-    border-top:1px solid var(--stroke);
+    padding:0 18px 18px; background:var(--surface);
   }
   .stage .info h3 { font-size:17px; }
   .stage .info p { font-size:13px; color:var(--ink-2); margin-top:3px; }
   .stage .info .grow { flex:1; }
+  .current-badge { position:absolute; top:12px; right:12px; z-index:5; padding:4px 10px; border-radius:10px; background:var(--primary); color:#fff; font-size:11px; }
   .modal .close {
-    position:absolute; top:26px; right:30px; width:42px; height:42px;
+    position:absolute; top:12px; right:18px; width:34px; height:34px;
     border-radius:50%; border:1px solid var(--stroke); cursor:pointer;
     background:rgba(0,0,0,.4); color:#fff; font-size:18px; backdrop-filter:blur(8px);
     transition:.2s;
@@ -311,7 +311,7 @@
     overflow-y:auto;
   }
   .drawer.show { transform:translateX(0); }
-  .drawer h3 { font-size:20px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .drawer h3 { font-size:18px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
   .drawer .sub { font-size:13px; color:var(--ink-3); margin-bottom:22px; }
   /* 窗口内遮罩：只变暗软件内容区，不覆盖窗口外 */
   .dimmer {
@@ -324,7 +324,7 @@
     display:flex; align-items:center; justify-content:space-between; gap:12px;
     padding:15px 0; border-bottom:1px dashed rgba(255,255,255,.14);
   }
-  .row .txt b { display:block; font-size:15px; font-weight:600; }
+  .row .txt b { display:block; font-size:14px; font-weight:600; }
   .row .txt span { font-size:12px; color:var(--ink-3); }
   .switch {
     width:52px; height:30px; border-radius:99px; border:none; cursor:pointer;
@@ -390,9 +390,10 @@
       <input id="search" type="text" data-placeholder-key="Shell.Search.Placeholder" placeholder="搜索喜欢的壁纸，比如：恐龙、星星、独角兽…" />
     </div>
 
+    <div class="title-appearance"><div id="theme-palettes" class="palette-dots" role="listbox"></div><button id="theme-toggle" class="title-icon" type="button"></button><div class="language-picker"><button id="language-toggle" class="title-icon" type="button" aria-haspopup="menu">文</button><div id="language-menu" class="language-menu" role="menu" hidden><button role="menuitem" data-language="zh-CN">简体中文</button><button role="menuitem" data-language="en-US">English</button></div></div></div>
     <div class="t-actions">
-      <button class="btn" onclick="openFile()">📁 本地壁纸</button>
-      <button class="btn primary" onclick="openDrawer()">⚙ 设置</button>
+      <button class="btn" onclick="openFile()" data-title-key="Shell.Actions.Local">📁</button>
+      <button class="btn primary" onclick="openDrawer()" data-title-key="Shell.Actions.Settings">⚙</button>
     </div>
 
     <div class="t-ctrl">
@@ -429,9 +430,6 @@
       <button class="btn" style="margin-left:auto;padding:7px 14px;font-size:13px;" onclick="closeDrawer()">✕ 取消</button>
     </h3>
     <p class="sub" data-key="Settings.Page.Subtitle"></p>
-    <div class="appearance-row"><label for="theme-mode" data-key="Appearance.Mode"></label><select id="theme-mode"><option value="System" data-key="Appearance.System"></option><option value="Light" data-key="Appearance.Light"></option><option value="Dark" data-key="Appearance.Dark"></option></select></div>
-    <div class="appearance-row"><label for="theme-palette" data-key="Appearance.Palette"></label><select id="theme-palette"><option value="Default" data-key="Appearance.Default"></option><option value="DotNet" data-key="Appearance.DotNet" selected></option><option value="Aurora" data-key="Appearance.Aurora"></option><option value="Ember" data-key="Appearance.Ember"></option><option value="Aquatic" data-key="Appearance.Aquatic"></option><option value="Desert" data-key="Appearance.Desert"></option><option value="Dusk" data-key="Appearance.Dusk"></option><option value="NightSky" data-key="Appearance.NightSky"></option></select></div>
-    <div class="appearance-row"><label for="language" data-key="Appearance.Language"></label><select id="language"><option value="zh-CN">简体中文</option><option value="en-US">English</option></select></div>
     <div class="row">
       <div class="txt"><b>开机自启</b><span>开机后自动应用上次的壁纸</span></div>
       <button class="switch on" onclick="this.classList.toggle('on')"></button>
@@ -457,16 +455,16 @@
 
 <!-- 预览弹窗 -->
 <div class="modal" id="modal">
-  <button class="close" onclick="closeModal()">✕</button>
   <div class="stage">
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="imgbox" id="stageImg"></div>
     <div class="info">
       <div class="grow">
         <h3 id="stageName"></h3>
         <p id="stageTag"></p>
       </div>
-      <button class="btn" onclick="closeModal()">❤ 收藏</button>
-      <button class="btn primary" onclick="apply('预览页')">✨ 设为壁纸</button>
+      <button class="btn" id="previewFavorite" onclick="toggleFavorite()" data-key="Preview.Labels.Favorite"></button>
+      <button class="btn primary" id="previewApply" onclick="apply(previewId)" data-key="Preview.Labels.Apply"></button>
     </div>
   </div>
 </div>
@@ -474,7 +472,7 @@
 <div class="about-overlay" id="about-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title">
  <section class="about-window"><div class="about-head"><b id="about-title" data-key="About.Title"></b><button class="btn" id="about-close" aria-label="Close">✕</button></div>
  <div class="about-body"><div class="about-brand"><img src="../logo.png" alt=""><div><h2 data-key="Shell.Window.Title"></h2><p data-key="Shell.Window.Subtitle"></p></div></div>
- <dl class="about-details"><dt data-key="About.AboutVersion"></dt><dd>1.0.7</dd><dt data-key="About.AboutCompileTime"></dt><dd id="about-build-time">2026-10-15 00:00:00</dd><dt data-key="About.AboutPlatform"></dt><dd>.NET 10 · Avalonia 12.1.4</dd><dt data-key="About.Author"></dt><dd data-key="About.AboutAuthorName"></dd></dl>
+ <dl class="about-details"><dt data-key="About.AboutVersion"></dt><dd>1.0.8</dd><dt data-key="About.AboutCompileTime"></dt><dd id="about-build-time">2026-10-15 00:00:00</dd><dt data-key="About.AboutPlatform"></dt><dd>.NET 10 · Avalonia 12.1.4</dd><dt data-key="About.Author"></dt><dd data-key="About.AboutAuthorName"></dd></dl>
  <a class="btn" href="https://github.com/dotnet9/KidWall" target="_blank" rel="noopener" data-key="About.Repository"></a><hr>
  <p data-key="About.AboutUpdateDescription"></p><button class="btn primary" id="update-action"></button> <button class="btn" id="update-cancel" data-key="About.AboutCancel" hidden></button>
  <progress id="update-progress" hidden></progress><p id="update-status" role="status"></p><small data-key="About.Copyright"></small>
@@ -522,10 +520,23 @@ const WALLPAPERS = [
     live:null },
 ];
 
-const CATS = ["全部","推荐","卡通","星空","插画","动态壁纸"];
+const CATS = ["全部","推荐","卡通","星空","插画","动态壁纸","收藏","本地"];
 const CAT_MAP = { "卡通":"卡通", "星空":"星空", "插画":"插画", "动态壁纸":"动态" };
-const CAT_EMOJI = { "全部":"🪄","推荐":"🌟","卡通":"🐣","星空":"🌙","插画":"🎨","动态壁纸":"🎞️" };
+const CAT_EMOJI = { "全部":"🪄","推荐":"🌟","卡通":"🐣","星空":"🌙","插画":"🎨","动态壁纸":"🎞️","收藏":"💛","本地":"📁" };
+const CAT_KEYS = { "全部":"All","推荐":"Recommended","卡通":"Cartoon","星空":"Starry","插画":"Illustration","动态壁纸":"Dynamic","动态":"Dynamic","收藏":"Favorites","本地":"Local" };
 const recommend = [1,4,6,10,12,14];
+const text = key => key.split('.').reduce((value, part) => value?.[part], window.KIDWALL_RESOURCES[document.documentElement.lang || 'zh-CN'].Localization) ?? key;
+let favorites = new Set();
+let currentId = null;
+let previewId = null;
+try {
+  const saved = JSON.parse(localStorage.getItem('kidwall-gallery') || '{}');
+  favorites = new Set(Array.isArray(saved.favorites) ? saved.favorites : []);
+  currentId = saved.currentId ?? null;
+} catch { /* 浏览器不允许本地存储时仍可在当前页面操作。 */ }
+function saveGallery(){
+  try { localStorage.setItem('kidwall-gallery', JSON.stringify({ favorites:[...favorites], currentId })); } catch {}
+}
 
 /* ---------------- 渲染 ---------------- */
 let currentCat = "全部";
@@ -534,6 +545,8 @@ let keyword = "";
 function matchCat(w){
   if(currentCat==="全部") return true;
   if(currentCat==="推荐") return recommend.includes(w.id);
+  if(currentCat==="收藏") return favorites.has(w.id);
+  if(currentCat==="本地") return w.local === true;
   return w.cat === CAT_MAP[currentCat];
 }
 
@@ -541,9 +554,11 @@ function renderCats(){
   document.getElementById("cats").innerHTML = CATS.map(c=>{
     const count = c==="全部" ? WALLPAPERS.length
       : c==="推荐" ? recommend.length
+      : c==="收藏" ? WALLPAPERS.filter(w=>favorites.has(w.id)).length
+      : c==="本地" ? WALLPAPERS.filter(w=>w.local).length
       : WALLPAPERS.filter(w=>w.cat===CAT_MAP[c]).length;
     return `<button class="cat ${c===currentCat?"active":""}" data-cat="${c}"
-      onclick="currentCat='${c}';renderCats();renderGrid()">${CAT_EMOJI[c]} ${c}<span class="cnt">${count}</span></button>`;
+      onclick="currentCat='${c}';renderCats();renderGrid()">${CAT_EMOJI[c]} <span data-key="Main.Categories.${CAT_KEYS[c]}">${text('Main.Categories.'+CAT_KEYS[c])}</span><span class="cnt">${count}</span></button>`;
   }).join("");
 }
 
@@ -555,23 +570,24 @@ function liveHTML(kind){
 }
 
 function renderGrid(){
-  const list = WALLPAPERS.filter(w=>matchCat(w) && (!keyword || (w.name+w.tag+w.cat).includes(keyword)));
-  document.getElementById("countLabel").textContent = `共 ${list.length} 张 · 点击卡片可预览`;
-  document.getElementById("sectionTitle").textContent = `${CAT_EMOJI[currentCat]} ${currentCat}壁纸`;
+  const list = WALLPAPERS.filter(w=>matchCat(w) && (!keyword || (w.name+w.tag+w.cat+text('Main.Categories.'+CAT_KEYS[w.cat])).toLocaleLowerCase().includes(keyword.toLocaleLowerCase())));
+  document.getElementById("countLabel").textContent = text('Main.Labels.Count').replace('{0}',list.length);
+  document.getElementById("sectionTitle").textContent = `${CAT_EMOJI[currentCat]} ${text('Main.Section.'+CAT_KEYS[currentCat])}`;
   document.getElementById("empty").classList.toggle("show", list.length===0);
   document.getElementById("grid").innerHTML = list.map(w=>`
     <div class="card" onclick="openModal(${w.id})">
       <img src="${w.img}" alt="${w.name}" loading="lazy">
-      ${w.cat==="动态"?`<div class="badge"><span class="dot"></span>动态</div>`:""}
+      ${w.cat==="动态"?`<div class="badge"><span class="dot"></span><span data-key="Main.Card.Dynamic">${text('Main.Card.Dynamic')}</span></div>`:""}
+      ${w.id===currentId?`<div class="current-badge" data-key="Main.Card.Current">${text('Main.Card.Current')}</div>`:""}
       ${liveHTML(w.live)}
       <div class="shade"></div>
       <div class="meta">
         <span class="name">${w.name}</span>
-        <span class="tag">${w.cat} · #${w.tag}</span>
+        <span class="tag">${text('Main.Categories.'+CAT_KEYS[w.cat])} · #${w.tag}</span>
       </div>
       <div class="ops" onclick="event.stopPropagation()">
-        <button class="btn" onclick="openModal(${w.id})">👁 预览</button>
-        <button class="btn set" onclick="apply('${w.name}')">✨ 设为壁纸</button>
+        <button class="btn" onclick="openModal(${w.id})">👁 <span data-key="Main.Card.Preview">${text('Main.Card.Preview')}</span></button>
+        <button class="btn set" onclick="apply(${w.id})">✨ <span data-key="Main.Card.SetWallpaper">${text('Main.Card.SetWallpaper')}</span></button>
       </div>
     </div>`).join("");
 }
@@ -579,23 +595,39 @@ function renderGrid(){
 /* ---------------- 交互 ---------------- */
 function openModal(id){
   const w = WALLPAPERS.find(x=>x.id===id);
+  if (!w) return;
+  previewId = id;
   document.getElementById("stageImg").innerHTML = `
     <img src="${w.img}" alt="${w.name}">${liveHTML(w.live)}
     <div class="shade"></div>
-    <div style="position:absolute;top:14px;left:16px;z-index:5">${w.live?`<span class="badge"><span class="dot"></span>动态壁纸</span>`:""}</div>`;
+    ${w.cat==="动态"?`<span class="badge"><span class="dot"></span><span data-key="Main.Card.Dynamic">${text('Main.Card.Dynamic')}</span></span>`:""}`;
   document.getElementById("stageName").textContent = w.name;
-  document.getElementById("stageTag").textContent = `${w.cat} 壁纸 · #${w.tag} · 建议分辨率 1920×1080`;
+  document.getElementById("stageTag").textContent = `${text('Main.Categories.'+CAT_KEYS[w.cat])} · #${w.tag} · ${text('Preview.Labels.Resolution')}`;
+  const favorite = document.getElementById('previewFavorite');
+  favorite.dataset.key = favorites.has(id) ? 'Preview.Labels.Favorited' : 'Preview.Labels.Favorite';
+  favorite.textContent = text(favorite.dataset.key);
   document.getElementById("modal").classList.add("show");
 }
-function closeModal(){ document.getElementById("modal").classList.remove("show"); }
+function closeModal(){ document.getElementById("modal").classList.remove("show"); previewId = null; }
+function toggleFavorite(){
+  if (previewId === null) return;
+  const w = WALLPAPERS.find(item=>item.id===previewId);
+  if(favorites.has(previewId)) favorites.delete(previewId); else favorites.add(previewId);
+  saveGallery(); renderCats(); renderGrid(); openModal(previewId);
+  toast(text(favorites.has(previewId)?'Toast.Messages.FavoriteAdded':'Toast.Messages.FavoriteRemoved').replace('{0}',w.name));
+}
 function openDrawer(){ document.getElementById("drawer").classList.add("show"); document.getElementById("drawerDimmer").classList.add("show"); }
 function closeDrawer(){ document.getElementById("drawer").classList.remove("show"); document.getElementById("drawerDimmer").classList.remove("show"); }
 function openFile(){ toast("已打开本地文件夹选择器（原型示意）"); }
 
 let toastTimer;
-function apply(where){
-  toast(`已设为桌面壁纸（${where}）`);
+function apply(id){
+  const w = WALLPAPERS.find(item=>item.id===id);
+  if(!w) return;
+  currentId = id; saveGallery(); renderGrid();
+  toast(text('Toast.Messages.Applied').replace('{0}',w.name));
 }
+window.refreshWallpaperText = () => { renderCats(); renderGrid(); if(previewId!==null)openModal(previewId); };
 function toast(text){
   document.getElementById("toastText").textContent = text;
   const t = document.getElementById("toast");
