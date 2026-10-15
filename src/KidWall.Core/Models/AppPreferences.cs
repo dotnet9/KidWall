@@ -24,6 +24,12 @@ public sealed class AppPreferences
     /// <summary>最近一次应用的壁纸路径。</summary>
     public string LastAppliedWallpaperPath { get; set; } = string.Empty;
 
-    /// <summary>语言（zh-CN）。</summary>
+    /// <summary>界面语言。</summary>
     public string Language { get; set; } = "zh-CN";
+
+    /// <summary>主题模式，与配色独立保存。</summary>
+    public string ThemeMode { get; set; } = "System";
+
+    /// <summary>共享主题配色。</summary>
+    public string Palette { get; set; } = "DotNet";
 }

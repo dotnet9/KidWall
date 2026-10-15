@@ -1,6 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using KidWall.Core.Models;
-using CodeWF.Avalonia.Lang;
+using CodeWF.Toolkit.Lang;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace KidWall.App.ViewModels;
@@ -68,13 +68,20 @@ public partial class WallpaperItemViewModel : ObservableObject
 
     public string CategoryDisplayName => Category switch
     {
-        WallpaperCategory.Cartoon => "卡通",
-        WallpaperCategory.Starry => "星空",
-        WallpaperCategory.Illustration => "插画",
-        WallpaperCategory.Dynamic => "动态壁纸",
-        WallpaperCategory.Local => "本地",
-        _ => "壁纸",
+        WallpaperCategory.Cartoon => I18nManager.Instance.GetResource(Localization.Main.Categories.Cartoon),
+        WallpaperCategory.Starry => I18nManager.Instance.GetResource(Localization.Main.Categories.Starry),
+        WallpaperCategory.Illustration => I18nManager.Instance.GetResource(Localization.Main.Categories.Illustration),
+        WallpaperCategory.Dynamic => I18nManager.Instance.GetResource(Localization.Main.Categories.Dynamic),
+        WallpaperCategory.Local => I18nManager.Instance.GetResource(Localization.Main.Categories.Local),
+        _ => I18nManager.Instance.GetResource(Localization.Main.Categories.Wallpaper),
     };
+
+    public void RefreshLocalizedText()
+    {
+        OnPropertyChanged(nameof(CategoryDisplayName));
+        OnPropertyChanged(nameof(DisplayTags));
+        OnPropertyChanged(nameof(FavoriteText));
+    }
 
     /// <summary>网格缩略图。</summary>
     public AvaloniaBitmap? Thumb { get; }

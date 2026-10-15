@@ -21,23 +21,20 @@
         <DataTemplate x:DataType="vm:CategoryItemViewModel">
           <Button
               Classes="category"
-              Background="{Binding BackgroundBrush}"
+              Classes.active="{Binding IsSelected}"
               Command="{Binding SelectCommand}"
               CornerRadius="20"
               MinHeight="40"
               FontSize="14"
-              Foreground="{Binding ForegroundBrush}"
               Padding="20,8">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBlock Text="{Binding Icon}" VerticalAlignment="Center" />
               <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
               <Border
-                  Background="{Binding CountBackgroundBrush}"
                   Classes="category-count"
                   VerticalAlignment="Center">
                 <TextBlock
                     Classes="category-count"
-                    Foreground="{Binding ForegroundBrush}"
                     HorizontalAlignment="Center"
                     Text="{Binding CountText}" />
               </Border>
@@ -90,10 +87,10 @@
                     PreviewCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).OpenPreviewCommand, Mode=OneTime}"
                     ApplyCommand="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).ApplyWallpaperCommand, Mode=OneTime}"
                     CommandParameter="{Binding Mode=OneTime}"
-                    PreviewText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).PreviewButtonText, Mode=OneTime}"
-                    ApplyText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).SetWallpaperButtonText, Mode=OneTime}"
-                    CurrentText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CurrentBadgeText, Mode=OneTime}"
-                    DynamicText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DynamicBadgeText, Mode=OneTime}"
+                    PreviewText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).PreviewButtonText}"
+                    ApplyText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).SetWallpaperButtonText}"
+                    CurrentText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CurrentBadgeText}"
+                    DynamicText="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DynamicBadgeText}"
                     Loop="True">
                   <controls:DynamicWallpaperPreviewView.OverlayContent>
                     <controls:DynamicCardOverlay
@@ -104,7 +101,7 @@
                 <Border Classes="dyn-overlay flow" IsVisible="{Binding IsFlowOverlay}" />
                 <Border Classes="dyn-overlay aurora" IsVisible="{Binding IsAuroraOverlay}" />
                 <Border Classes="card-shade" Background="{DynamicResource CardShadeBrush}" />
-                <!-- Keep the rounded card edge visible above media content. -->
+                <!-- 让圆角卡片边框始终显示在媒体内容上方。 -->
                 <Border
                     Background="Transparent"
                     BorderBrush="{DynamicResource KidWallBorderBrush}"
@@ -132,7 +129,7 @@
                   <Border Classes="badge" IsVisible="{Binding IsCurrent}">
                     <TextBlock Classes="badge" Text="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CurrentBadgeText}" />
                   </Border>
-                  <Border Classes="badge" IsVisible="{Binding IsAnimated}">
+                  <Border Classes="badge" IsVisible="{Binding IsDynamic}">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                       <Ellipse Classes="badge-dot" VerticalAlignment="Center" />
                       <TextBlock Classes="badge" Text="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DynamicBadgeText}" />

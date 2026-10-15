@@ -8,5 +8,7 @@ public interface IMainWindowService
 
     void CloseToTray();
 
+    void ShowAbout();
+
     Task<string?> PickLocalFolderAsync();
 }

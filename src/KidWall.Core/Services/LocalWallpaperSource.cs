@@ -1,4 +1,4 @@
-using KidWall.Core.Models;
+﻿using KidWall.Core.Models;
 
 namespace KidWall.Core.Services;
 
@@ -14,7 +14,7 @@ public sealed class LocalWallpaperSource : IWallpaperSource
         _folder = folder;
     }
 
-    public string Name => "本地";
+    public string Name => "local";
 
     public Task<IReadOnlyList<Wallpaper>> LoadAsync(CancellationToken ct = default)
     {

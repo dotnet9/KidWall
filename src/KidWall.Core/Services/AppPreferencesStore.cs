@@ -20,7 +20,7 @@ public sealed class AppPreferencesStore
             if (File.Exists(_filePath))
             {
                 var json = File.ReadAllText(_filePath);
-                return JsonSerializer.Deserialize<AppPreferences>(json) ?? new AppPreferences();
+                return JsonSerializer.Deserialize(json, WallpaperJsonContext.Default.AppPreferences) ?? new AppPreferences();
             }
         }
         catch (Exception)
@@ -36,7 +36,7 @@ public sealed class AppPreferencesStore
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
-            var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(preferences, WallpaperJsonContext.Default.AppPreferences);
             File.WriteAllText(_filePath, json);
         }
         catch (Exception)

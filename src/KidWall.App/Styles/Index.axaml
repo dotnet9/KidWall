@@ -1,4 +1,4 @@
-<Styles
+﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -60,6 +60,7 @@
     <!-- 卡片遮罩渐变 -->
     <LinearGradientBrush x:Key="CardShadeBrush" StartPoint="0%,0%" EndPoint="0%,100%">
       <GradientStop Offset="0" Color="#00000000" />
+      <GradientStop Offset="0.4" Color="#00000000" />
       <GradientStop Offset="0.78" Color="#8C0A0528" />
       <GradientStop Offset="1" Color="#D90A0528" />
     </LinearGradientBrush>
@@ -127,7 +128,7 @@
     <Setter Property="FontSize" Value="13" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
-    <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="Foreground" Value="{DynamicResource ButtonSolidForeground}" />
     <Setter Property="RenderTransform" Value="translateY(0)" />
     <Setter Property="RenderTransformOrigin" Value="50%,50%" />
     <Setter Property="Transitions">
@@ -135,6 +136,12 @@
         <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" />
       </Transitions>
     </Setter>
+  </Style>
+  <Style Selector="Button.primary-btn TextBlock, Button.card-ops.set TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ButtonSolidForeground}" />
+  </Style>
+  <Style Selector="Button.category TextBlock">
+    <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
   </Style>
   <Style Selector="Button.primary-btn:pointerover">
     <Setter Property="RenderTransform" Value="translateY(-2px)" />
@@ -172,7 +179,7 @@
     <Setter Property="MinHeight" Value="40" />
     <Setter Property="Padding" Value="20,8" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="Background" Value="#1AFFFFFF" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
     <Setter Property="RenderTransform" Value="translateY(0)" />
     <Setter Property="RenderTransformOrigin" Value="50%,50%" />
@@ -186,11 +193,11 @@
     <Setter Property="RenderTransform" Value="translateY(-2px)" />
   </Style>
   <Style Selector="Button.category:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="#2EFFFFFF" />
+    <Setter Property="Background" Value="{DynamicResource StudioRaised}" />
   </Style>
   <Style Selector="Button.category.active">
     <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
-    <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="Foreground" Value="{DynamicResource ButtonSolidForeground}" />
     <Setter Property="FontWeight" Value="Bold" />
   </Style>
   <Style Selector="Border.category-count">
@@ -199,15 +206,15 @@
     <Setter Property="Padding" Value="6,1" />
     <Setter Property="MinWidth" Value="22" />
   </Style>
-  <Style Selector="Border.category-count.active">
+  <Style Selector="Button.category.active Border.category-count">
     <Setter Property="Background" Value="#2E3A2500" />
   </Style>
   <Style Selector="TextBlock.category-count">
     <Setter Property="FontSize" Value="10.5" />
     <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
   </Style>
-  <Style Selector="TextBlock.category-count.active">
-    <Setter Property="Foreground" Value="#3A2500" />
+  <Style Selector="Button.category.active TextBlock.category-count">
+    <Setter Property="Foreground" Value="{DynamicResource ButtonSolidForeground}" />
   </Style>
   <Style Selector="Border.category-planned">
     <Setter Property="Background" Value="#66FFFFFF" />
@@ -301,7 +308,7 @@
   </Style>
   <Style Selector="Button.card-ops.set">
     <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}" />
-    <Setter Property="Foreground" Value="#3A2500" />
+    <Setter Property="Foreground" Value="{DynamicResource ButtonSolidForeground}" />
     <Setter Property="FontWeight" Value="Bold" />
   </Style>
 
@@ -341,7 +348,7 @@
   </Style>
   <Style Selector="TextBlock.card-tag">
     <Setter Property="FontSize" Value="11" />
-    <Setter Property="Foreground" Value="{DynamicResource KidWallTextSecondaryBrush}" />
+    <Setter Property="Foreground" Value="#B8FFFFFF" />
   </Style>
 
   <!-- 动态壁纸：呼吸光晕（模拟播放动效，仅 Opacity 动画，安全） -->

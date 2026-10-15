@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using KidWall.Core.Models;
 
 namespace KidWall.Core.Services;
@@ -16,22 +16,15 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     /// <summary>动态视频封面（16:9 渐变底图，避免视频封面缺失）。</summary>
     private static readonly GradientSpec[] CoverSpecs =
     [
-        new("星空紫", "cover", WallpaperCategory.Dynamic,
+        new("night-purple", "cover", WallpaperCategory.Dynamic,
             new RgbColor(46, 16, 101), new RgbColor(27, 20, 64), new RgbColor(255, 209, 102), StarStyle.Twinkle, Bubbles: false),
-        new("深海蓝", "cover", WallpaperCategory.Dynamic,
+        new("deep-blue", "cover", WallpaperCategory.Dynamic,
             new RgbColor(30, 58, 138), new RgbColor(15, 23, 42), new RgbColor(79, 209, 255), StarStyle.Twinkle, Bubbles: false),
-        new("极光青", "cover", WallpaperCategory.Dynamic,
+        new("aurora-teal", "cover", WallpaperCategory.Dynamic,
             new RgbColor(76, 29, 149), new RgbColor(14, 116, 144), new RgbColor(109, 255, 196), StarStyle.Twinkle, Bubbles: false),
-        new("莓果粉", "cover", WallpaperCategory.Dynamic,
+        new("berry-pink", "cover", WallpaperCategory.Dynamic,
             new RgbColor(255, 154, 213), new RgbColor(124, 58, 237), new RgbColor(255, 209, 102), StarStyle.Twinkle, Bubbles: true),
     ];
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
-    };
 
     private readonly string _resDirectory;
     private readonly string _coverCacheDirectory;
@@ -47,7 +40,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
         _catalog = LoadCatalog(resDirectory);
     }
 
-    public string Name => "精选";
+    public string Name => "built-in";
 
     public Task<IReadOnlyList<Wallpaper>> LoadAsync(CancellationToken ct = default)
     {
@@ -87,7 +80,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
                     var cover = EnsureCover(folder, Path.GetFileNameWithoutExtension(file));
                     wallpapers.Add(new Wallpaper($"res:{file}", GetDisplayName(relativeKey, file), category, file, cover)
                     {
-                        Tags = "动态 儿童 视频",
+                        Tags = "dynamic children video",
                         IsDynamic = true,
                         IsRecommended = IsRecommended(relativeKey),
                         SourceName = Name,
@@ -102,7 +95,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
 
                     wallpapers.Add(new Wallpaper($"res:{file}", GetDisplayName(relativeKey, file), category, file, file)
                     {
-                        Tags = $"{directory} 儿童",
+                        Tags = $"{directory} children",
                         IsRecommended = IsRecommended(relativeKey),
                         SourceName = Name,
                     });
@@ -172,7 +165,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
     }
 
     private static WallpaperCatalog Deserialize(string json) =>
-        JsonSerializer.Deserialize<WallpaperCatalog>(json, JsonOptions) ?? new WallpaperCatalog();
+        JsonSerializer.Deserialize(json, WallpaperJsonContext.Default.WallpaperCatalog) ?? new WallpaperCatalog();
 
     /// <summary>查找视频同名封面（jpg/png/bmp），缺失时生成一张渐变封面（.preview.bmp）。</summary>
     private string EnsureCover(string folder, string nameWithoutExtension)
@@ -194,9 +187,7 @@ public sealed class BuiltInWallpaperSource : IWallpaperSource
                 Directory.CreateDirectory(Path.GetDirectoryName(coverPath)!);
                 var seed = StableHash(nameWithoutExtension);
                 var spec = CoverSpecs[(seed & int.MaxValue) % CoverSpecs.Length];
-                // The gallery only displays a 280x158 card. A 640x360 cover
-                // keeps first launch fast while retaining enough detail for
-                // the larger preview poster.
+                // 图库卡片为 280×158，640×360 封面兼顾首次生成速度与预览清晰度。
                 File.WriteAllBytes(coverPath, GradientBitmapFactory.Generate(640, 360, spec, seed: seed));
             }
             catch (Exception)

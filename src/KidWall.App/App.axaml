@@ -8,6 +8,7 @@
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:semi="https://irihi.tech/semi"
     xmlns:codewf="https://codewf.com"
+    xmlns:l="using:Localization"
     x:DataType="app:App"
     RequestedThemeVariant="Dark">
   <Application.Resources>
@@ -26,6 +27,7 @@
     <semi:UrsaSemiTheme Locale="zh-CN" />
     <semi:SemiPopupAnimations />
     <codewf:ACSemiTheme />
+    <codewf:StudioTheme />
     <StyleInclude Source="avares://KidWall.App/Styles/Index.axaml" />
   </Application.Styles>
 
@@ -34,12 +36,12 @@
       <TrayIcon
           Command="{Binding TrayIconCommand}"
           Icon="avares://KidWall.App/Assets/logo.ico"
-          ToolTipText="童壁 KidWall">
+          ToolTipText="{codewf:I18n Localization.Shell.Window.Title}">
         <TrayIcon.Menu>
           <NativeMenu>
-            <NativeMenuItem Header="打开" Command="{Binding ShowMainWindowCommand}" />
+            <NativeMenuItem Header="{codewf:I18n {x:Static l:Host.TrayOpen}}" Command="{Binding ShowMainWindowCommand}" />
             <NativeMenuItemSeparator />
-            <NativeMenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />
+            <NativeMenuItem Header="{codewf:I18n {x:Static l:Host.TrayExit}}" Command="{Binding ExitApplicationCommand}" />
           </NativeMenu>
         </TrayIcon.Menu>
       </TrayIcon>

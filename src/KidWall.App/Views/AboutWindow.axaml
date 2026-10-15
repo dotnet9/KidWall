@@ -1,0 +1,53 @@
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:codewf="https://codewf.com"
+                    xmlns:vm="using:KidWall.App.ViewModels"
+                    xmlns:l="using:Localization"
+                    x:Class="KidWall.App.Views.AboutWindow"
+                    x:DataType="vm:MainViewModel" x:CompileBindings="True"
+                    Title="{codewf:I18n {x:Static l:About.Title}}"
+                    Icon="avares://KidWall.App/Assets/logo.ico"
+                    Width="600" Height="620" MinWidth="540" MinHeight="520"
+                    CanMaximize="False" CanMinimize="False" WindowStartupLocation="CenterOwner"
+                    Background="{DynamicResource KidWallWindowBackground}"
+                    Foreground="{DynamicResource KidWallTextBrush}"
+                    TitleBarBackground="{DynamicResource KidWallTitlebarBrush}"
+                    TitleBarForeground="{DynamicResource KidWallTextBrush}">
+  <codewf:CodeWFWindow.LeftContent>
+    <TextBlock Margin="18,0" VerticalAlignment="Center" Text="{codewf:I18n {x:Static l:About.Title}}" />
+  </codewf:CodeWFWindow.LeftContent>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="28" Spacing="18">
+      <Grid ColumnDefinitions="56,*" ColumnSpacing="16">
+        <Image Source="avares://KidWall.App/Assets/logo.png" Width="56" Height="56" />
+        <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+          <TextBlock FontSize="22" FontWeight="SemiBold" Text="{Binding WindowTitle}" />
+          <TextBlock Text="{Binding WindowSubtitle}" TextWrapping="Wrap" Foreground="{DynamicResource KidWallTextSecondaryBrush}" />
+        </StackPanel>
+      </Grid>
+      <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14" ColumnSpacing="12">
+        <TextBlock Text="{codewf:I18n {x:Static l:About.AboutVersion}}" />
+        <TextBlock Grid.Column="1" Text="{Binding Version}" />
+        <TextBlock Grid.Row="1" Text="{codewf:I18n {x:Static l:About.AboutCompileTime}}" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CompileTime}" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="2" Text="{codewf:I18n {x:Static l:About.AboutPlatform}}" />
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Platform}" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="3" Text="{codewf:I18n {x:Static l:About.Author}}" />
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{codewf:I18n {x:Static l:About.AboutAuthorName}}" />
+      </Grid>
+      <Button Command="{Binding OpenRepositoryCommand}" Content="{codewf:I18n {x:Static l:About.Repository}}" HorizontalAlignment="Left" />
+      <Border Height="1" Background="{DynamicResource KidWallBorderBrush}" />
+      <StackPanel DataContext="{Binding Update}" x:DataType="vm:UpdateViewModel" Spacing="12">
+        <TextBlock Text="{codewf:I18n {x:Static l:About.AboutUpdateDescription}}" TextWrapping="Wrap" />
+        <WrapPanel>
+          <Button Classes="primary-btn" Command="{Binding ActionCommand}" Content="{Binding ActionText}" Margin="0,0,8,4" />
+          <Button Command="{Binding CheckCommand}" Content="{codewf:I18n {x:Static l:About.AboutRecheck}}" IsVisible="{Binding CanRecheck}" Margin="0,0,8,4" />
+          <Button Command="{Binding CancelCommand}" Content="{codewf:I18n {x:Static l:About.AboutCancel}}" IsVisible="{Binding IsBusy}" />
+        </WrapPanel>
+        <ProgressBar Height="6" Value="{Binding Progress}" Maximum="100" IsVisible="{Binding IsDownloading}" IsIndeterminate="{Binding IsIndeterminate}" />
+        <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
+      </StackPanel>
+      <TextBlock Text="{codewf:I18n {x:Static l:About.Copyright}}" TextWrapping="Wrap" Foreground="{DynamicResource KidWallTextTertiaryBrush}" />
+    </StackPanel>
+  </ScrollViewer>
+</codewf:CodeWFWindow>

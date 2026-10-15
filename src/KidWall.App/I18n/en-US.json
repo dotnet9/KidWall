@@ -1,0 +1,176 @@
+﻿{
+  "language": "English",
+  "description": "KidWall en-US",
+  "cultureName": "en-US",
+  "Localization": {
+    "Shell": {
+      "Window": {
+        "Title": "KidWall",
+        "Subtitle": "Wallpapers for children · Lightweight and ad free"
+      },
+      "Search": {
+        "Placeholder": "Search wallpapers, such as dinosaurs, stars, or unicorns…"
+      },
+      "Actions": {
+        "Local": "Local wallpapers",
+        "Settings": "Settings"
+      },
+      "Controls": {
+        "Minimize": "Minimize 🌙",
+        "Maximize": "Maximize ⭐",
+        "Restore": "Restore 🏠",
+        "Close": "Close 👋"
+      }
+    },
+    "Main": {
+      "Categories": {
+        "All": "All",
+        "Recommended": "Recommended",
+        "Cartoon": "Cartoons",
+        "Starry": "Space",
+        "Illustration": "Illustrations",
+        "Dynamic": "Dynamic",
+        "Local": "Local",
+        "Wallpaper": "Wallpaper"
+      },
+      "Section": {
+        "All": "All wallpapers",
+        "Recommended": "Recommended wallpapers",
+        "Cartoon": "Cartoon wallpapers",
+        "Starry": "Space wallpapers",
+        "Illustration": "Illustration wallpapers",
+        "Dynamic": "Dynamic wallpapers",
+        "Local": "Local wallpapers"
+      },
+      "Labels": {
+        "Count": "{0} wallpapers · Select a card to preview"
+      },
+      "Footer": {
+        "Text": "KidWall · Wallpapers for children · Open source"
+      },
+      "Card": {
+        "Preview": "Preview",
+        "SetWallpaper": "Set wallpaper",
+        "Dynamic": "Dynamic",
+        "Current": "Current",
+        "Planned": "Planned"
+      },
+      "Empty": {
+        "Icon": "🔭",
+        "Text": "No matching wallpapers. Try another search."
+      },
+      "Status": {
+        "Loading": "Loading wallpapers…",
+        "DynamicPlanned": "Dynamic wallpapers are being prepared."
+      }
+    },
+    "Preview": {
+      "Labels": {
+        "Resolution": "Recommended resolution 1920×1080",
+        "Apply": "✨ Set wallpaper",
+        "Favorite": "❤ Favorite",
+        "Favorited": "💛 Favorited",
+        "Close": "✕"
+      }
+    },
+    "Settings": {
+      "Page": {
+        "Title": "⚙ Settings",
+        "Subtitle": "Appearance, language, and wallpaper preferences",
+        "Save": "Save settings",
+        "CheckUpdate": "Check for updates"
+      },
+      "AutoStart": {
+        "Title": "Start on login",
+        "Desc": "Apply the previous wallpaper when you sign in"
+      },
+      "AutoRotate": {
+        "Title": "Rotate wallpapers",
+        "Desc": "Switch wallpaper every {0} minutes"
+      },
+      "BatterySaver": {
+        "Title": "Dynamic wallpaper power saving",
+        "Desc": "Not implemented yet"
+      },
+      "ContentFilter": {
+        "Title": "Filter inappropriate content",
+        "Desc": "Not implemented yet"
+      }
+    },
+    "Toast": {
+      "Messages": {
+        "Applied": "Desktop wallpaper applied: {0}",
+        "Saved": "Settings saved 🎉",
+        "Minimized": "🌙 KidWall is taking a nap.",
+        "Maximized": "✨ Window maximized.",
+        "Restored": "🐣 Window restored.",
+        "Closed": "👋 KidWall is in the system tray.",
+        "Reopened": "🎈 Welcome back!",
+        "LocalImported": "Imported {0} local wallpapers",
+        "AutoRotated": "Wallpaper changed: {0}",
+        "CheckingUpdate": "🔍 Checking for updates…",
+        "UpdateAvailable": "Version {0} is available. Release page opened.",
+        "UpToDate": "You are up to date.",
+        "UpdateCheckFailed": "Could not check for updates: {0}",
+        "DynamicFailed": "Could not apply dynamic wallpaper: {0}",
+        "DynamicApplied": "Dynamic wallpaper applied: {0}",
+        "FileUnavailable": "Could not apply wallpaper: file unavailable",
+        "MacPermission": "Allow KidWall to control Finder in System Settings → Privacy & Security → Automation",
+        "ApplyFailed": "Could not apply wallpaper: {0}",
+        "FavoriteAdded": "Added to favorites: {0}",
+        "FavoriteRemoved": "Removed from favorites: {0}",
+        "PlatformUnsupported": "Setting wallpapers is not supported on this platform yet."
+      }
+    },
+    "Host": {
+      "TrayOpen": "Open",
+      "TrayExit": "Exit",
+      "CloseSettings": "Close settings",
+      "SelectFolder": "Choose a wallpaper folder"
+    },
+    "Appearance": {
+      "Mode": "Theme mode",
+      "Palette": "Palette",
+      "Language": "Language",
+      "System": "System",
+      "Light": "Light",
+      "Dark": "Dark",
+      "DotNet": ".NET purple",
+      "Aurora": "AI Aurora",
+      "Ember": "AI Ember",
+      "Default": "Default blue",
+      "Aquatic": "Aquatic",
+      "Desert": "Desert",
+      "Dusk": "Dusk",
+      "NightSky": "Night sky",
+      "SimplifiedChinese": "简体中文",
+      "English": "English"
+    },
+    "About": {
+      "UpdateCheck": "Check for updates",
+      "UpdateDownload": "Download update",
+      "UpdateInstall": "Install update",
+      "UpdateReleasePage": "Open releases",
+      "AboutChecking": "Checking…",
+      "AboutDownloading": "Downloading…",
+      "AboutInstalling": "Starting installer…",
+      "AboutOpenFolder": "Open download folder",
+      "AboutCurrent": "You are up to date.",
+      "AboutAvailable": "Version {0} is available.",
+      "AboutDownloaded": "Download verified and ready to install.",
+      "AboutFailed": "Update failed: {0}",
+      "AboutCanceled": "Canceled. You can retry.",
+      "AboutCancel": "Cancel",
+      "AboutRecheck": "Check again",
+      "AboutPlatform": "Platform",
+      "AboutAuthorName": "Dotnet9 (CodeWF)",
+      "AboutUpdateDescription": "Check for KidWall updates and verify downloads before opening the system installer.",
+      "AboutVersion": "Version",
+      "AboutCompileTime": "Compile Time",
+      "Title": "About KidWall",
+      "Author": "Author",
+      "Repository": "Open-source repository",
+      "Copyright": "Copyright © Dotnet9 · MIT License"
+    }
+  }
+}

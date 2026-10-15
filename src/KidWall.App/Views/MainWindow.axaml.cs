@@ -22,6 +22,7 @@ public partial class MainWindow : CodeWFWindow
 
         _floatTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(33), DispatcherPriority.Render, (_, _) => AnimateHeader());
         _floatTimer.Start();
+        Closed += (_, _) => _floatTimer.Stop();
     }
 
     private void AnimateHeader()

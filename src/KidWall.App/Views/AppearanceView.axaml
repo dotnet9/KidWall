@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KidWall.App.ViewModels"
+             x:Class="KidWall.App.Views.AppearanceView" x:DataType="vm:AppearanceViewModel">
+  <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="12" ColumnSpacing="10" Margin="0,8,0,16">
+    <TextBlock Text="{Binding ThemeLabel}" VerticalAlignment="Center" />
+    <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
+    </ComboBox>
+    <TextBlock Grid.Row="1" Text="{Binding PaletteLabel}" VerticalAlignment="Center" />
+    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><StackPanel Orientation="Horizontal" Spacing="8"><Ellipse Width="12" Height="12" Fill="{Binding Swatch}" /><TextBlock Text="{Binding DisplayName}" /></StackPanel></DataTemplate></ComboBox.ItemTemplate>
+    </ComboBox>
+    <TextBlock Grid.Row="2" Text="{Binding LanguageLabel}" VerticalAlignment="Center" />
+    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:LanguageOption"><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
+    </ComboBox>
+  </Grid>
+</UserControl>

@@ -12,7 +12,7 @@
         IsVisible="{Binding IsVideoHostVisible, RelativeSource={RelativeSource AncestorType=controls:DynamicWallpaperPreviewView}}"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch" />
-    <!-- Keep the poster above the video until the first decoded frame. -->
+    <!-- 首帧解码前保持海报可见，避免视频区域闪黑。 -->
     <Image
         Classes="wallpaper-media"
         x:Name="PART_Poster"

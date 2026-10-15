@@ -8,6 +8,8 @@ using KidWall.Core.Models;
 using KidWall.Core.Services;
 using CodeWF.Toolkit.Core.UpdateChecking;
 using System.Collections.ObjectModel;
+using CodeWF.Toolkit.Core.Extensions;
+using System.Runtime.InteropServices;
 
 namespace KidWall.App.ViewModels;
 
@@ -21,11 +23,11 @@ public partial class MainViewModel : LocalizedViewModel
     private const string KeyDynamic = "dynamic";
 
     private readonly AppPreferences _preferences;
-    private readonly UpdateChecker _updateChecker = new("dotnet9", "KidWall");
     private readonly AppPreferencesStore _preferencesStore;
     private readonly IDesktopWallpaperService _wallpaperService;
     private readonly IDynamicWallpaperService _dynamicWallpaperService;
     private readonly IMainWindowService _mainWindowService;
+    private readonly Action<string> _openUrl;
     private readonly string _resDirectory;
     private readonly DispatcherTimer _rotateTimer;
     private readonly DispatcherTimer _messageTimer;
@@ -41,14 +43,20 @@ public partial class MainViewModel : LocalizedViewModel
         IDesktopWallpaperService wallpaperService,
         IDynamicWallpaperService dynamicWallpaperService,
         IMainWindowService mainWindowService,
-        string resDirectory)
+        string resDirectory,
+        IUpdateService? updates = null,
+        Action<string>? openUrl = null,
+        Action? exit = null)
     {
         _preferences = preferences;
         _preferencesStore = preferencesStore;
         _wallpaperService = wallpaperService;
         _dynamicWallpaperService = dynamicWallpaperService;
         _mainWindowService = mainWindowService;
+        _openUrl = openUrl ?? (url => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }));
         _resDirectory = resDirectory;
+        Update = new UpdateViewModel(updates, openUrl, exit);
+        Appearance = new AppearanceViewModel(preferences, preferencesStore);
 
         Categories.Add(new CategoryItemViewModel(KeyAll, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyRecommended, OnCategorySelected));
@@ -73,6 +81,12 @@ public partial class MainViewModel : LocalizedViewModel
         SyncAutoRotateTimer();
         _ = LoadAsync();
     }
+
+    public AppearanceViewModel Appearance { get; }
+    public UpdateViewModel Update { get; }
+    public string Version => UpdateVersion.Display(typeof(App).Assembly);
+    public string CompileTime => typeof(App).Assembly.CompileTime()?.ToString("yyyy-MM-dd HH:mm:ss") ?? "—";
+    public string Platform => $"{RuntimeInformation.FrameworkDescription} · Avalonia {typeof(Avalonia.Application).Assembly.GetName().Version}";
 
     public string WindowTitle => L(Localization.Shell.Window.Title);
 
@@ -307,7 +321,7 @@ public partial class MainViewModel : LocalizedViewModel
                 {
                     if (showStatus)
                     {
-                        ShowStatus($"动态壁纸设置失败：{item.Name}");
+                        ShowStatus(string.Format(L(Localization.Toast.Messages.DynamicFailed), item.Name));
                     }
 
                     return false;
@@ -327,7 +341,7 @@ public partial class MainViewModel : LocalizedViewModel
 
                 if (showStatus)
                 {
-                    ShowStatus($"🎬 动态壁纸已应用：{item.Name}");
+                    ShowStatus(string.Format(L(Localization.Toast.Messages.DynamicApplied), item.Name));
                 }
 
                 return true;
@@ -338,7 +352,7 @@ public partial class MainViewModel : LocalizedViewModel
             {
                 if (showStatus)
                 {
-                    ShowStatus("设置壁纸失败：文件不可用 🥺");
+                    ShowStatus(L(Localization.Toast.Messages.FileUnavailable));
                 }
 
                 return false;
@@ -349,8 +363,8 @@ public partial class MainViewModel : LocalizedViewModel
                 if (showStatus)
                 {
                     ShowStatus(OperatingSystem.IsMacOS()
-                        ? "设置壁纸失败：请在「系统设置 → 隐私与安全性 → 自动化」中允许本程序控制 Finder 🥺"
-                        : "设置壁纸失败：文件不可用 🥺");
+                        ? L(Localization.Toast.Messages.MacPermission)
+                        : L(Localization.Toast.Messages.FileUnavailable));
                 }
 
                 return false;
@@ -377,11 +391,11 @@ public partial class MainViewModel : LocalizedViewModel
 
             return true;
         }
-        catch (PlatformNotSupportedException ex)
+        catch (PlatformNotSupportedException)
         {
             if (showStatus)
             {
-                ShowStatus(ex.Message);
+                ShowStatus(L(Localization.Toast.Messages.PlatformUnsupported));
             }
 
             return false;
@@ -390,7 +404,7 @@ public partial class MainViewModel : LocalizedViewModel
         {
             if (showStatus)
             {
-                ShowStatus($"应用壁纸失败：{item.Name}");
+                ShowStatus(string.Format(L(Localization.Toast.Messages.ApplyFailed), item.Name));
             }
 
             return false;
@@ -407,11 +421,17 @@ public partial class MainViewModel : LocalizedViewModel
     private void ToggleFavorite(WallpaperItemViewModel item)
     {
         item.IsFavorite = !item.IsFavorite;
-        ShowStatus(item.IsFavorite ? $"💛 已收藏：{item.Name}" : $"收藏已取消：{item.Name}");
+        ShowStatus(item.IsFavorite ? string.Format(L(Localization.Toast.Messages.FavoriteAdded), item.Name) : string.Format(L(Localization.Toast.Messages.FavoriteRemoved), item.Name));
     }
 
     [RelayCommand]
     private void ToggleSettings() => IsSettingsOpen = !IsSettingsOpen;
+
+    [RelayCommand]
+    private void ShowAbout() => _mainWindowService.ShowAbout();
+
+    [RelayCommand]
+    private void OpenRepository() => _openUrl("https://github.com/dotnet9/KidWall");
 
     [RelayCommand]
     private void MinimizeWindow() => _mainWindowService.Minimize();
@@ -447,57 +467,14 @@ public partial class MainViewModel : LocalizedViewModel
         ShowStatus(L(Localization.Toast.Messages.Saved));
     }
 
-    [RelayCommand]
-    private async Task CheckUpdateAsync()
-    {
-        ShowStatus(L(Localization.Toast.Messages.CheckingUpdate));
-        Version current = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(1, 0, 0);
-        UpdateCheckResult result = await _updateChecker.CheckAsync(current);
-        if (!result.Succeeded)
-        {
-            ShowStatus(string.Format(L(Localization.Toast.Messages.UpdateCheckFailed), result.Error));
-            return;
-        }
-
-        if (result.Update is { } update)
-        {
-            // 仅提醒不自动下载：提示并打开发布页
-            ShowStatus(string.Format(L(Localization.Toast.Messages.UpdateAvailable), update.Tag));
-            OpenReleasePage(update.PageUrl);
-            return;
-        }
-
-        ShowStatus(L(Localization.Toast.Messages.UpToDate));
-    }
-
-    private void OpenReleasePage(string url)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
-        }
-        catch
-        {
-            // 打不开浏览器就忽略，状态条已给出提示
-        }
-    }
-
-    // ---------- 本地文件夹 ----------
-
     public async Task AddLocalFolderAsync(string folder)
     {
-        if (string.IsNullOrWhiteSpace(folder) || _localFolders.Contains(folder))
-        {
-            return;
-        }
-
+        if (string.IsNullOrWhiteSpace(folder) || _localFolders.Contains(folder)) return;
         _localFolders.Add(folder);
         await LoadAsync();
         var localCount = _allItems.Count(item => item.IsLocal);
         ShowStatus(string.Format(L(Localization.Toast.Messages.LocalImported), localCount));
     }
-
-    // ---------- 内部 ----------
 
     private void OnCategorySelected(CategoryItemViewModel category)
     {
@@ -526,7 +503,7 @@ public partial class MainViewModel : LocalizedViewModel
         Wallpapers.Clear();
         foreach (var item in _allItems)
         {
-            if (MatchCategory(item, key) && item.Model.MatchesKeyword(SearchText))
+            if (MatchCategory(item, key) && (item.Model.MatchesKeyword(SearchText) || item.CategoryDisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
             {
                 Wallpapers.Add(item);
             }
@@ -645,6 +622,7 @@ public partial class MainViewModel : LocalizedViewModel
 
     protected override void RefreshLocalizedText()
     {
+        foreach (var item in _allItems) item.RefreshLocalizedText();
         Categories[0].DisplayName = L(Localization.Main.Categories.All);
         Categories[1].DisplayName = L(Localization.Main.Categories.Recommended);
         Categories[2].DisplayName = L(Localization.Main.Categories.Cartoon);
@@ -695,5 +673,12 @@ public partial class MainViewModel : LocalizedViewModel
         OnPropertyChanged(nameof(SectionTitle));
         OnPropertyChanged(nameof(SectionIcon));
         OnPropertyChanged(nameof(CountText));
+    }
+
+    public override void Dispose()
+    {
+        _rotateTimer.Stop(); _messageTimer.Stop();
+        Appearance.Dispose(); Update.Dispose();
+        base.Dispose();
     }
 }

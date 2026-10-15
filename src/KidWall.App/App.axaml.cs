@@ -12,13 +12,15 @@ using KidWall.App.Services;
 using KidWall.App.ViewModels;
 using KidWall.App.Views;
 using KidWall.Core.Services;
-using CodeWF.Avalonia.Lang;
-using CodeWF.Avalonia.Lang.Json;
+using CodeWF.Toolkit.Lang;
+using CodeWF.Toolkit.Lang.Json;
+using CodeWF.Avalonia.Controls.Themes;
 
 namespace KidWall.App;
 
 public partial class App : Avalonia.Application
 {
+    public static StudioThemeController ThemeController { get; private set; } = null!;
     public static AppPreferencesStore PreferencesStore { get; private set; } = null!;
 
     public static IDesktopWallpaperService WallpaperService { get; private set; } = null!;
@@ -46,6 +48,9 @@ public partial class App : Avalonia.Application
     {
         AvaloniaXamlLoader.Load(this);
         RegisterLocalization();
+        ThemeController = new StudioThemeController(this);
+        ActualThemeVariantChanged += (_, _) => RefreshThemeAliases();
+        RefreshThemeAliases();
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -74,6 +79,9 @@ public partial class App : Avalonia.Application
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "KidWall")
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KidWall");
         var resDirectory = Path.Combine(AppContext.BaseDirectory, "res");
+        var bundleResources = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "res"));
+        if (!Directory.Exists(resDirectory) && OperatingSystem.IsMacOS() && Directory.Exists(bundleResources))
+            resDirectory = bundleResources;
         var libVlcDirectory = Path.Combine(AppContext.BaseDirectory, "libvlc", "win-x64");
 
         try
@@ -94,7 +102,9 @@ public partial class App : Avalonia.Application
 
         PreferencesStore = new AppPreferencesStore(dataDirectory);
         var preferences = PreferencesStore.Load();
+        preferences.Language = string.Equals(preferences.Language, "en-US", StringComparison.OrdinalIgnoreCase) ? "en-US" : "zh-CN";
         I18nManager.Instance.Culture = new CultureInfo(preferences.Language);
+        ApplyThirdPartyCulture(preferences.Language);
         WallpaperService = OperatingSystem.IsWindows()
             ? new WindowsDesktopWallpaperService()
             : OperatingSystem.IsMacOS()
@@ -138,6 +148,8 @@ public partial class App : Avalonia.Application
 
     private void CleanupRuntimeState()
     {
+        (_mainWindow?.DataContext as IDisposable)?.Dispose();
+        ThemeController.Dispose();
         try
         {
             _dynamicWallpaperService?.Dispose();
@@ -191,11 +203,35 @@ public partial class App : Avalonia.Application
 
     private static void RegisterLocalization()
     {
+        var resourceFolder = Path.Combine(AppContext.BaseDirectory, "I18n");
+        var bundleResources = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "Resources", "I18n"));
+        if (!Directory.Exists(resourceFolder) && OperatingSystem.IsMacOS() && Directory.Exists(bundleResources))
+            resourceFolder = bundleResources;
         var langPlugin = new JsonLangPlugin
         {
-            ResourceFolder = Path.Combine(AppContext.BaseDirectory, "I18n")
+            ResourceFolder = resourceFolder
         };
 
         I18nManager.Instance.Register(langPlugin, new CultureInfo("zh-CN"), out _);
+    }
+
+    public static void ApplyThirdPartyCulture(string culture)
+    {
+        if (Current is not { } app) return;
+        foreach (var semi in app.Styles.OfType<Semi.Avalonia.SemiTheme>()) semi.Locale = CultureInfo.GetCultureInfo(culture);
+        foreach (var ursa in app.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>()) ursa.Locale = CultureInfo.GetCultureInfo(culture);
+    }
+
+    private void RefreshThemeAliases()
+    {
+        foreach (var (alias, token) in new[]
+        {
+            ("KidWallWindowBackground", "StudioBackground"), ("KidWallSurfaceBrush", "StudioSurface"),
+            ("KidWallTitlebarBrush", "StudioSurface"), ("KidWallTextBrush", "StudioText"),
+            ("KidWallTextSecondaryBrush", "StudioMuted"), ("KidWallTextTertiaryBrush", "StudioMuted"),
+            ("KidWallBorderBrush", "StudioBorder"), ("KidWallAccentBrush", "StudioAccent"),
+            ("KidWallAccentGradientBrush", "StudioAccent"), ("PrimaryButtonBrush", "StudioPrimary")
+        })
+            if (TryGetResource(token, ActualThemeVariant, out var value)) Resources[alias] = value;
     }
 }

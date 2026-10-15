@@ -7,11 +7,13 @@
     xmlns:controls="using:KidWall.App.Controls"
     xmlns:vm="using:KidWall.App.ViewModels"
     xmlns:views="using:KidWall.App.Views"
+    xmlns:l="using:Localization"
     x:CompileBindings="True"
     x:DataType="vm:MainViewModel"
     Background="{DynamicResource KidWallWindowBackground}"
+    Foreground="{DynamicResource KidWallTextBrush}"
     Icon="avares://KidWall.App/Assets/logo.ico"
-    FontFamily="YouYuan, Microsoft YaHei UI, Microsoft YaHei, Segoe UI"
+    FontFamily="Segoe UI, Microsoft YaHei UI, PingFang SC, Noto Sans CJK SC, sans-serif"
     Height="820"
     MinHeight="640"
     MinWidth="1000"
@@ -19,6 +21,7 @@
     Width="1280"
     TitleBarHeight="60"
     TitleBarBackground="{DynamicResource KidWallTitlebarBrush}"
+    TitleBarForeground="{DynamicResource KidWallTextBrush}"
     TitleBarBorderBrush="{DynamicResource KidWallAccentGradientBrush}"
     TitleBarBorderThickness="0,0,0,3"
     behaviors:WindowCloseBehavior.IsEnabled="True"
@@ -188,7 +191,7 @@
                   </StackPanel>
                 </Button>
               </Grid>
-              <!-- Reserve a header strip so the close button stays outside the native video HWND. -->
+              <!-- 为关闭按钮预留标题区，避免被原生视频窗口遮挡。 -->
               <Button
                   Grid.RowSpan="2"
                   Classes="candy hand"
@@ -239,6 +242,7 @@
                 <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.35" />
               </Transitions>
             </Border.Transitions>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="26,22">
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Classes="panel-title" Text="{Binding SettingsTitle}" />
@@ -247,7 +251,7 @@
                     Classes="secondary-btn"
                     Command="{Binding ToggleSettingsCommand}"
                     Padding="8,4"
-                    ToolTip.Tip="关闭设置">
+                    ToolTip.Tip="{codewf:I18n {x:Static l:Host.CloseSettings}}">
                   <TextBlock Text="✕" />
                 </Button>
               </Grid>
@@ -255,6 +259,7 @@
                   Classes="panel-sub"
                   Margin="0,4,0,20"
                   Text="{Binding SettingsSubtitle}" />
+              <views:AppearanceView DataContext="{Binding Appearance}" />
 
               <Grid ColumnDefinitions="*,Auto" Margin="0,14,0,0">
                 <StackPanel Spacing="2">
@@ -287,7 +292,7 @@
                 </StackPanel>
                 <ToggleSwitch
                     Grid.Column="1"
-                    IsChecked="{Binding BatterySaver, Mode=TwoWay}"
+                    IsChecked="False" IsEnabled="False"
                     OnContent=""
                     OffContent="" />
               </Grid>
@@ -299,7 +304,7 @@
                 </StackPanel>
                 <ToggleSwitch
                     Grid.Column="1"
-                    IsChecked="{Binding ContentFilter, Mode=TwoWay}"
+                    IsChecked="False" IsEnabled="False"
                     OnContent=""
                     OffContent="" />
               </Grid>
@@ -312,14 +317,10 @@
                 <TextBlock Text="{Binding SaveSettingsText}" />
               </Button>
 
-              <Button
-                  Classes="secondary-btn"
-                  HorizontalAlignment="Stretch"
-                  Margin="0,12,0,0"
-                  Command="{Binding CheckUpdateCommand}">
-                <TextBlock Text="{Binding CheckUpdateText}" />
-              </Button>
+              <Button Command="{Binding ShowAboutCommand}" Content="{codewf:I18n {x:Static l:About.Title}}"
+                      HorizontalAlignment="Stretch" Margin="0,16,0,0" />
             </StackPanel>
+            </ScrollViewer>
           </Border>
         </Grid>
       </Border>

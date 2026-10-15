@@ -1,4 +1,4 @@
-using KidWall.Core.Models;
+﻿using KidWall.Core.Models;
 
 namespace KidWall.Core.Services;
 
@@ -11,7 +11,7 @@ public sealed class LinuxDesktopWallpaperService : IDesktopWallpaperService
 {
     public bool SetWallpaper(string imagePath)
     {
-        throw new PlatformNotSupportedException("当前平台 Linux 的壁纸功能正在开发中，敬请期待 🙏");
+        throw new PlatformNotSupportedException();
     }
 
     public string? GetCurrentWallpaper() => null;

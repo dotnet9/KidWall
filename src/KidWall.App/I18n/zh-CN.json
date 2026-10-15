@@ -1,6 +1,6 @@
-{
+﻿{
   "language": "简体中文",
-  "description": "KidWall 简体中文资源",
+  "description": "KidWall zh-CN",
   "cultureName": "zh-CN",
   "Localization": {
     "Shell": {
@@ -30,7 +30,8 @@
         "Starry": "星空",
         "Illustration": "插画",
         "Dynamic": "动态壁纸",
-        "Local": "本地"
+        "Local": "本地",
+        "Wallpaper": "壁纸"
       },
       "Section": {
         "All": "全部壁纸",
@@ -45,7 +46,7 @@
         "Count": "共 {0} 张 · 点击卡片可预览"
       },
       "Footer": {
-        "Text": "童壁 KidWall · 为儿童打造的纯净桌面壁纸 · 开源原型"
+        "Text": "童壁 KidWall · 儿童桌面壁纸 · 开源软件"
       },
       "Card": {
         "Preview": "预览",
@@ -75,7 +76,7 @@
     "Settings": {
       "Page": {
         "Title": "⚙ 简单设置",
-        "Subtitle": "儿童模式 · 一键守护",
+        "Subtitle": "外观、语言与壁纸偏好",
         "Save": "保存设置",
         "CheckUpdate": "检查更新"
       },
@@ -89,11 +90,11 @@
       },
       "BatterySaver": {
         "Title": "动态壁纸省电模式",
-        "Desc": "后台播放时降低帧率，更省电"
+        "Desc": "尚未实现，暂不可用"
       },
       "ContentFilter": {
         "Title": "屏蔽不适合内容",
-        "Desc": "自动过滤风险壁纸源"
+        "Desc": "尚未实现，暂不可用"
       }
     },
     "Toast": {
@@ -110,8 +111,66 @@
         "CheckingUpdate": "🔍 正在检查更新…",
         "UpdateAvailable": "🎉 发现新版本 {0}，已打开发布页",
         "UpToDate": "✅ 当前已是最新版本",
-        "UpdateCheckFailed": "⚠️ 检查更新失败：{0}"
+        "UpdateCheckFailed": "⚠️ 检查更新失败：{0}",
+        "DynamicFailed": "动态壁纸设置失败：{0}",
+        "DynamicApplied": "动态壁纸已应用：{0}",
+        "FileUnavailable": "设置壁纸失败：文件不可用",
+        "MacPermission": "请在系统设置的隐私与安全性 → 自动化中允许 KidWall 控制 Finder",
+        "ApplyFailed": "应用壁纸失败：{0}",
+        "FavoriteAdded": "已收藏：{0}",
+        "FavoriteRemoved": "收藏已取消：{0}",
+        "PlatformUnsupported": "当前平台的壁纸设置功能尚未适配。"
       }
+    },
+    "Host": {
+      "TrayOpen": "打开",
+      "TrayExit": "退出",
+      "CloseSettings": "关闭设置",
+      "SelectFolder": "选择壁纸文件夹"
+    },
+    "Appearance": {
+      "Mode": "主题模式",
+      "Palette": "配色",
+      "Language": "语言",
+      "System": "跟随系统",
+      "Light": "浅色",
+      "Dark": "深色",
+      "DotNet": ".NET 紫",
+      "Aurora": "AI 极光",
+      "Ember": "AI 余烬",
+      "Default": "默认蓝",
+      "Aquatic": "水生",
+      "Desert": "沙漠",
+      "Dusk": "黄昏",
+      "NightSky": "夜空",
+      "SimplifiedChinese": "简体中文",
+      "English": "English"
+    },
+    "About": {
+      "UpdateCheck": "检查更新",
+      "UpdateDownload": "下载更新",
+      "UpdateInstall": "安装更新",
+      "UpdateReleasePage": "打开发布页",
+      "AboutChecking": "正在检查…",
+      "AboutDownloading": "正在下载…",
+      "AboutInstalling": "正在启动安装…",
+      "AboutOpenFolder": "打开下载目录",
+      "AboutCurrent": "当前已是最新版本。",
+      "AboutAvailable": "发现新版本 {0}。",
+      "AboutDownloaded": "下载和校验完成，可以安装。",
+      "AboutFailed": "更新失败：{0}",
+      "AboutCanceled": "已取消，可以重试。",
+      "AboutCancel": "取消",
+      "AboutRecheck": "重新检查",
+      "AboutPlatform": "开发平台",
+      "AboutAuthorName": "沙漠尽头的狼",
+      "AboutUpdateDescription": "检查KidWall新版本，校验下载后由系统安装器处理。",
+      "AboutVersion": "版本号",
+      "AboutCompileTime": "编译时间",
+      "Title": "关于童壁",
+      "Author": "作者",
+      "Repository": "开源仓库",
+      "Copyright": "Copyright © Dotnet9 · MIT 开源许可"
     }
   }
 }
