@@ -21,6 +21,8 @@ public partial class MainViewModel : LocalizedViewModel
     private const string KeyStarry = "starry";
     private const string KeyIllustration = "illustration";
     private const string KeyDynamic = "dynamic";
+    private const string KeyFavorites = "favorites";
+    private const string KeyLocal = "local";
 
     private readonly AppPreferences _preferences;
     private readonly AppPreferencesStore _preferencesStore;
@@ -55,6 +57,9 @@ public partial class MainViewModel : LocalizedViewModel
         _mainWindowService = mainWindowService;
         _openUrl = openUrl ?? (url => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }));
         _resDirectory = resDirectory;
+        _localFolders.AddRange((_preferences.LocalFolders ?? [])
+            .Where(folder => !string.IsNullOrWhiteSpace(folder))
+            .Distinct(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal));
         Update = new UpdateViewModel(updates, openUrl, exit);
         Appearance = new AppearanceViewModel(preferences, preferencesStore);
 
@@ -64,6 +69,8 @@ public partial class MainViewModel : LocalizedViewModel
         Categories.Add(new CategoryItemViewModel(KeyStarry, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyIllustration, OnCategorySelected));
         Categories.Add(new CategoryItemViewModel(KeyDynamic, OnCategorySelected));
+        Categories.Add(new CategoryItemViewModel(KeyFavorites, OnCategorySelected));
+        Categories.Add(new CategoryItemViewModel(KeyLocal, OnCategorySelected));
 
         _rotateTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(Math.Max(1, _preferences.AutoRotateIntervalMinutes)) };
         _rotateTimer.Tick += (_, _) => RotateOnce();
@@ -289,11 +296,16 @@ public partial class MainViewModel : LocalizedViewModel
                 items.AddRange(wallpapers.Select(w => new WallpaperItemViewModel(w)));
             }
 
-            _allItems = items;
-            foreach (var item in items)
+            _allItems = items.DistinctBy(item => item.Id).ToList();
+            var favorites = (_preferences.FavoriteWallpaperIds ?? []).ToHashSet(StringComparer.Ordinal);
+            foreach (var item in _allItems)
             {
                 item.IsCurrent = item.Id == _appliedWallpaperId;
+                item.IsFavorite = favorites.Contains(item.Id);
             }
+
+            if (PreviewItem is not null)
+                PreviewItem = _allItems.FirstOrDefault(item => item.Id == PreviewItem.Id);
 
             RefreshFilter();
             RestoreInitialWallpaper();
@@ -421,6 +433,12 @@ public partial class MainViewModel : LocalizedViewModel
     private void ToggleFavorite(WallpaperItemViewModel item)
     {
         item.IsFavorite = !item.IsFavorite;
+        var favorites = (_preferences.FavoriteWallpaperIds ?? []).ToHashSet(StringComparer.Ordinal);
+        if (item.IsFavorite) favorites.Add(item.Id);
+        else favorites.Remove(item.Id);
+        _preferences.FavoriteWallpaperIds = favorites.Order(StringComparer.Ordinal).ToList();
+        _preferencesStore.Save(_preferences);
+        RefreshFilter();
         ShowStatus(item.IsFavorite ? string.Format(L(Localization.Toast.Messages.FavoriteAdded), item.Name) : string.Format(L(Localization.Toast.Messages.FavoriteRemoved), item.Name));
     }
 
@@ -469,8 +487,13 @@ public partial class MainViewModel : LocalizedViewModel
 
     public async Task AddLocalFolderAsync(string folder)
     {
-        if (string.IsNullOrWhiteSpace(folder) || _localFolders.Contains(folder)) return;
-        _localFolders.Add(folder);
+        if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder)) return;
+        var normalized = Path.TrimEndingDirectorySeparator(Path.GetFullPath(folder));
+        var comparer = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        if (_localFolders.Contains(normalized, comparer)) return;
+        _localFolders.Add(normalized);
+        _preferences.LocalFolders = [.. _localFolders];
+        _preferencesStore.Save(_preferences);
         await LoadAsync();
         var localCount = _allItems.Count(item => item.IsLocal);
         ShowStatus(string.Format(L(Localization.Toast.Messages.LocalImported), localCount));
@@ -494,6 +517,8 @@ public partial class MainViewModel : LocalizedViewModel
         KeyStarry => item.Category == WallpaperCategory.Starry,
         KeyIllustration => item.Category == WallpaperCategory.Illustration,
         KeyDynamic => item.IsDynamic,
+        KeyFavorites => item.IsFavorite,
+        KeyLocal => item.IsLocal,
         _ => true,
     };
 
@@ -629,6 +654,8 @@ public partial class MainViewModel : LocalizedViewModel
         Categories[3].DisplayName = L(Localization.Main.Categories.Starry);
         Categories[4].DisplayName = L(Localization.Main.Categories.Illustration);
         Categories[5].DisplayName = L(Localization.Main.Categories.Dynamic);
+        Categories[6].DisplayName = L(Localization.Main.Categories.Favorites);
+        Categories[7].DisplayName = L(Localization.Main.Categories.Local);
 
         Categories[0].SectionTitle = L(Localization.Main.Section.All);
         Categories[1].SectionTitle = L(Localization.Main.Section.Recommended);
@@ -636,6 +663,8 @@ public partial class MainViewModel : LocalizedViewModel
         Categories[3].SectionTitle = L(Localization.Main.Section.Starry);
         Categories[4].SectionTitle = L(Localization.Main.Section.Illustration);
         Categories[5].SectionTitle = L(Localization.Main.Section.Dynamic);
+        Categories[6].SectionTitle = L(Localization.Main.Section.Favorites);
+        Categories[7].SectionTitle = L(Localization.Main.Section.Local);
 
         foreach (var category in Categories)
         {

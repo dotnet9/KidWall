@@ -42,6 +42,7 @@ namespace Localization.Main
         public static readonly string Starry = "Localization.Main.Categories.Starry";
         public static readonly string Illustration = "Localization.Main.Categories.Illustration";
         public static readonly string Dynamic = "Localization.Main.Categories.Dynamic";
+        public static readonly string Favorites = "Localization.Main.Categories.Favorites";
         public static readonly string Local = "Localization.Main.Categories.Local";
         public static readonly string Wallpaper = "Localization.Main.Categories.Wallpaper";
     }
@@ -54,6 +55,7 @@ namespace Localization.Main
         public static readonly string Starry = "Localization.Main.Section.Starry";
         public static readonly string Illustration = "Localization.Main.Section.Illustration";
         public static readonly string Dynamic = "Localization.Main.Section.Dynamic";
+        public static readonly string Favorites = "Localization.Main.Section.Favorites";
         public static readonly string Local = "Localization.Main.Section.Local";
     }
 

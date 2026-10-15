@@ -24,6 +24,12 @@ public sealed class AppPreferences
     /// <summary>最近一次应用的壁纸路径。</summary>
     public string LastAppliedWallpaperPath { get; set; } = string.Empty;
 
+    /// <summary>用户收藏的壁纸稳定标识，刷新图库或重启后恢复。</summary>
+    public List<string> FavoriteWallpaperIds { get; set; } = [];
+
+    /// <summary>用户导入的本地文件夹，重启后重新扫描。</summary>
+    public List<string> LocalFolders { get; set; } = [];
+
     /// <summary>界面语言。</summary>
     public string Language { get; set; } = "zh-CN";
 

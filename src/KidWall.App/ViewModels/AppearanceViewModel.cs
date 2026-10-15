@@ -5,6 +5,8 @@ using Avalonia.Media;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Toolkit.Lang;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Windows.Input;
 using KidWall.Core.Models;
 using KidWall.Core.Services;
 
@@ -25,6 +27,7 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
         if (!Enum.TryParse<StudioPalette>(preferences.Palette, out var palette) || !Enum.IsDefined(palette)) palette = StudioPalette.DotNet;
         App.ThemeController.Mode = mode; App.ThemeController.Palette = palette;
         Languages = [new("zh-CN", T(Localization.Appearance.SimplifiedChinese)), new("en-US", T(Localization.Appearance.English))];
+        foreach (var option in Languages) option.SelectCommand = new RelayCommand(() => SelectedLanguage = option);
         _language = Languages.FirstOrDefault(item => item.Key == preferences.Language) ?? Languages[0];
         I18nManager.Instance.CultureChanged += OnCultureChanged;
         Refresh();
@@ -35,6 +38,11 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
     public string ThemeLabel => T(Localization.Appearance.Mode);
     public string PaletteLabel => T(Localization.Appearance.Palette);
     public string LanguageLabel => T(Localization.Appearance.Language);
+    public StudioThemeMode ThemeMode
+    {
+        get => App.ThemeController.Mode;
+        set => SelectedMode = Modes.Single(item => item.Key == value.ToString());
+    }
     public AppearanceOption? SelectedMode
     {
         get => _mode;
@@ -43,6 +51,7 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
             if (!SetProperty(ref _mode, value) || _refreshing || value is null) return;
             App.ThemeController.Mode = Enum.Parse<StudioThemeMode>(value.Key);
             _preferences.ThemeMode = value.Key; _store.Save(_preferences);
+            OnPropertyChanged(nameof(ThemeMode));
         }
     }
     public AppearanceOption? SelectedPalette
@@ -103,4 +112,7 @@ public sealed class AppearanceViewModel : ObservableObject, IDisposable
 }
 
 public sealed record AppearanceOption(string Key, string DisplayName, IBrush Swatch);
-public sealed record LanguageOption(string Key, string DisplayName);
+public sealed record LanguageOption(string Key, string DisplayName)
+{
+    public ICommand? SelectCommand { get; set; }
+}

@@ -30,6 +30,7 @@
         "Starry": "Space",
         "Illustration": "Illustrations",
         "Dynamic": "Dynamic",
+        "Favorites": "Favorites",
         "Local": "Local",
         "Wallpaper": "Wallpaper"
       },
@@ -40,6 +41,7 @@
         "Starry": "Space wallpapers",
         "Illustration": "Illustration wallpapers",
         "Dynamic": "Dynamic wallpapers",
+        "Favorites": "Favorite wallpapers",
         "Local": "Local wallpapers"
       },
       "Labels": {

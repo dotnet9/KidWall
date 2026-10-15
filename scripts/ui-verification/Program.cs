@@ -5,6 +5,8 @@ using Avalonia.Headless;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Avalonia.Interactivity;
+using Ursa.Controls;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Toolkit.Lang;
 using CodeWF.Toolkit.Core.UpdateChecking;
@@ -38,6 +40,15 @@ window.Show(); Complete(model.LoadCommand.ExecuteAsync(null)); Pump();
 Check(model.Wallpapers.Count == 1,"Real wallpaper catalog loads through generated JSON metadata");
 Check(wallpaper.Calls == 0,"Verification never changes desktop wallpaper");
 Check(model.Appearance.Modes.Count == 3 && model.Appearance.Palettes.Count == 8,"Three independent modes and eight palettes");
+var paletteSelector=window.GetVisualDescendants().OfType<ListBox>().Single(control=>control.Classes.Contains("title-palettes"));
+Check(paletteSelector.Items.Count==8 && !window.GetVisualDescendants().OfType<ComboBox>().Any(),"Title bar uses eight palette dots with no appearance dropdowns");
+var themeToggle=window.GetVisualDescendants().OfType<ThemeToggleButton>().Single();
+model.Appearance.ThemeMode=StudioThemeMode.System;Pump();
+foreach(var expected in new[]{StudioThemeMode.Light,StudioThemeMode.Dark,StudioThemeMode.System})
+{
+    themeToggle.GetVisualDescendants().OfType<Button>().Single(button=>button.Name=="PART_ThemeButton").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));Pump();
+    Check(model.Appearance.ThemeMode==expected && store.Load().ThemeMode==expected.ToString(),"Actual Ursa theme click persists "+expected);
+}
 var sample=model.Wallpapers[0];
 model.SearchText="missing-wallpaper";Pump();Check(model.Wallpapers.Count==0,"Search filters actual wallpaper data");
 model.SearchText="Stars";Pump();Check(model.Wallpapers.Count==1,"Search restores the matching wallpaper");
@@ -48,7 +59,7 @@ model.ToggleFavoriteCommand.Execute(sample);Check(sample.IsFavorite,"Favorite ac
 model.ToggleFavoriteCommand.Execute(sample);Check(!sample.IsFavorite,"Favorite action can be reversed");
 foreach(var palette in model.Appearance.Palettes.ToArray())
 {
-    model.Appearance.SelectedPalette=palette;
+    paletteSelector.SelectedItem=palette;
     foreach(var dark in new[]{false,true})
     {
         model.Appearance.SelectedMode=model.Appearance.Modes.Single(item=>item.Key==(dark?"Dark":"Light"));Pump();
@@ -72,13 +83,24 @@ model.Appearance.SelectedMode=model.Appearance.Modes.Single(item=>item.Key=="Sys
 Check(store.Load().ThemeMode=="System","System mode persisted independently");
 foreach(var language in model.Appearance.Languages)
 {
-    model.Appearance.SelectedLanguage=language;Pump();
+    var languageButton=window.GetVisualDescendants().OfType<Button>().Single(button=>button.Flyout is MenuFlyout);
+    var languageMenu=(MenuFlyout)languageButton.Flyout!;languageMenu.ShowAt(languageButton);Pump();
+    var languageItem=languageMenu.ItemsSource!.Cast<LanguageOption>().Single(option=>option.Key==language.Key);
+    Check(languageMenu.IsOpen && languageItem.SelectCommand is not null,"Language popup opens with the actual language catalog");
+    languageItem.SelectCommand!.Execute(null);languageMenu.Hide();Pump();
+    foreach(var mode in new[]{StudioThemeMode.Light,StudioThemeMode.Dark,StudioThemeMode.System})
+    {
+        model.Appearance.ThemeMode=mode;Pump();
+        var key=mode switch{StudioThemeMode.Light=>Localization.Appearance.Light,StudioThemeMode.Dark=>Localization.Appearance.Dark,_=>Localization.Appearance.System};
+        var themeButton=themeToggle.GetVisualDescendants().OfType<Button>().Single(button=>button.Name=="PART_ThemeButton");
+        Check(ToolTip.GetTip(themeButton) is TextBlock text && text.Text==I18nManager.Instance.GetResource(key),"Actual Ursa tooltip follows "+language.Key+" / "+mode);
+    }
     Check(store.Load().Language==language.Key && I18nManager.Instance.Culture.Name==language.Key,"Requested language stays active and survives JSON persistence");
     Check(model.Wallpapers[0].CategoryDisplayName==I18nManager.Instance.GetResource(Localization.Main.Categories.Cartoon),"Existing wallpaper card updates its language");
     var card=window.GetVisualDescendants().OfType<KidWall.App.Controls.DynamicWallpaperPreviewView>().First();
     Check(card.PreviewText==model.PreviewButtonText && card.ApplyText==model.SetWallpaperButtonText,"Existing card actions update language");
     model.IsSettingsOpen=true;Pump();Capture("settings-"+language.Key+".png");
-    Check(window.GetVisualDescendants().OfType<ComboBox>().Count()==3,"Settings expose actual appearance selectors");
+    Check(window.GetVisualDescendants().OfType<ComboBox>().Count()==0,"Settings do not repeat title-bar appearance selectors");
     Check(model.Version==UpdateVersion.Display(typeof(App).Assembly) && model.CompileTime!="—","Actual application metadata survives native publication");
     model.IsSettingsOpen=false;
 }
@@ -96,6 +118,7 @@ about.Close();
 VerifyUpdates();
 Check(wallpaper.Calls==0,"All tests kept the user's wallpaper untouched");
 window.Close();
+VerifyPersistence();
 // 用仓库真实静态资源检查完整图库，依然使用隔离偏好和壁纸替身。
 var gallerySamples=Path.Combine(output,"gallery-samples");
 Directory.CreateDirectory(gallerySamples);
@@ -134,6 +157,53 @@ void Check(bool ok,string message){if(!ok)throw new InvalidOperationException(me
 void Pump(){var t=Stopwatch.StartNew();do{Dispatcher.UIThread.RunJobs();AvaloniaHeadlessPlatform.ForceRenderTimerTick();Thread.Sleep(10);}while(t.ElapsedMilliseconds<220);}
 void Complete(Task task){var timer=Stopwatch.StartNew();while(!task.IsCompleted&&timer.ElapsedMilliseconds<10000)Pump();Check(task.IsCompleted,"Async operation completes");task.GetAwaiter().GetResult();}
 void Capture(string file){Pump();using var image=window.CaptureRenderedFrame()??throw new InvalidOperationException("Missing image");using var stream=File.Create(Path.Combine(output,file));image.Save(stream);}
+void VerifyPersistence()
+{
+    var persistenceStore=new AppPreferencesStore(Path.Combine(output,"persistence-preferences"));
+    var localDirectory=Path.Combine(output,"imported-wallpapers");Directory.CreateDirectory(localDirectory);
+    File.Copy(Path.Combine(samples,"cartoon","Stars.png"),Path.Combine(localDirectory,"LocalStars.png"),true);
+    var acceptedWallpaper=new AcceptedWallpaper();
+    string favoriteId;
+    using(var first=new MainViewModel(new AppPreferences{AutoStart=false},persistenceStore,acceptedWallpaper,
+        new FakeDynamic(),new FakeWindow(),samples,fake,_=>{},()=>{}))
+    {
+        Complete(first.LoadCommand.ExecuteAsync(null));
+        Complete(first.AddLocalFolderAsync(localDirectory));
+        Complete(first.AddLocalFolderAsync(localDirectory+Path.DirectorySeparatorChar));
+        Complete(first.AddLocalFolderAsync(Path.Combine(localDirectory,"missing-folder")));
+        Check(persistenceStore.Load().LocalFolders.Count==1,"Local folders persist with normalized duplicates and missing folders excluded");
+        var local=first.Wallpapers.Single(item=>item.IsLocal);favoriteId=local.Id;
+        first.OpenPreviewCommand.Execute(local);
+        var favoriteCategory=first.Categories.Single(item=>item.Key=="favorites");
+        var countChanged=false;favoriteCategory.PropertyChanged+=(_,change)=>countChanged|=change.PropertyName==nameof(CategoryItemViewModel.CountText);
+        first.ToggleFavoriteCommand.Execute(local);
+        Check(countChanged && favoriteCategory.CountText=="1","Favorite count label refreshes immediately");
+        Check(first.PreviewItem==local && local.IsFavorite,"Favorite keeps the selected preview open");
+        Complete(first.LoadCommand.ExecuteAsync(null));
+        Check(first.PreviewItem?.Id==favoriteId && first.PreviewItem.IsFavorite,"Refreshing catalog keeps preview and favorite state");
+        first.Categories.Single(item=>item.Key=="favorites").SelectCommand.Execute(null);
+        Check(first.Wallpapers.Count==1 && first.Wallpapers[0].Id==favoriteId,"Favorites category filters actual saved favorites");
+        first.Categories.Single(item=>item.Key=="local").SelectCommand.Execute(null);
+        Check(first.Wallpapers.Count==1 && first.Wallpapers[0].IsLocal,"Local category exposes imported folder images");
+        first.ApplyWallpaperCommand.Execute(first.Wallpapers[0]);
+        Check(first.Wallpapers.Single().IsCurrent && persistenceStore.Load().LastAppliedWallpaperId==favoriteId,
+            "Controlled wallpaper application updates unique current state and persisted identity");
+    }
+    using(var reopened=new MainViewModel(persistenceStore.Load(),persistenceStore,acceptedWallpaper,
+        new FakeDynamic(),new FakeWindow(),samples,fake,_=>{},()=>{}))
+    {
+        Complete(reopened.LoadCommand.ExecuteAsync(null));
+        var restored=reopened.Wallpapers.Single(item=>item.Id==favoriteId);
+        Check(restored.IsLocal && restored.IsFavorite && restored.IsCurrent,"Restart restores imported images, favorite, and current wallpaper");
+        reopened.Categories.Single(item=>item.Key=="favorites").SelectCommand.Execute(null);
+        reopened.ToggleFavoriteCommand.Execute(restored);
+        Check(reopened.Wallpapers.Count==0 && persistenceStore.Load().FavoriteWallpaperIds.Count==0,
+            "Removing favorite immediately updates filtered view and saved preference");
+        Complete(reopened.LoadCommand.ExecuteAsync(null));
+        Check(reopened.Wallpapers.Count==0,"Removed favorite stays removed after reload");
+    }
+    Check(acceptedWallpaper.Calls==2,"Current wallpaper restored only through isolated service substitute");
+}
 void VerifyUpdates()
 {
     Complete(model.Update.CheckAsync());Check(model.Update.State==UpdateState.Current,"Current release state");
@@ -147,6 +217,7 @@ void VerifyUpdates()
     using var closing=new UpdateViewModel(fake,_=>{},()=>{});var unfinished=closing.CheckAsync();closing.Dispose();Complete(unfinished);Check(!closing.ActionCommand.CanExecute(null),"Closing cancels safely");
 }
 sealed class FakeWallpaper:IDesktopWallpaperService{public int Calls{get;private set;}public bool SetWallpaper(string path){Calls++;throw new InvalidOperationException("Unexpected wallpaper operation");}}
+sealed class AcceptedWallpaper:IDesktopWallpaperService{public int Calls{get;private set;}public bool SetWallpaper(string path){Calls++;return File.Exists(path);}}
 sealed class FakeDynamic:IDynamicWallpaperService{public bool IsSupported=>false;public bool IsRunning=>false;public bool Show(string path)=>throw new InvalidOperationException("Unexpected dynamic wallpaper");public void Stop(){}public void Dispose(){}}
 sealed class FakeWindow:IMainWindowService{public void Minimize(){}public void ToggleMaximize(){}public void CloseToTray(){}public void ShowAbout(){}public Task<string?> PickLocalFolderAsync()=>Task.FromResult<string?>(null);}
 sealed class FakeUpdates:IUpdateService

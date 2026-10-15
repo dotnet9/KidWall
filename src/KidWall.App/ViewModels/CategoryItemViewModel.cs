@@ -19,13 +19,14 @@ public partial class CategoryItemViewModel : ObservableObject
             "starry" => "🌙",
             "illustration" => "🎨",
             "dynamic" => "🎞️",
+            "favorites" => "💛",
             "local" => "📁",
             _ => string.Empty,
         };
         SelectCommand = new RelayCommand(() => onSelect(this));
     }
 
-    /// <summary>筛选键：all / recommended / cartoon / starry / illustration / dynamic / local。</summary>
+    /// <summary>壁纸类别、收藏或本地目录的筛选键。</summary>
     public string Key { get; }
 
     /// <summary>原型中的分类图标。</summary>
@@ -56,5 +57,7 @@ public partial class CategoryItemViewModel : ObservableObject
     private int _count;
 
     public string CountText => Count.ToString();
+
+    partial void OnCountChanged(int value) => OnPropertyChanged(nameof(CountText));
 
 }

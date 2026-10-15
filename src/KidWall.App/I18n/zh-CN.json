@@ -30,6 +30,7 @@
         "Starry": "星空",
         "Illustration": "插画",
         "Dynamic": "动态壁纸",
+        "Favorites": "收藏",
         "Local": "本地",
         "Wallpaper": "壁纸"
       },
@@ -40,6 +41,7 @@
         "Starry": "星空壁纸",
         "Illustration": "插画壁纸",
         "Dynamic": "动态壁纸",
+        "Favorites": "收藏的壁纸",
         "Local": "本地壁纸"
       },
       "Labels": {

@@ -1,19 +1,40 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:KidWall.App.ViewModels"
+             xmlns:codewf="https://codewf.com"
+             xmlns:ursa="https://irihi.tech/ursa"
+             xmlns:keys="using:Localization"
              x:Class="KidWall.App.Views.AppearanceView" x:DataType="vm:AppearanceViewModel">
-  <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="12" ColumnSpacing="10" Margin="0,8,0,16">
-    <TextBlock Text="{Binding ThemeLabel}" VerticalAlignment="Center" />
-    <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
-    </ComboBox>
-    <TextBlock Grid.Row="1" Text="{Binding PaletteLabel}" VerticalAlignment="Center" />
-    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><StackPanel Orientation="Horizontal" Spacing="8"><Ellipse Width="12" Height="12" Fill="{Binding Swatch}" /><TextBlock Text="{Binding DisplayName}" /></StackPanel></DataTemplate></ComboBox.ItemTemplate>
-    </ComboBox>
-    <TextBlock Grid.Row="2" Text="{Binding LanguageLabel}" VerticalAlignment="Center" />
-    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-      <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:LanguageOption"><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
-    </ComboBox>
-  </Grid>
+  <UserControl.Styles>
+    <Style Selector="ListBox.title-palettes ListBoxItem">
+      <Setter Property="Width" Value="24" /><Setter Property="Height" Value="28" />
+      <Setter Property="Padding" Value="4" /><Setter Property="CornerRadius" Value="14" />
+      <Setter Property="BorderThickness" Value="1" /><Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.title-palettes ListBoxItem:selected"><Setter Property="BorderBrush" Value="{DynamicResource KidWallAccentBrush}" /></Style>
+  </UserControl.Styles>
+  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+    <ListBox Classes="title-palettes" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette, Mode=TwoWay}"
+             Background="Transparent" BorderThickness="0" Padding="0" Height="28" ToolTip.Tip="{Binding PaletteLabel}">
+      <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ListBox.ItemsPanel>
+      <ListBox.ItemTemplate><DataTemplate x:DataType="vm:AppearanceOption"><Ellipse Width="14" Height="14" Fill="{Binding Swatch}" ToolTip.Tip="{Binding DisplayName}" AutomationProperties.Name="{Binding DisplayName}" /></DataTemplate></ListBox.ItemTemplate>
+    </ListBox>
+    <ThemeVariantScope x:Name="TitleBarThemeScope" RequestedThemeVariant="{Binding ThemeMode, Mode=TwoWay, Converter={x:Static codewf:StudioThemeModeConverter.Instance}}">
+      <ThemeVariantScope.Resources>
+        <TextBlock x:Key="STRING_THEME_TOGGLE_SYSTEM" Text="{codewf:I18n {x:Static keys:Appearance.System}}" />
+        <TextBlock x:Key="STRING_THEME_TOGGLE_LIGHT" Text="{codewf:I18n {x:Static keys:Appearance.Light}}" />
+        <TextBlock x:Key="STRING_THEME_TOGGLE_DARK" Text="{codewf:I18n {x:Static keys:Appearance.Dark}}" />
+      </ThemeVariantScope.Resources>
+      <ursa:ThemeToggleButton Width="30" Height="30" IsThreeState="True" TargetScope="{Binding #TitleBarThemeScope}" ToolTip.Tip="{Binding ThemeLabel}" />
+    </ThemeVariantScope>
+    <Button Width="30" Height="30" Padding="6" Background="Transparent" ToolTip.Tip="{Binding LanguageLabel}" AutomationProperties.Name="{Binding LanguageLabel}">
+      <PathIcon Width="17" Height="17" Data="{StaticResource SemiIconLanguage}" />
+      <Button.Flyout><MenuFlyout ItemsSource="{Binding Languages}">
+        <MenuFlyout.ItemContainerTheme><ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" x:DataType="vm:LanguageOption">
+          <Setter Property="Header" Value="{Binding DisplayName}" /><Setter Property="Command" Value="{Binding SelectCommand}" />
+        </ControlTheme></MenuFlyout.ItemContainerTheme>
+      </MenuFlyout></Button.Flyout>
+    </Button>
+  </StackPanel>
 </UserControl>

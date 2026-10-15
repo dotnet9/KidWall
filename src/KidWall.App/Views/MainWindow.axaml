@@ -39,44 +39,35 @@
             Text="🎈"
             VerticalAlignment="Center" />
       </Border>
-      <StackPanel Spacing="1" VerticalAlignment="Center">
+      <StackPanel Spacing="1" VerticalAlignment="Center" MaxWidth="250">
         <TextBlock Classes="win-title" Text="{Binding WindowTitle}" />
-        <TextBlock Classes="win-subtitle" Text="{Binding WindowSubtitle}" />
+        <TextBlock Classes="win-subtitle" Text="{Binding WindowSubtitle}" TextTrimming="CharacterEllipsis" />
       </StackPanel>
     </StackPanel>
   </codewf:CodeWFWindow.LeftContent>
+  <codewf:CodeWFWindow.TitleBarContent>
+    <Grid Width="220" VerticalAlignment="Center">
+      <TextBox Classes="search" Padding="34,4,10,4" Text="{Binding SearchText, Mode=TwoWay}" PlaceholderText="{Binding SearchPlaceholder}" />
+      <TextBlock Margin="12,0,0,0" Text="🔎" IsHitTestVisible="False" VerticalAlignment="Center" />
+    </Grid>
+  </codewf:CodeWFWindow.TitleBarContent>
   <codewf:CodeWFWindow.RightContent>
     <!-- 搜索框与右侧操作区 -->
     <StackPanel
         Margin="0,0,10,0"
         Orientation="Horizontal"
-        Spacing="18"
+        Spacing="8"
         VerticalAlignment="Center">
-      <Grid Width="460" MaxWidth="460" VerticalAlignment="Center">
-        <TextBox
-            Classes="search"
-            Padding="38,4,14,4"
-            Text="{Binding SearchText, Mode=TwoWay}"
-            VerticalAlignment="Center"
-            PlaceholderText="{Binding SearchPlaceholder}" />
-        <TextBlock
-            Margin="14,0,0,0"
-            FontSize="16"
-            IsHitTestVisible="False"
-            Text="🔎"
-            VerticalAlignment="Center" />
-      </Grid>
+      <views:AppearanceView DataContext="{Binding Appearance}" />
       <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-        <Button Classes="secondary-btn" Command="{Binding PickLocalFolderCommand}">
+        <Button Classes="secondary-btn" Width="32" Height="32" Padding="6" Command="{Binding PickLocalFolderCommand}" ToolTip.Tip="{Binding LocalButtonText}" AutomationProperties.Name="{Binding LocalButtonText}">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="📁" />
-            <TextBlock Text="{Binding LocalButtonText}" />
           </StackPanel>
         </Button>
-        <Button Classes="primary-btn" Command="{Binding ToggleSettingsCommand}">
+        <Button Classes="primary-btn" Width="32" Height="32" Padding="6" Command="{Binding ToggleSettingsCommand}" ToolTip.Tip="{Binding SettingsButtonText}" AutomationProperties.Name="{Binding SettingsButtonText}">
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Text="⚙" />
-            <TextBlock Text="{Binding SettingsButtonText}" />
           </StackPanel>
         </Button>
       </StackPanel>
@@ -259,7 +250,6 @@
                   Classes="panel-sub"
                   Margin="0,4,0,20"
                   Text="{Binding SettingsSubtitle}" />
-              <views:AppearanceView DataContext="{Binding Appearance}" />
 
               <Grid ColumnDefinitions="*,Auto" Margin="0,14,0,0">
                 <StackPanel Spacing="2">
