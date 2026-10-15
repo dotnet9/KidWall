@@ -4,7 +4,7 @@ $repositoryRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $fixtureRoot = Join-Path ([IO.Path]::GetTempPath()) ('KidWall-deb-test-' + [Guid]::NewGuid().ToString('N'))
 $source = Join-Path $fixtureRoot 'source with spaces'
 $output = Join-Path $fixtureRoot 'output'
-$nativeDpkg = Get-Command dpkg-deb -CommandType Application -ErrorAction SilentlyContinue
+$nativeDpkg = Get-Command dpkg-deb -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 $global:CodeWFDebFixture = @{
     App = 'KidWall'; Command = 'kidwall'; Executable = 'KidWall.App'; AppDirectory = 'usr/local/share/KidWall'
     BinDirectory = 'usr/local/bin'; Icon = 'usr/share/pixmaps/kidwall.png'; NativeDpkg = $nativeDpkg; Fail = $false; Inspections = 0
