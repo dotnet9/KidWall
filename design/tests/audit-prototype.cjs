@@ -13,8 +13,15 @@ const { chromium } = require('playwright');
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
     await standalone.attach(page);
-  const setLanguage=async value=>{await page.locator('#language-toggle').click();await page.locator('#language-menu [data-language="'+value+'"]').click();};
-  const setMode=async value=>{for(let index=0;index<3;index++){if(await page.locator('#theme-toggle').getAttribute('data-mode')===value)return;await page.locator('#theme-toggle').click();}if(await page.locator('#theme-toggle').getAttribute('data-mode')!==value)throw Error('Theme cycle failed');};
+  async function checkAppearanceLanguage(language){
+    const matches=await page.evaluate(expected=>{
+      const words=KIDWALL_RESOURCES[expected].Localization.Appearance,mode=document.getElementById('theme-toggle'),languageButton=document.getElementById('language-toggle');
+      return document.documentElement.lang===expected && mode.title===words.Mode+': '+words[mode.dataset.mode] && mode.getAttribute('aria-label')===mode.title && languageButton.title===words.Language && languageButton.getAttribute('aria-label')===languageButton.title && [...document.querySelectorAll('button[data-palette]')].every(button=>button.title===words[button.dataset.palette] && button.getAttribute('aria-label')===button.title);
+    },language);
+    assert.ok(matches,'Title-bar language, tooltips and accessibility labels switch immediately: '+language);
+  }
+  const setLanguage=async value=>{await page.locator('#language-toggle').click();await page.locator('#language-menu [data-language="'+value+'"]').click();await checkAppearanceLanguage(value);};
+  const setMode=async value=>{for(let index=0;index<3;index++){if(await page.locator('#theme-toggle').getAttribute('data-mode')===value){await checkAppearanceLanguage(await page.locator('html').getAttribute('lang'));return;}await page.locator('#theme-toggle').click();}if(await page.locator('#theme-toggle').getAttribute('data-mode')!==value)throw Error('Theme cycle failed');await checkAppearanceLanguage(await page.locator('html').getAttribute('lang'));};
   const setPalette=async value=>{await page.locator('button[data-palette="'+value+'"]').click();};
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -28,6 +35,7 @@ const { chromium } = require('playwright');
     assert.equal(await page.locator('.switch:disabled').count(), 2);
     for (const language of ['zh-CN', 'en-US']) {
       await setLanguage(language);
+      await setMode('System');
       for (const palette of palettes) {
         await setPalette(palette);
         for (const mode of ['Light', 'Dark']) {
