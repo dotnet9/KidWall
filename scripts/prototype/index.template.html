@@ -666,6 +666,7 @@ function minWin(e){
   const w = document.getElementById("win");
   w.classList.remove("closed");
   w.classList.add("min");
+  document.getElementById("reopen").classList.add("show");
   setTimeout(()=>toast("🌙 月亮睡着了，童壁先去睡一觉～"), 200);
 }
 function maxWin(e){

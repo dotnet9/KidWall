@@ -46,7 +46,7 @@
       '--surface': colors.Surface, '--ink': colors.Text, '--ink-2': colors.Muted,
       '--ink-3': colors.Muted, '--stroke': colors.Border, '--glass': colors.Raised };
     for (const [key, value] of Object.entries(values)) root.style.setProperty(key, value);
-    document.getElementById('theme-palettes').innerHTML = Object.keys(palettes).map(key => `<button class="palette-dot" role="option" data-palette="${key}" aria-selected="${key===palette}" aria-label="${text('Appearance.'+key)}" title="${text('Appearance.'+key)}"><i style="background:${palettes[key][dark?'Dark':'Light'].Primary}"></i></button>`).join('');
+    document.getElementById('theme-palettes').innerHTML = Object.keys(palettes).map(key => `<button class="palette-dot" role="option" data-palette="${key}" aria-selected="${key===palette}" aria-label="${text('Appearance.'+key)}" title="${text('Appearance.'+key)}"><i style="background:${palettes[key].Swatch}"></i></button>`).join('');
     const toggle=document.getElementById('theme-toggle');toggle.dataset.mode=mode;toggle.textContent=mode==='Light'?'☀':mode==='Dark'?'☾':'◐';toggle.title=text('Appearance.Mode')+': '+text('Appearance.'+mode);toggle.setAttribute('aria-label',toggle.title);
     const languageButton=document.getElementById('language-toggle');languageButton.title=text('Appearance.Language');languageButton.setAttribute('aria-label',languageButton.title);
   }

@@ -28,9 +28,23 @@ const { chromium } = require('playwright');
     await page.goto(standalone.url);
     assert.ok(await page.locator('.win').evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth) >= 1));
     assert.equal(await page.locator('.t-ctrl button').count(), 3);
+    assert.deepEqual(await page.locator('.t-ctrl button').evaluateAll(buttons=>buttons.map(button=>button.getAttribute('onclick'))),['minWin(event)','maxWin(event)','closeWin(event)']);
+    await page.locator('.t-ctrl button').nth(0).click();
+    assert.ok(await page.locator('#win').evaluate(element=>element.classList.contains('min') && getComputedStyle(element).pointerEvents==='none'));
+    await page.locator('#reopen').click();assert.ok(await page.locator('#win').evaluate(element=>!element.classList.contains('min') && !element.classList.contains('closed')));
+    await page.locator('#maxBtn').click();
+    await page.waitForFunction(()=>Math.abs(parseFloat(getComputedStyle(document.getElementById('win')).width)-innerWidth)<2);
+    assert.ok(await page.locator('#win').evaluate(element=>element.classList.contains('full') && Math.abs(parseFloat(getComputedStyle(element).width)-innerWidth)<2));
+    await page.locator('#maxBtn').click();await page.waitForFunction(()=>parseFloat(getComputedStyle(document.getElementById('win')).width)<innerWidth);assert.ok(await page.locator('#win').evaluate(element=>!element.classList.contains('full') && parseFloat(getComputedStyle(element).width)<innerWidth));
+    await page.locator('.t-ctrl button').nth(2).click();
+    assert.ok(await page.locator('#win').evaluate(element=>element.classList.contains('closed') && getComputedStyle(element).pointerEvents==='none'));
+    await page.locator('#reopen').click();assert.ok(await page.locator('#win').evaluate(element=>!element.classList.contains('closed')));
     await page.locator('button[onclick="openDrawer()"]').click();
     const palettes = await page.locator('button[data-palette]').evaluateAll(options => options.map(option => option.dataset.palette));
     assert.equal(palettes.length, 8);
+    assert.deepEqual(palettes,['DotNet','Aurora','Ember','Default','Aquatic','Desert','Dusk','NightSky']);
+    const swatches=await page.locator('#theme-palettes button i').evaluateAll(dots=>dots.map(dot=>[getComputedStyle(dot).backgroundColor,getComputedStyle(dot).backgroundImage]));
+    assert.equal(swatches[0][0],'rgb(81, 43, 212)');assert.ok(swatches[1][1].startsWith('linear-gradient('));
     assert.equal(await page.locator('.titlebar select').count(), 0);
     assert.equal(await page.locator('.switch:disabled').count(), 2);
     for (const language of ['zh-CN', 'en-US']) {
@@ -40,6 +54,7 @@ const { chromium } = require('playwright');
         await setPalette(palette);
         for (const mode of ['Light', 'Dark']) {
           await setMode(mode);
+          assert.deepEqual(await page.locator('#theme-palettes button i').evaluateAll(dots=>dots.map(dot=>[getComputedStyle(dot).backgroundColor,getComputedStyle(dot).backgroundImage])),swatches,'Palette swatches remain stable across modes');
           assert.deepEqual(await page.evaluate(() => [document.documentElement.dataset.palette, document.documentElement.dataset.mode]), [palette, mode]);
         }
       }
