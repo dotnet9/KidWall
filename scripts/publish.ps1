@@ -28,5 +28,5 @@ $aotArgs = @("-p:PublishAot=true",
 $singleFile = "false"
 $trimmed = "true"
 if ($RuntimeIdentifier.StartsWith("osx-", [StringComparison]::OrdinalIgnoreCase)) { $aotArgs += "-p:StripSymbols=false" }
-dotnet publish (Join-Path $repositoryRoot "src/KidWall.App/KidWall.App.csproj") -c Release -f $tfm -r $RuntimeIdentifier --self-contained true @aotArgs -p:PublishSingleFile=$singleFile -p:PublishTrimmed=$trimmed -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App")
+dotnet publish (Join-Path $repositoryRoot "src/KidWall.App/KidWall.App.csproj") -c Release -f $tfm -r $RuntimeIdentifier --self-contained true @aotArgs -p:PublishSingleFile=$singleFile -p:PublishTrimmed=$trimmed -p:DebugType=portable -p:DebugSymbols=true -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/KidWall.App")
 if ($LASTEXITCODE -ne 0) { throw "publish failed for $RuntimeIdentifier" }

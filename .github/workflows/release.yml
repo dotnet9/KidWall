@@ -1,4 +1,4 @@
-﻿name: release
+name: release
 
 # 推送 v* 标签发布 KidWall 全平台产物：
 # win-x64 用 Inno Setup 生成中文安装包（NativeAOT）；
@@ -31,7 +31,27 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: 测试
-        run: dotnet test KidWall.slnx -c Release
+        run: dotnet test --solution KidWall.slnx -c Release
+
+      - name: 校验 T4 与原型资源
+        shell: pwsh
+        run: ./scripts/sync_localization_keys.ps1 -Check
+
+      - name: 验证真实控件的语言、主题与更新交互
+        run: dotnet run --project scripts/ui-verification/UiVerification.csproj -c Release -- artifacts/ui-verification
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 验证原型交互
+        shell: pwsh
+        run: |
+          npm ci --prefix design/tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npx --prefix design/tests playwright install chromium
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm test --prefix design/tests
 
   publish:
     name: 发布 ${{ matrix.rid }}
@@ -48,7 +68,7 @@ jobs:
           - rid: linux-arm64
             os: ubuntu-24.04-arm
           - rid: osx-x64
-            os: macos-14
+            os: macos-15-intel
           - rid: osx-arm64
             os: macos-14
     runs-on: ${{ matrix.os }}
@@ -152,6 +172,10 @@ jobs:
           }
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "tag_name=$tagName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: 校验五平台安装包与 SHA-256
+        shell: pwsh
+        run: ./scripts/verify_release_installers.ps1 -Version '${{ steps.version.outputs.version }}'
 
       - name: 准备发布说明
         shell: pwsh
