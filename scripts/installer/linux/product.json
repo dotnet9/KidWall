@@ -1,0 +1,15 @@
+{
+  "id": "com.codewf.kidwall",
+  "package": "kidwall",
+  "command": "kidwall",
+  "name": "KidWall",
+  "chineseName": "童壁",
+  "summary": "Browse and manage a child-friendly wallpaper collection",
+  "chineseSummary": "浏览和管理儿童壁纸图库",
+  "description": "A wallpaper collection browser with previews, favorites and platform-dependent wallpaper actions.",
+  "chineseDescription": "提供预览、收藏和图库筛选；设置壁纸等操作取决于操作系统支持。",
+  "categories": [
+    "Graphics"
+  ],
+  "homepage": "https://github.com/dotnet9/KidWall"
+}
