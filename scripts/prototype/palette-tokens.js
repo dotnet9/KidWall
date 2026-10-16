@@ -1,4 +1,4 @@
-// 共享 StudioTheme 12.1.4.21 的令牌与固定色卡快照；无运行时跨仓依赖。
+﻿// 共享 StudioTheme 12.1.4.25 的令牌与固定色卡快照；无运行时跨仓依赖。
 window.KIDWALL_PALETTES = {
   "DotNet": {
     "Swatch": "#512BD4",
@@ -10,7 +10,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#242036",
       "Muted": "#6E6684",
       "Border": "#DDD8EC",
-      "Raised": "#EFEDF7"
+      "Raised": "#EFEDF7",
+      "PrimaryHover": "#4927BF",
+      "PrimaryPressed": "#4122AA",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#512BD4",
@@ -20,7 +23,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#F3F0FC",
       "Muted": "#AAA5C0",
       "Border": "#343044",
-      "Raised": "#211E30"
+      "Raised": "#211E30",
+      "PrimaryHover": "#4927BF",
+      "PrimaryPressed": "#4122AA",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Aurora": {
@@ -33,7 +39,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#242036",
       "Muted": "#6E6684",
       "Border": "#DDD8EC",
-      "Raised": "#EFEDF7"
+      "Raised": "#EFEDF7",
+      "PrimaryHover": "#4927BF",
+      "PrimaryPressed": "#4122AA",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#512BD4",
@@ -43,7 +52,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#F3F0FC",
       "Muted": "#AAA5C0",
       "Border": "#2C3B48",
-      "Raised": "#20303A"
+      "Raised": "#20303A",
+      "PrimaryHover": "#4927BF",
+      "PrimaryPressed": "#4122AA",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Ember": {
@@ -56,7 +68,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#242036",
       "Muted": "#6E6684",
       "Border": "#DDCABC",
-      "Raised": "#F4ECE5"
+      "Raised": "#F4ECE5",
+      "PrimaryHover": "#984731",
+      "PrimaryPressed": "#873F2B",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#A94F36",
@@ -66,20 +81,26 @@ window.KIDWALL_PALETTES = {
       "Text": "#F3F0FC",
       "Muted": "#AAA5C0",
       "Border": "#443631",
-      "Raised": "#302522"
+      "Raised": "#302522",
+      "PrimaryHover": "#984731",
+      "PrimaryPressed": "#873F2B",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Default": {
     "Swatch": "#0064FA",
     "Light": {
       "Primary": "#0064FA",
-      "Accent": "#0064FA",
+      "Accent": "#005DE8",
       "Background": "#FFFFFF",
       "Surface": "#F8F9FB",
       "Text": "#202736",
-      "Muted": "#68758B",
+      "Muted": "#606D82",
       "Border": "#DDE2EB",
-      "Raised": "#EEF1F6"
+      "Raised": "#EEF1F6",
+      "PrimaryHover": "#005AE1",
+      "PrimaryPressed": "#0050C8",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#0064FA",
@@ -89,20 +110,26 @@ window.KIDWALL_PALETTES = {
       "Text": "#EDF1F8",
       "Muted": "#A6B2C6",
       "Border": "#354051",
-      "Raised": "#242A35"
+      "Raised": "#242A35",
+      "PrimaryHover": "#005AE1",
+      "PrimaryPressed": "#0050C8",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Aquatic": {
     "Swatch": "#008D9E",
     "Light": {
       "Primary": "#007D8F",
-      "Accent": "#007A8C",
+      "Accent": "#007184",
       "Background": "#F4FCFC",
       "Surface": "#EBF7F8",
       "Text": "#183B42",
       "Muted": "#526F77",
       "Border": "#BFDCE0",
-      "Raised": "#DCEFF1"
+      "Raised": "#DCEFF1",
+      "PrimaryHover": "#007081",
+      "PrimaryPressed": "#006472",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#007D8F",
@@ -112,20 +139,26 @@ window.KIDWALL_PALETTES = {
       "Text": "#E6F6F7",
       "Muted": "#A4C2C8",
       "Border": "#35505B",
-      "Raised": "#20343D"
+      "Raised": "#20343D",
+      "PrimaryHover": "#007081",
+      "PrimaryPressed": "#006472",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Desert": {
     "Swatch": "#B57532",
     "Light": {
       "Primary": "#9B651E",
-      "Accent": "#98631D",
+      "Accent": "#8A591A",
       "Background": "#FFFCF5",
       "Surface": "#FBF4E7",
       "Text": "#3C3022",
-      "Muted": "#7B6C55",
+      "Muted": "#73644F",
       "Border": "#DECDB0",
-      "Raised": "#F3E8D5"
+      "Raised": "#F3E8D5",
+      "PrimaryHover": "#8C5B1B",
+      "PrimaryPressed": "#7C5118",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#9B651E",
@@ -135,7 +168,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#F7EDDB",
       "Muted": "#C8B799",
       "Border": "#544630",
-      "Raised": "#3A3023"
+      "Raised": "#3A3023",
+      "PrimaryHover": "#8C5B1B",
+      "PrimaryPressed": "#7C5118",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "Dusk": {
@@ -146,9 +182,12 @@ window.KIDWALL_PALETTES = {
       "Background": "#FAF8FE",
       "Surface": "#F1EDF9",
       "Text": "#332841",
-      "Muted": "#746583",
+      "Muted": "#6D5E7C",
       "Border": "#D3C7E6",
-      "Raised": "#E7E0F3"
+      "Raised": "#E7E0F3",
+      "PrimaryHover": "#654AA3",
+      "PrimaryPressed": "#5A4291",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#7052B5",
@@ -158,7 +197,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#F2EAFB",
       "Muted": "#BEB0D0",
       "Border": "#4B3E5D",
-      "Raised": "#342B43"
+      "Raised": "#342B43",
+      "PrimaryHover": "#654AA3",
+      "PrimaryPressed": "#5A4291",
+      "OnPrimary": "#FFFFFF"
     }
   },
   "NightSky": {
@@ -169,9 +211,12 @@ window.KIDWALL_PALETTES = {
       "Background": "#F6F9FF",
       "Surface": "#EDF3FC",
       "Text": "#20314A",
-      "Muted": "#5D6F87",
+      "Muted": "#566780",
       "Border": "#BED0E8",
-      "Raised": "#DDE9F8"
+      "Raised": "#DDE9F8",
+      "PrimaryHover": "#20569C",
+      "PrimaryPressed": "#1C4C8A",
+      "OnPrimary": "#FFFFFF"
     },
     "Dark": {
       "Primary": "#235FAD",
@@ -181,7 +226,10 @@ window.KIDWALL_PALETTES = {
       "Text": "#E8F0FF",
       "Muted": "#A8BCD8",
       "Border": "#344965",
-      "Raised": "#203047"
+      "Raised": "#203047",
+      "PrimaryHover": "#20569C",
+      "PrimaryPressed": "#1C4C8A",
+      "OnPrimary": "#FFFFFF"
     }
   }
 };

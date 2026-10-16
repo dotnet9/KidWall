@@ -44,7 +44,9 @@
     const colors = palettes[palette][dark ? 'Dark' : 'Light'];
     const root = document.documentElement;
     root.dataset.mode = mode; root.dataset.palette = palette; root.dataset.dark = String(dark);
-    const values = { '--primary': colors.Primary, '--accent': colors.Accent, '--app-bg': colors.Background,
+    const values = { '--primary': colors.Primary, '--primary-hover': colors.PrimaryHover,
+      '--primary-pressed': colors.PrimaryPressed, '--on-primary': colors.OnPrimary,
+      '--accent': colors.Accent, '--app-bg': colors.Background,
       '--surface': colors.Surface, '--ink': colors.Text, '--ink-2': colors.Muted,
       '--ink-3': colors.Muted, '--stroke': colors.Border, '--glass': colors.Raised };
     for (const [key, value] of Object.entries(values)) root.style.setProperty(key, value);

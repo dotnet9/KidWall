@@ -1,4 +1,4 @@
-/* 外观、设置和关于与当前应用实现保持一致，壁纸卡片保留原有交互。 */
+﻿/* 外观、设置和关于与当前应用实现保持一致，壁纸卡片保留原有交互。 */
 body { background:color-mix(in srgb,var(--accent) 12%,var(--app-bg,#fff)); }
 [hidden] { display:none!important; }
 .win { background:var(--app-bg,#fff); border-color:var(--stroke); border-radius:8px; }
@@ -53,3 +53,9 @@ body { background:color-mix(in srgb,var(--accent) 12%,var(--app-bg,#fff)); }
 .about-window small { display:block; color:var(--ink-3); margin-top:18px; font-size:14px; }
 .about-window progress { width:100%; accent-color:var(--accent); margin:12px 0; }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+
+/* 主操作的三态与原生 Semi 实心按钮使用同一组配色。 */
+.btn.primary,.ops .btn.set{background:var(--primary);color:var(--on-primary)}
+.btn.primary:hover,.ops .btn.set:hover{background:var(--primary-hover)}
+.btn.primary:active,.ops .btn.set:active{background:var(--primary-pressed)}
+.btn.primary:disabled,.ops .btn.set:disabled{opacity:.45;pointer-events:none}

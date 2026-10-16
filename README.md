@@ -1,4 +1,4 @@
-# KidWall｜童壁
+﻿# KidWall｜童壁
 > 专为儿童设计的开源桌面壁纸软件，支持静态图片、动态壁纸，轻量纯净，无广告。
 
 ✨ 核心特性
@@ -11,7 +11,7 @@
 
 > 适合家长给孩子电脑配置桌面，自定义孩子喜欢的卡通、星空、插画桌面背景。
 
-当前版本：1.0.10。标题栏展示与 CodeWF Demo 共用的八个配色点、Ursa 三态主题按钮和 Semi 语言菜单，支持中英文动态切换；设置页保留功能参数。
+当前版本：1.0.11。标题栏展示与 CodeWF Demo 共用的八个配色点、Ursa 三态主题按钮和 Semi 语言菜单，支持中英文动态切换；设置页保留功能参数。
 
 ![KidWall 原生深色图库](docs/media/kidwall-native-dark.png)
 
@@ -40,7 +40,7 @@
 
 ```powershell
 pwsh scripts/publish.ps1 -RuntimeIdentifier win-x64
-./scripts/build_installer.ps1 -Version 1.0.10
+./scripts/build_installer.ps1 -Version 1.0.11
 ```
 
 ## 发布
