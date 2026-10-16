@@ -75,8 +75,12 @@ const { chromium } = require('playwright');
       assert.equal(await page.locator('#about-overlay').evaluate(element=>element.classList.contains('show')),false);
     }
     await page.locator('#about-open').click();
+    // 更新示例跟随当前原型版本递增，避免发版后仍等待旧版本文本。
+    const nextVersion = (await page.locator('.about-details dd').first().textContent()).trim().split('.').map(Number);
+    nextVersion[nextVersion.length - 1] += 1;
+    const expectedAvailable = await page.evaluate(version => KIDWALL_RESOURCES['en-US'].Localization.About.AboutAvailable.replace('{0}', version), nextVersion.join('.'));
     await page.locator('#update-action').click();
-    await page.waitForFunction(() => document.getElementById('update-status').textContent.includes('1.0.9'));
+    await page.waitForFunction(expected => document.getElementById('update-status').textContent === expected, expectedAvailable);
     await page.locator('#update-action').click();
     await page.waitForFunction(() => document.getElementById('update-action').textContent === 'Install update');
     await page.locator('#update-action').click();
