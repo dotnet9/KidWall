@@ -14,6 +14,7 @@
 #endif
 
 [Setup]
+LicenseFile=..\LICENSE
 AppId={{E267CDA1-B2DE-453E-81A4-61F53F8F1040}
 AppName=KidWall
 AppVersion={#AppVersion}
@@ -38,10 +39,11 @@ UninstallDisplayIcon={app}\KidWall.App.exe
 WizardStyle=modern
 
 [Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "chinesesimplified"; MessagesFile: "Languages\ChineseSimplified.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "*.pdb,*.dbg,*.dSYM\*"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -51,4 +53,6 @@ Name: "{autoprograms}\KidWall"; Filename: "{app}\KidWall.App.exe"; WorkingDir: "
 Name: "{autodesktop}\KidWall"; Filename: "{app}\KidWall.App.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\KidWall.App.exe"; Description: "Launch KidWall"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\KidWall.App.exe"; Description: "{cm:LaunchProgram,KidWall}"; Flags: nowait postinstall skipifsilent
+
+#include "installer\CodeWF.Setup.iss"
