@@ -68,7 +68,7 @@
   let timer;
   const action = document.getElementById('update-action');
   function showUpdate() {
-    document.getElementById('update-status').textContent = updateState === 'Available' ? text('About.AboutAvailable').replace('{0}', '1.0.9') : updateState === 'Downloaded' ? text('About.AboutDownloaded') : updateState === 'Canceled' ? text('About.AboutCanceled') : '';
+    document.getElementById('update-status').textContent = updateState === 'Available' ? text('About.AboutAvailable').replace('{0}', '1.0.14') : updateState === 'Downloaded' ? text('About.AboutDownloaded') : updateState === 'Canceled' ? text('About.AboutCanceled') : '';
     action.textContent = text(updateState === 'Checking' ? 'About.AboutChecking' : updateState === 'Available' ? 'About.UpdateDownload' : updateState === 'Downloading' ? 'About.AboutDownloading' : updateState === 'Downloaded' ? 'About.UpdateInstall' : 'About.UpdateCheck');
     action.disabled = ['Checking','Downloading'].includes(updateState);
     document.getElementById('update-cancel').hidden = !action.disabled;
