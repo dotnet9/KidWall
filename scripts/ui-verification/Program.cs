@@ -22,6 +22,10 @@ Directory.CreateDirectory(output);
 AppBuilder.Configure<App>().UseSkia().WithInterFont()
     .With(new FontManagerOptions { FontFallbacks = [new FontFallback { FontFamily = new FontFamily("Microsoft YaHei UI") }] })
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
+ButtonPaletteVerification.Run(App.ThemeController, output,
+    ("primary", new Button { Classes = { "primary-btn" } }),
+    ("preview", new Button { Classes = { "card-ops" } }),
+    ("apply", new Button { Classes = { "card-ops", "set" } }));
 var preferences = new AppPreferences { AutoStart = false, AutoRotate = false };
 var store = new AppPreferencesStore(Path.Combine(output,"preferences"));
 var samples = Path.Combine(output,"samples");
